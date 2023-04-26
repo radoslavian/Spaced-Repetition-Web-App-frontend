@@ -5,6 +5,11 @@
 /.pnp
 .pnp.js
 
+# backup files
+*.bak
+*~
+*\#*
+
 # testing
 /coverage
 
