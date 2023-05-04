@@ -1,20 +1,28 @@
 import axios from "axios";
+import { getAuthToken, saveToken } from "./helpers.js";
+
 const BASE_API_URL = process.env.REACT_APP_BASE_API_URL || "http://localhost:8000";
 
-export default class ApiClient{
-    constructor(authToken = "") {
+export default class ApiClient {
+    constructor() {
 	this.baseUrl = BASE_API_URL + "/api";
-        this.authToken = authToken;
     }
 
-    setAuthToken(token) {
-        this.authToken = token;
+    async authenticate(endpoint, credentials) {
+        const localToken = await this.post(endpoint, credentials);
+        saveToken(localToken);
+    }
+
+    isAuthenticated() {
+	const token = getAuthToken();
+        return token !== null;
     }
 
     async request(url, method, options) {
-        const headers = this.authToken !== "" ? {
+        const authToken = getAuthToken();
+        const headers = authToken !== undefined ? {
             'Content-Type': 'application/json',
-            Authorization: 'Token '+ this.authToken
+            Authorization: 'Token '+ authToken
         } : {
             'Content-Type': 'application/json'
         };

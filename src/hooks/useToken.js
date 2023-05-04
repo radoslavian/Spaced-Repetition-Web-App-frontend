@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getAuthToken, saveToken } from "../utils/helpers.js";
 
 // based on:
 // https://www.digitalocean.com/community/tutorials/how-to-add-login-
@@ -7,22 +8,16 @@ import { useState } from "react";
 // the article describes also storing token in localStorage
 
 export default function useToken() {
-    const getToken = () => {
-        const tokenString = localStorage.getItem('token');
-        const userToken = JSON.parse(tokenString === undefined ? tokenString : "{}");
-        return userToken?.token;
-    };
+    const [token, setToken] = useState(getAuthToken());
 
-    const [token, setToken] = useState(getToken());
-
-    const saveToken = userToken => {
-        localStorage.setItem('token', JSON.stringify(userToken));
-        setToken(userToken.token);
+    const saveUserToken = userToken => {
+	saveToken(userToken);
+	setToken(userToken.auth_token);
     };
 
     return {
-        setToken: saveToken,
-        token
-    };
+	setToken: saveUserToken,
+	token
+    }
 }
 
