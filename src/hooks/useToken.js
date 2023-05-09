@@ -11,6 +11,7 @@ export default function useToken() {
     const [token, setToken] = useState(getAuthToken());
 
     const saveUserToken = userToken => {
+	console.log("Save token: ", userToken);
 	saveToken(userToken);
 	setToken(userToken.auth_token);
     };

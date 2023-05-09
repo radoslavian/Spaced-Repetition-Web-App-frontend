@@ -9,8 +9,10 @@ export default class ApiClient {
     }
 
     async authenticate(endpoint, credentials) {
-        const localToken = await this.post(endpoint, credentials);
-        saveToken(localToken);
+        const localToken = await this.post(endpoint, {data: credentials});
+        if (localToken !== undefined) {
+            saveToken(localToken);
+        }
     }
 
     isAuthenticated() {
@@ -20,6 +22,7 @@ export default class ApiClient {
 
     async request(url, method, options) {
         const authToken = getAuthToken();
+        const requestUrl = this.baseUrl + url;
         const headers = authToken !== undefined ? {
             'Content-Type': 'application/json',
             Authorization: 'Token '+ authToken
@@ -27,12 +30,14 @@ export default class ApiClient {
             'Content-Type': 'application/json'
         };
         const config =  {
-            ...options,
-            headers: { ...headers }
+            url: requestUrl,
+            method: method,
+            headers: { ...headers },
+            ...options
         };
-        const requestUrl = this.baseUrl + url;
-        
-        return axios[method](requestUrl, config)
+
+        // axios itself is only called in this place
+        return axios(config)
             .then(response => response.data)
             .catch(console.error);
     }
@@ -43,6 +48,10 @@ export default class ApiClient {
 
     async post(url, options) {
         return this.request(url, "post", options);
+    }
+
+    async put(url, options){
+        return this.request(url, "put", options);
     }
 }
 

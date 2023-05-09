@@ -1,4 +1,3 @@
-// UserProvider.js
 import { createContext, useContext, useState, useEffect } from "react";
 import { useApi } from "./ApiProvider";
 
@@ -18,7 +17,7 @@ export function UserProvider({ children }) {
             }
         };
         getUserData();
-    }, [api.isAuthenticated]);
+    }, [api]);
 
     return (
         <UserContext.Provider value={{ user }}>
@@ -34,3 +33,4 @@ export function useUser() {
     }
     return userContext;
 }
+

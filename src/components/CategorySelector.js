@@ -1,15 +1,17 @@
 import React from "react";
 import { Tree } from "antd";
 
-export default function CategoryBrowser({ categories, selectedCategories }) {
+export default function CategorySelector(
+    { categories, selectedCategories, onCheck }) {
     return (
         <>
           <Tree
             checkable
-            defaultSelectedKeys={selectedCategories}
-            defaultCheckedKeys={selectedCategories}
+            checkedKeys={selectedCategories}
             treeData={categories}
             defaultExpandAll={true}
+            onCheck={onCheck}
+            defaultExpandedKeys={categories}
           />
         </>
     );

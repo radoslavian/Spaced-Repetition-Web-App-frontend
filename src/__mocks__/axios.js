@@ -1,16 +1,41 @@
-const authToken = { auth_token: "7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f" };
-const userData = {
-    email: "user@userdomain.com.su",
-    id: "626e4d32-a52f-4c15-8f78-aacf3b69a9b2",
-    username: "user_name"
+import { authToken, userData, userCategories } from "./mockData";
+
+const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
+const BASE_API_URL =  "http://localhost:8000";
+const BASE_URL = BASE_API_URL + "/api";
+
+export const axiosMatch = {
+    post: jest.fn(() => Promise.resolve({ data: authToken })),
+    get: jest.fn().mockImplementation(config => {
+        if (config.url.includes("/auth/users/me/")) {
+            return Promise.resolve({ data: userData });
+        } else if (categoriesUrlMatch.test(config.url)) {
+            return Promise.resolve({ data: userCategories });
+        }
+        else {
+            console.error("Placeholder return in __mocks__/axios.js - url: ",
+                          config.url);
+            return 1;
+        }
+    }),
+    put: jest.fn(() => {
+        return Promise.resolve({ status: 204 });
+    })
 };
 
-const get = jest.fn();
-
-// returns 'undefined' even though configured to do otherwise
-const axios = {
-    post: jest.fn(() => Promise.resolve({data: authToken})),
-    get: jest.fn(() => Promise.resolve({data: userData}))
-};
+function axios(config) {
+    switch(config.method) {
+    case "post":
+        return axiosMatch.post(config);
+        break;
+    case "get":
+        return axiosMatch.get(config);
+        break;
+    case "put":
+        return axiosMatch.put(config);
+        break;
+    }
+}
 
 export default axios;
+
