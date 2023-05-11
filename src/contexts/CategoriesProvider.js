@@ -4,7 +4,6 @@ import { useApi } from "./ApiProvider";
 import { useUser } from "./UserProvider";
 import { timeOut } from "../utils/helpers";
 import { getAuthToken } from "../utils/helpers.js";
-import axios from "axios";
 
 const CategoriesContext = createContext();
 
@@ -19,8 +18,8 @@ export function CategoriesProvider({ children }) {
         if (user?.id === undefined || !api.isAuthenticated()) {
             // the assumption is a user cannot select anything if
             // either api is unauthenticated or there is no
-            // user data - because in this instance downloading
-            // categories took no place
+            // user data - because in such an instance no
+            // categories downloading took place
             return;
         }
         setSelectedCategories(categories);

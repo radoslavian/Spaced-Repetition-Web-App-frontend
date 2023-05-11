@@ -20,12 +20,38 @@ export default class ApiClient {
         return token !== null;
     }
 
-    async request(url, method, options) {
+    validateRequest(url) {
+        const baseUrlOrigin = new URL(this.baseUrl).origin;
+        const receivedUrlOrigin = new URL(url).origin;
+        return baseUrlOrigin === receivedUrlOrigin;
+    }
+
+    getRequestUrl(url) {
+        let validation;
+
+        try {
+            validation = this.validateRequest(url);
+        } catch(e) {
+            return this.baseUrl + url;
+        }
+
+        switch(validation) {
+        case true:
+            return url;
+        case false:
+            throw Error("Attempt to make request with an unknowon origin: "
+                        + `${new URL(url).origin}`);
+        default:
+            throw Error(`Wrong URL: ${url}`);
+        }
+    }
+
+    async request(url, method, options = {}) {
+        const requestUrl = this.getRequestUrl(url);
         const authToken = getAuthToken();
-        const requestUrl = this.baseUrl + url;
         const headers = authToken !== undefined ? {
             'Content-Type': 'application/json',
-            Authorization: 'Token '+ authToken
+            Authorization: 'Token ' + authToken
         } : {
             'Content-Type': 'application/json'
         };

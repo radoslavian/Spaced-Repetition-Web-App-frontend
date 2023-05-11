@@ -4,8 +4,11 @@ import axios, { axiosMatch } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { timeOut } from "./utils/helpers";
-import { CategoriesProvider, useCategories } from "./contexts/CategoriesProvider";
+import { CategoriesProvider,
+         useCategories } from "./contexts/CategoriesProvider";
+import { CardsProvider, useCards } from "./contexts/CardsProvider.js";
 import CategorySelector from "./components/CategorySelector.js";
+import { memorizedCardsSecondPage } from "./__mocks__/mockData";
 
 describe("<ApiProvider/>", () => {
     function FakeComponent() {
@@ -170,3 +173,146 @@ describe("<CategoriesProvider/>", () => {
     });
 });
 
+describe("<CardsProvider/> - memorized (general)", () => {
+    const MemorizedCurrentPage = ({ currentPage }) => (
+        <>
+            { currentPage.map(card => (
+                <p key={ card.id }
+                  data-testid={ card.id }>
+                  { card.grade }, { card.easiness_factor },
+                  { card.last_review }, { card.introduced_on },
+                </p>
+            )) }
+        </>
+    );
+
+    const TestingComponent = () => {
+        const { currentPage, count, isFirst, isLast } = useCards().memorized;
+
+        return (
+            <>
+              <span data-testid="is-first">
+                { Boolean(isFirst) ? "true" : "false" }
+              </span>
+              <span data-testid="is-last">
+                { Boolean(isLast) ? "true" : "false"}
+              </span>
+              <span data-testid="count">{ count }</span>
+              <MemorizedCurrentPage
+                data-testid="current-page"
+                currentPage={currentPage}/>
+            </>
+        );
+    };
+
+    const card = memorizedCardsSecondPage.results[0];
+
+    // should be: beforeAll, but gets reset to <body/>
+    // after each test
+    beforeEach(async () => await act(() => render(
+        <ApiProvider>
+          <UserProvider>
+            <CategoriesProvider>
+              <CardsProvider>
+                <TestingComponent/>
+              </CardsProvider>
+            </CategoriesProvider>
+          </UserProvider>
+        </ApiProvider>
+    )));
+
+    test("if currentPage returned expected output", () => {
+        const receivedCard = screen.getByTestId(card.id);
+        expect(receivedCard).toBeInTheDocument();
+    });
+
+    test("if totalCards shows expected number of memorized cards", () => {
+        const receivedCard = screen.getByTestId("count");
+        expect(receivedCard).toHaveTextContent("62");
+    });
+
+    test("if isFirst correctly indicates we're not on the first page", () => {
+        const isFirst = screen.getByTestId("is-first");
+        expect(isFirst).toHaveTextContent("false");
+    });
+
+    test("if isLast correctly indicates we are not on the last page", () => {
+        const isLast = screen.getByTestId("is-last");
+        expect(isLast).toHaveTextContent("false");
+    });
+    /*
+    test("if isFirst correctly indicates we're on the first page", () => {
+        // expected output: false
+    });
+
+    test("if isLast correctly indicates that we are not yet in the last page",
+         () => {
+             // expected: isLast is false
+         });
+
+    test("if cards update when active categories are being updated", () => {
+    });
+*/
+});
+
+describe("<CardsProvider/> - memorized: navigation", () => {
+    const TestingComponent = ({ goTo }) => {
+        const { currentPage, prevPage, nextPage } = useCards().memorized;
+        const calledPrev = useRef(0);
+        const calledNext = useRef(0);
+
+        switch (goTo) {
+        case "next":
+            nextPage();
+            break;
+        case "prev":
+            if (currentPage !== undefined) calledPrev.current++;
+            prevPage();
+            break;
+        default:
+            throw Error("Wrong parameter: ", goTo);
+        }
+
+        return (
+            <>
+              <span>Parameter: { goTo }</span>
+              <div data-testid="page-data">
+                { currentPage.map(card => (
+                    <p key={card.id} data-testid={card.id}></p>
+                )) }
+              </div>
+            </>
+        );
+    };
+
+    const ComponentWithProviders = ({ goTo }) => {
+        return (<ApiProvider>
+                  <UserProvider>
+                    <CategoriesProvider>
+                      <CardsProvider>
+                        <TestingComponent goTo={ goTo }/>
+                      </CardsProvider>
+                    </CategoriesProvider>
+                  </UserProvider>
+                </ApiProvider>
+               );
+    };
+
+    test("rendering next page", async () => {
+        await act(() => render(
+            <ComponentWithProviders goTo="next"/>
+        ));
+        const card = screen.getByTestId(
+            "b9f2a0ec-fac1-4574-a553-26c5e8d8b5ab");
+        expect(card).toBeInTheDocument();
+    });
+
+    test("rendering previous page", async () => {
+        await act(() => render(
+            <ComponentWithProviders goTo="prev"/>
+        ));
+        const card = await screen.getByTestId(
+            "3dc52454-4931-4583-9737-81e6a56ac127");
+        expect(card).toBeInTheDocument();
+    });
+});
