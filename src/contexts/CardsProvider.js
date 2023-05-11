@@ -8,6 +8,7 @@ const CardsContext = createContext();
 export function CardsProvider({ children }) {
     const api = useApi();
     const { user } = useUser();
+
     const [memorizedCards, setMemorizedCards] = useState([]);
     const memorizedCount = useRef(0);
     const memorizedNavigation = useRef({
@@ -22,40 +23,37 @@ export function CardsProvider({ children }) {
     // in a user instance
     const cardsPerPage = 20;
 
-    const getCards = (cardsSetter, count, navigation) => {
-        return async url => {
-            const response = await api.get(url);
-            cardsSetter(response?.results);
-            count.current = response.count;
-            navigation.current = {
-                currentPage: url,
-                prev: response.previous,
-                next: response.next
-            };
-        };
-    };
+    const getCards = (cardsSetter, count, navigation) =>
+          async url => {
+              const response = await api.get(url);
+              cardsSetter(response?.results);
+              count.current = response.count;
+              navigation.current = {
+                  currentPage: url,
+                  prev: response.previous,
+                  next: response.next
+              };
+          };
 
-    const getMemorized = async url => {
-        const response = await api.get(url);
-        setMemorizedCards(response?.results);
-        memorizedCount.current = response.count;
-        memorizedNavigation.current = {
-            currentPage: url,
-            prev: response.previous,
-            next: response.next
-        };
-    };
+    const getNextPage = (navigation, getCardsFn) => 
+          async () => {
+              if (Boolean(navigation.current.next)) {
+                  getCardsFn(navigation.current.next);
+              }
+          };
 
-    const nextPageMemorized = async url => {
-        if (Boolean(memorizedNavigation.current.next)) {
-            getMemorized(memorizedNavigation.current.next);
-        }
-    };
+    const getPrevPage = (navigation, getCardsFn) =>
+          async () => {
+              if (Boolean(navigation.current.prev)) {
+                  getCardsFn(navigation.current.prev);
+              }
+          };
 
-    const prevPageMemorized = async url => {
-        if (Boolean(memorizedNavigation.current.prev))
-            getMemorized(memorizedNavigation.current.prev);
-    };
+    // should I employ useCallback or useMemo for that?
+    const getMemorized = getCards(setMemorizedCards,
+                                  memorizedCount, memorizedNavigation);
+    const nextPageMemorized = getNextPage(memorizedNavigation, getMemorized);
+    const prevPageMemorized = getPrevPage(memorizedNavigation, getMemorized);
 
     useEffect(() => {
         if (api.isAuthenticated() && user !== undefined) {

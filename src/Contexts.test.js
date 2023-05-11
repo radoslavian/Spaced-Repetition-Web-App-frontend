@@ -256,6 +256,8 @@ describe("<CardsProvider/> - memorized (general)", () => {
 });
 
 describe("<CardsProvider/> - memorized: navigation", () => {
+    afterAll(jest.clearAllMocks);
+
     const TestingComponent = ({ goTo }) => {
         const { currentPage, prevPage, nextPage } = useCards().memorized;
         const calledPrev = useRef(0);
@@ -316,3 +318,58 @@ describe("<CardsProvider/> - memorized: navigation", () => {
         expect(card).toBeInTheDocument();
     });
 });
+/*
+describe("<CardsProvider/> - queued (general)", () => {
+    const QueuedCurrentPage = ({ currentPage }) => (
+        <>
+            { currentPage.map(card => (
+                <p key={ card.id }
+                  data-testid={ card.id }>
+                  { card.grade }, { card.easiness_factor },
+                  { card.last_review }, { card.introduced_on },
+                </p>
+            )) }
+        </>
+    );
+
+    const TestingComponent = () => {
+        const { currentPage, count, isFirst, isLast } = useCards().queued;
+
+        return (
+            <>
+              <span data-testid="is-first">
+                { Boolean(isFirst) ? "true" : "false" }
+              </span>
+              <span data-testid="is-last">
+                { Boolean(isLast) ? "true" : "false"}
+              </span>
+              <span data-testid="count">{ count }</span>
+              <QueuedCurrentPage
+                data-testid="current-page"
+                currentPage={currentPage}/>
+            </>
+        );
+    };
+
+    const card = queuedCardsSecondPage.results[0];
+
+    // should be: beforeAll, but gets reset to <body/>
+    // after each test
+    beforeEach(async () => await act(() => render(
+        <ApiProvider>
+          <UserProvider>
+            <CategoriesProvider>
+              <CardsProvider>
+                <TestingComponent/>
+              </CardsProvider>
+            </CategoriesProvider>
+          </UserProvider>
+        </ApiProvider>
+    )));
+
+    test("if currentPage returned expected output", () => {
+        const receivedCard = screen.getByTestId(card.id);
+        expect(receivedCard).toBeInTheDocument();
+    });
+});
+*/
