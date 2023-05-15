@@ -1,11 +1,21 @@
-import { authToken, userData, userCategories,
-         memorizedCardsSecondPage, memorizedCardsThirdPage,
-         memorizedCardsFirstPage} from "./mockData";
+import {
+    authToken, userData, userCategories, memorizedCardsSecondPage,
+    memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
+    queuedCardsMiddlePage, queuedCardsThirdPage, outstandingFirstPage,
+    outstandingSecondPage, outstandingThirdPage
+}from "./mockData";
 
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
 const memorizedCards = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/$/;
 const memCardsFirstPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/\?page=1/;
 const memCardsThirdPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/\?page=3/;
+
+const queuedCardsMainPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/$/;
+const queuedCardsFirstPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/\?page=1$/;
+const queuedCardsThirdPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/\?page=3$/;
+const outstandingCardsFirstPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/$/;
+const outstandingCardsSecondPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/\?page=2$/;
+
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
 export const axiosMatch = {
@@ -13,6 +23,21 @@ export const axiosMatch = {
     get: jest.fn().mockImplementation(config => {
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
+        }
+        else if (outstandingCardsSecondPageRoute.test(config.url)) {
+            return Promise.resolve({ data: outstandingSecondPage });
+        }
+        else if (outstandingCardsFirstPageRoute.test(config.url)) {
+            return Promise.resolve({ data: outstandingFirstPage });
+        }
+        else if (queuedCardsFirstPageRoute.test(config.url)) {
+            return Promise.resolve({ data: queuedCardsFirstPage });
+        }
+        else if (queuedCardsMainPageRoute.test(config.url)) {
+            return Promise.resolve({ data: queuedCardsMiddlePage });
+        }
+        else if (queuedCardsThirdPageRoute.test(config.url)) {
+            return Promise.resolve({ data: queuedCardsThirdPage });
         }
         else if (categoriesUrlMatch.test(config.url)) {
             return Promise.resolve({ data: userCategories });

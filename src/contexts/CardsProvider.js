@@ -9,9 +9,28 @@ export function CardsProvider({ children }) {
     const api = useApi();
     const { user } = useUser();
 
+    // memorized
     const [memorizedCards, setMemorizedCards] = useState([]);
     const memorizedCount = useRef(0);
     const memorizedNavigation = useRef({
+        current: null,
+        prev: null,
+        next: null
+    });
+
+    // queued
+    const [queuedCards, setQueuedCards] = useState([]);
+    const queuedCount = useRef(0);
+    const queuedNavigation = useRef({
+        current: null,
+        prev: null,
+        next: null
+    });
+
+    // outstanding
+    const [outstandingCards, setOutstandingCards] = useState([]);
+    const outstandingCount = useRef(0);
+    const outstandingNavigation = useRef({
         current: null,
         prev: null,
         next: null
@@ -50,15 +69,34 @@ export function CardsProvider({ children }) {
           };
 
     // should I employ useCallback or useMemo for that?
-    const getMemorized = getCards(setMemorizedCards,
-                                  memorizedCount, memorizedNavigation);
+    // memorized
+    const getMemorized = getCards(setMemorizedCards, memorizedCount,
+                                  memorizedNavigation);
     const nextPageMemorized = getNextPage(memorizedNavigation, getMemorized);
     const prevPageMemorized = getPrevPage(memorizedNavigation, getMemorized);
 
+    // queued
+    const getQueued = getCards(setQueuedCards, queuedCount, queuedNavigation);
+    const nextPageQueued = getNextPage(queuedNavigation, getQueued);
+    const prevPageQueued = getPrevPage(queuedNavigation, getQueued);
+
+    // outstanding (scheduled)
+    const getOutstanding = getCards(setOutstandingCards, outstandingCount,
+                                    outstandingNavigation);
+    const nextPageOutstanding = getNextPage(outstandingNavigation,
+                                            getOutstanding);
+    const prevPageOutstanding = getPrevPage(outstandingNavigation,
+                                            getOutstanding);
+
     useEffect(() => {
         if (api.isAuthenticated() && user !== undefined) {
-            const url = `/users/${user.id}/cards/memorized/`;
-            getMemorized(url);
+            const memorizedUrl = `/users/${user.id}/cards/memorized/`;
+            const queuedUrl = `/users/${user.id}/cards/queued/`;
+            const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
+
+            getMemorized(memorizedUrl);
+            getQueued(queuedUrl);
+            getOutstanding(outstandingUrl);
         }
     }, [user, api]);
 
@@ -71,8 +109,26 @@ export function CardsProvider({ children }) {
         prevPage: prevPageMemorized
     };
 
+    const queued = {
+        currentPage: queuedCards,
+        count: queuedCount.current,
+        isFirst: Boolean(!queuedNavigation.current.prev),
+        isLast: Boolean(!queuedNavigation.current.next),
+        nextPage: nextPageQueued,
+        prevPage: prevPageQueued
+    };
+
+    const outstanding = {
+        currentPage: outstandingCards,
+        count: outstandingCount.current,
+        isFirst: Boolean(!outstandingNavigation.current.prev),
+        isLast: Boolean(!outstandingNavigation.current.next),
+        nextPage: nextPageOutstanding,
+        prevPage: prevPageOutstanding
+    };
+
     return (
-        <CardsContext.Provider value={{ memorized }}>
+        <CardsContext.Provider value={{ memorized, queued, outstanding }}>
           { children }
         </CardsContext.Provider>
     );

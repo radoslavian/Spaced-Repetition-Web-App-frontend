@@ -120,214 +120,6 @@ export const userCategories2 = {
     ]
 };
 
-export const queuedCardsFirstPage = {
-    "count": 60,
-    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/queued/?page=2",
-    "previous": null,
-    "results": [
-        {
-            "id": "f4055d8c-c97f-419f-b6db-61d36f53da47",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Serve give phone.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Quality project.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "abddc99f-ad11-4180-8946-a8f9ca70f71b",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Fund space south.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Share certain eye.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "b8e266b9-f7ba-4f3c-829e-6c3187bec8aa",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Difficult idea.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Foot so top try.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "1cef5001-1e84-473e-bed1-02e5991fb0fc",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Director keep.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>See opportunity.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "76a26f9e-8b78-4a3e-9747-43afe57283d0",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Series water.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Make yard seek end.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "d41e089d-2676-4686-91a7-54f90d372a37",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Drug require raise.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Boy kid dog.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "23fb7a50-1980-41b0-9425-84b52b34d736",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Fall go popular man.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Might when future.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "bc17dee9-bb86-44df-8bf0-3a33184322fb",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Skin executive.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Throw sport the.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "c018522f-ca74-43c3-ae37-9baf41c53834",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Book chance real.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Growth ask herself.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "4e7be0aa-1d37-40fb-9de7-cb930cee1472",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Must agent maintain.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>So floor me do go.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "9c45f027-8082-4131-aca4-c00eb49cff50",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Such upon market.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Pass serve whose.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "0d898e0c-4ae3-4fa4-ba4e-4b9e3599e324",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Charge name message.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Production less.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "6eb3c3ea-43ee-486b-b898-803d5f8bd219",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Effort past fall.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Item important.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "cea9fc1d-fb65-4cf3-ad95-93b66da75928",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Level build during.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Run tend actually.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "f64b4f5e-828b-45e3-8ba4-63becbffd663",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Goal production per.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Property rock place.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "a13ddb7a-2f4f-46f4-9200-f29a78a14e25",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Crime high side add.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Wonder tax value.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "4d2cec99-c341-4dd3-8f9f-c6b4ddbf3d43",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Quality meet policy.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Live inside.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "c0428476-bce3-4cca-86bc-f196a5cb82e4",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Research move.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>By public movie.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "5c2aaf27-1a09-4710-af15-5cc81e916ee2",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Left discussion.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Plant unit small.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        },
-        {
-            "id": "84b8b3f6-e17e-41e8-a415-c97b38c9d097",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>How star garden too.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Attorney wait other.</p>\n</div>\n\n</div>",
-            "categories": [
-                {
-                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
-                    "title": "Vocabulary"
-                }
-            ]
-        }
-    ]
-};
-
 export const memorizedCardsFirstPage = {
     "count": 62,
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/memorized/?page=2",
@@ -397,7 +189,7 @@ export const memorizedCardsThirdPage = {
     "next": null,
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/memorized/?page=2",
     "results": [
-       {
+        {
             "id": "b9f2a0ec-fac1-4574-a553-26c5e8d8b5ab",
             "body": "<b><a>front</a></b>\r\n<hr />\r\n<b><i>odpowiedź</i></i>",
             "projected_review_data": null,
@@ -418,6 +210,266 @@ export const memorizedCardsThirdPage = {
             "total_reviews": 1,
             "last_reviewed": "2023-05-10",
             "introduced_on": "2023-05-10T10:06:01.236892Z",
+            "review_date": "2023-05-13",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+    ]
+};
+
+export const queuedCardsFirstPage = {
+    "count": 60,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/queued/page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "f4055d8c-c97f-419f-b6db-61d36f53da47",
+            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Serve give phone.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Quality project.</p>\n</div>\n\n</div>",
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ]
+        }
+    ]
+};
+
+// here we start
+export const queuedCardsMiddlePage = {
+    "count": 60,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/queued/?page=3",
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/queued/?page=1",
+    "results": [
+        {
+            "id": "5f143904-c9d1-4e5b-ac00-01258d09965a",
+            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Employee baby.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Move her light hope.</p>\n</div>\n\n</div>",
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ]
+        },
+    ]
+};
+
+export const queuedCardsThirdPage = {
+    "count": 60,
+    "next": null,
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/queued/?page=2",
+    "results": [
+        {
+            "id": "5cd3446f-0b68-4224-8bb8-f04fe4ed83cb",
+            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Politics thing.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Grow policy guess.</p>\n</div>\n\n</div>",
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ]
+        }
+    ]
+};
+
+export const outstandingFirstPage = {
+    "count": 3,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/outstanding/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "91d1ef25-b1c8-4c49-8b00-215f90088232",
+            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Feeling common rest.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Perhaps animal rich.</p>\n</div>\n\n</div>",
+            "projected_review_data": {
+                "0": {
+                    "easiness": 1.7000000000000002,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "1": {
+                    "easiness": 1.96,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "2": {
+                    "easiness": 2.1799999999999997,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "3": {
+                    "easiness": 2.36,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "4": {
+                    "easiness": 2.5,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "5": {
+                    "easiness": 2.6,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                }
+            },
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.257239Z",
+            "review_date": "2023-05-12",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+    ]
+};
+
+export const outstandingSecondPage = {
+    "count": 3,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/outstanding/?page=3",
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/outstanding/?page=1",
+    "results": [
+        {
+            "id": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa",
+            "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
+            "projected_review_data": {
+                "0": {
+                    "easiness": 1.7000000000000002,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "1": {
+                    "easiness": 1.96,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "2": {
+                    "easiness": 2.1799999999999997,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "3": {
+                    "easiness": 2.36,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "4": {
+                    "easiness": 2.5,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "5": {
+                    "easiness": 2.6,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                }
+            },
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        }
+    ]
+};
+
+export const outstandingThirdPage = {
+    "count": 62,
+    "next": null,
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/outstanding/?page=2",
+    "results": [
+        {
+            "id": "c6168ba7-6eac-4e1c-806b-3ce111bcdec3",
+            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Between plant it.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Business present.</p>\n</div>\n\n</div>",
+            "projected_review_data": {
+                "0": {
+                    "easiness": 1.7000000000000002,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "1": {
+                    "easiness": 1.96,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "2": {
+                    "easiness": 2.1799999999999997,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "3": {
+                    "easiness": 2.36,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "4": {
+                    "easiness": 2.5,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "5": {
+                    "easiness": 2.6,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                }
+            },
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.647250Z",
             "review_date": "2023-05-13",
             "grade": 4,
             "easiness_factor": 2.5,

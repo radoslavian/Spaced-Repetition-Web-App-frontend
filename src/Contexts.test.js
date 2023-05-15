@@ -1,4 +1,5 @@
-import { render, act, waitFor, screen, within } from "@testing-library/react";
+import { render, act, waitFor, screen, within,
+         fireEvent } from "@testing-library/react";
 import { useRef, useEffect } from "react";
 import axios, { axiosMatch } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
@@ -8,7 +9,8 @@ import { CategoriesProvider,
          useCategories } from "./contexts/CategoriesProvider";
 import { CardsProvider, useCards } from "./contexts/CardsProvider.js";
 import CategorySelector from "./components/CategorySelector.js";
-import { memorizedCardsSecondPage } from "./__mocks__/mockData";
+import { memorizedCardsSecondPage,
+         queuedCardsMiddlePage } from "./__mocks__/mockData";
 
 describe("<ApiProvider/>", () => {
     function FakeComponent() {
@@ -173,21 +175,9 @@ describe("<CategoriesProvider/>", () => {
     });
 });
 
-describe("<CardsProvider/> - memorized (general)", () => {
-    const MemorizedCurrentPage = ({ currentPage }) => (
-        <>
-            { currentPage.map(card => (
-                <p key={ card.id }
-                  data-testid={ card.id }>
-                  { card.grade }, { card.easiness_factor },
-                  { card.last_review }, { card.introduced_on },
-                </p>
-            )) }
-        </>
-    );
-
-    const TestingComponent = () => {
-        const { currentPage, count, isFirst, isLast } = useCards().memorized;
+function getProviderGeneralTestingComponent (cardsGroup) {
+    return () => {
+        const { currentPage, count, isFirst, isLast } = cardsGroup;
 
         return (
             <>
@@ -198,35 +188,44 @@ describe("<CardsProvider/> - memorized (general)", () => {
                 { Boolean(isLast) ? "true" : "false"}
               </span>
               <span data-testid="count">{ count }</span>
-              <MemorizedCurrentPage
+              <CardsCurrentPage
                 data-testid="current-page"
                 currentPage={currentPage}/>
             </>
         );
     };
+}
 
+function getComponentWithProviders(Component) {
+    return () => (<ApiProvider>
+                    <UserProvider>
+                      <CategoriesProvider>
+                        <CardsProvider>
+                          <Component/>
+                        </CardsProvider>
+                      </CategoriesProvider>
+                    </UserProvider>
+                  </ApiProvider>
+                 );
+}
+
+describe("<CardsProvider/> - memorized (general)", () => {
+    const TestingComponent = () => getProviderGeneralTestingComponent(
+        useCards().memorized)();
+    const ComponentWithProviders = getComponentWithProviders(TestingComponent);
     const card = memorizedCardsSecondPage.results[0];
 
     // should be: beforeAll, but gets reset to <body/>
     // after each test
     beforeEach(async () => await act(() => render(
-        <ApiProvider>
-          <UserProvider>
-            <CategoriesProvider>
-              <CardsProvider>
-                <TestingComponent/>
-              </CardsProvider>
-            </CategoriesProvider>
-          </UserProvider>
-        </ApiProvider>
-    )));
+        <ComponentWithProviders/>)));
 
     test("if currentPage returned expected output", () => {
         const receivedCard = screen.getByTestId(card.id);
         expect(receivedCard).toBeInTheDocument();
     });
 
-    test("if totalCards shows expected number of memorized cards", () => {
+    test("if count shows expected number of memorized cards", () => {
         const receivedCard = screen.getByTestId("count");
         expect(receivedCard).toHaveTextContent("62");
     });
@@ -240,44 +239,33 @@ describe("<CardsProvider/> - memorized (general)", () => {
         const isLast = screen.getByTestId("is-last");
         expect(isLast).toHaveTextContent("false");
     });
-    /*
-    test("if isFirst correctly indicates we're on the first page", () => {
-        // expected output: false
-    });
-
-    test("if isLast correctly indicates that we are not yet in the last page",
-         () => {
-             // expected: isLast is false
-         });
-
-    test("if cards update when active categories are being updated", () => {
-    });
-*/
 });
 
-describe("<CardsProvider/> - memorized: navigation", () => {
-    afterAll(jest.clearAllMocks);
-
-    const TestingComponent = ({ goTo }) => {
-        const { currentPage, prevPage, nextPage } = useCards().memorized;
-        const calledPrev = useRef(0);
-        const calledNext = useRef(0);
-
-        switch (goTo) {
-        case "next":
-            nextPage();
-            break;
-        case "prev":
-            if (currentPage !== undefined) calledPrev.current++;
-            prevPage();
-            break;
-        default:
-            throw Error("Wrong parameter: ", goTo);
-        }
+function getNavigationTestingComponent(cardsGroup) {
+    return () => {
+        const { currentPage, prevPage, nextPage,
+                isFirst, isLast } = cardsGroup;
 
         return (
             <>
-              <span>Parameter: { goTo }</span>
+              <div data-testid="isFirst">
+                { isFirst ? "true" : "false" }
+              </div>
+              <div data-testid="isLast">
+                { isLast ? "true" : "false" }
+              </div>
+              { currentPage !== [] ? <>
+                                       <div data-testid="click_prevPage"
+                                             onClick={prevPage}>
+                                         Click for previous page
+                                       </div>
+                                       <div data-testid="click_nextPage"
+                                             onClick={nextPage}>
+                                         Click for next page
+                                       </div>
+                                     </>
+                
+                : "" }
               <div data-testid="page-data">
                 { currentPage.map(card => (
                     <p key={card.id} data-testid={card.id}></p>
@@ -286,90 +274,186 @@ describe("<CardsProvider/> - memorized: navigation", () => {
             </>
         );
     };
+}
 
-    const ComponentWithProviders = ({ goTo }) => {
-        return (<ApiProvider>
-                  <UserProvider>
-                    <CategoriesProvider>
-                      <CardsProvider>
-                        <TestingComponent goTo={ goTo }/>
-                      </CardsProvider>
-                    </CategoriesProvider>
-                  </UserProvider>
-                </ApiProvider>
-               );
-    };
+describe("<CardsProvider/> - memorized: navigation", () => {
+    afterAll(jest.clearAllMocks);
+
+    const TestingComponent = () => getNavigationTestingComponent(
+        useCards().memorized)();
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
 
     test("rendering next page", async () => {
         await act(() => render(
-            <ComponentWithProviders goTo="next"/>
+            <ComponentWithProviders/>
         ));
-        const card = screen.getByTestId(
+        const clickNext = await screen.findByTestId("click_nextPage");
+        fireEvent.click(clickNext);
+        
+        const card = await screen.findByTestId(
             "b9f2a0ec-fac1-4574-a553-26c5e8d8b5ab");
         expect(card).toBeInTheDocument();
     });
 
     test("rendering previous page", async () => {
         await act(() => render(
-            <ComponentWithProviders goTo="prev"/>
+            <ComponentWithProviders/>
         ));
-        const card = await screen.getByTestId(
+        const clickPrev = await screen.findByTestId("click_prevPage");
+        fireEvent.click(clickPrev);
+        const card = await screen.findByTestId(
             "3dc52454-4931-4583-9737-81e6a56ac127");
         expect(card).toBeInTheDocument();
     });
 });
-/*
+
+// move that to the top
+const CardsCurrentPage = ({ currentPage }) => (
+    <>
+      { currentPage.map(card => (
+          <p key={ card.id }
+             data-testid={ card.id }>
+          </p>
+      )) }
+    </>
+);
+
 describe("<CardsProvider/> - queued (general)", () => {
-    const QueuedCurrentPage = ({ currentPage }) => (
-        <>
-            { currentPage.map(card => (
-                <p key={ card.id }
-                  data-testid={ card.id }>
-                  { card.grade }, { card.easiness_factor },
-                  { card.last_review }, { card.introduced_on },
-                </p>
-            )) }
-        </>
-    );
+    const TestingComponent = () => getProviderGeneralTestingComponent(
+        useCards().queued)();
+    const card = queuedCardsMiddlePage.results[0];
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
 
-    const TestingComponent = () => {
-        const { currentPage, count, isFirst, isLast } = useCards().queued;
-
-        return (
-            <>
-              <span data-testid="is-first">
-                { Boolean(isFirst) ? "true" : "false" }
-              </span>
-              <span data-testid="is-last">
-                { Boolean(isLast) ? "true" : "false"}
-              </span>
-              <span data-testid="count">{ count }</span>
-              <QueuedCurrentPage
-                data-testid="current-page"
-                currentPage={currentPage}/>
-            </>
-        );
-    };
-
-    const card = queuedCardsSecondPage.results[0];
-
-    // should be: beforeAll, but gets reset to <body/>
+    // should be: beforeAll instead, but gets reset to <body/>
     // after each test
     beforeEach(async () => await act(() => render(
-        <ApiProvider>
-          <UserProvider>
-            <CategoriesProvider>
-              <CardsProvider>
-                <TestingComponent/>
-              </CardsProvider>
-            </CategoriesProvider>
-          </UserProvider>
-        </ApiProvider>
-    )));
+        <ComponentWithProviders/>)));
 
     test("if currentPage returned expected output", () => {
         const receivedCard = screen.getByTestId(card.id);
         expect(receivedCard).toBeInTheDocument();
     });
+
+    test("if count shows expected number of queued cards", () => {
+        const receivedCard = screen.getByTestId("count");
+        expect(receivedCard).toHaveTextContent("60");
+    });
+
+    test("if isFirst correctly indicates we're not on the first page", () => {
+        const isFirst = screen.getByTestId("is-first");
+        expect(isFirst).toHaveTextContent("false");
+    });
+
+    test("if isLast correctly indicates we are not on the last page", () => {
+        const isLast = screen.getByTestId("is-last");
+        expect(isLast).toHaveTextContent("false");
+    });
 });
-*/
+
+describe("<CardsProvider/> - queued: navigation", () => {
+    afterAll(jest.clearAllMocks);
+
+    const QueuedTestingComponent = () => getNavigationTestingComponent(
+        useCards().queued)();
+    const ComponentWithProviders = getComponentWithProviders(
+        QueuedTestingComponent);
+
+    beforeEach(async () => await act(() => render(
+            <ComponentWithProviders/>
+        )));
+
+    test("rendering next page", async () => {
+        const clickNext = await screen.findByTestId("click_nextPage");
+        fireEvent.click(clickNext);
+        const card = await screen.findByTestId(
+            "5cd3446f-0b68-4224-8bb8-f04fe4ed83cb");
+        expect(card).toBeInTheDocument();
+    });
+
+    test("rendering previous page", async () => {
+        const clickPrev = await screen.findByTestId("click_prevPage");
+        fireEvent.click(clickPrev);
+        const card = await screen.findByTestId(
+            "f4055d8c-c97f-419f-b6db-61d36f53da47");
+        expect(card).toBeInTheDocument();
+    });
+
+    test("isFirst should be false", async () => {
+        const isFirstValue = await screen.findByTestId("isFirst");
+        expect(isFirstValue).toHaveTextContent("false");
+    });
+
+    test("isFirst should be true", async () => {
+        const clickPrev = await screen.findByTestId("click_prevPage");
+        fireEvent.click(clickPrev);
+        const isFirstValue = await screen.findByTestId("isFirst");
+        await waitFor(() => expect(isFirstValue).toHaveTextContent("true"));
+    });
+
+    test("isLast should be false", async () => {
+        const isLastValue = await screen.findByTestId("isLast");
+        await waitFor(() => expect(isLastValue).toHaveTextContent("false"));
+    });
+
+    test("isLast should be true", async () => {
+        const clickNext = await screen.findByTestId("click_nextPage");
+        fireEvent.click(clickNext);
+        const isLastValue = await screen.findByTestId("isLast");
+        await waitFor(() => expect(isLastValue).toHaveTextContent("true"));
+    });
+});
+
+describe("<CardsProvider/> - outstanding (scheduled) - general", () => {
+    const TestingComponent = () => getProviderGeneralTestingComponent(
+        useCards().outstanding)();
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
+
+    beforeEach(async () => await act(() => render(
+        <ComponentWithProviders/>)));
+
+    test("if currentPage returned expected output", () => {
+        const receivedCard = screen.getByTestId(
+            "91d1ef25-b1c8-4c49-8b00-215f90088232");
+        expect(receivedCard).toBeInTheDocument();
+    });
+
+    test("if count shows expected number of outstanding cards", () => {
+        const receivedCard = screen.getByTestId("count");
+        expect(receivedCard).toHaveTextContent("3");
+    });
+
+    test("if isFirst correctly indicates we're on the first page", () => {
+        const isFirst = screen.getByTestId("is-first");
+        expect(isFirst).toHaveTextContent("true");
+    });
+
+    test("if isLast correctly indicates we are not on the last page", () => {
+        const isLast = screen.getByTestId("is-last");
+        expect(isLast).toHaveTextContent("false");
+    });
+});
+
+describe("<CardsProvider/> - outstanding (scheduled) - navigation", () => {
+    const QueuedTestingComponent = () => getNavigationTestingComponent(
+        useCards().outstanding)();
+    const ComponentWithProviders = getComponentWithProviders(
+        QueuedTestingComponent);
+
+    beforeEach(async () => await act(() => render(
+            <ComponentWithProviders/>
+        )));
+
+    test("rendering next page", async () => {
+        const clickNext = await screen.findByTestId("click_nextPage");
+        fireEvent.click(clickNext);
+        const card = await screen.findByTestId(
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");
+        expect(card).toBeInTheDocument();
+    });
+
+    // test rendering previous page - how to do that?
+});
+
