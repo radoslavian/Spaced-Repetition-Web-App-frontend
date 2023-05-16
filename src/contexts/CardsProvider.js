@@ -36,17 +36,29 @@ export function CardsProvider({ children }) {
         next: null
     });
 
+    // all cards
+    const [allCards, setAllCards] = useState([]);
+    const allCardsCount = useRef(0);
+    const allCardsNavigation = useRef({
+        current: null,
+        prev: null,
+        next: null
+    });
+
     // later this should come from a separate module used by both
     // front-end app and back-end app
     // or: be imported by a backend-app and then stored as a field
     // in a user instance
     const cardsPerPage = 20;
 
-    const getCards = (cardsSetter, count, navigation) =>
+    // countParam - added due to naming differences of this attribute
+    // between endpoint for all cards and the remaining
+    const getCards = (cardsSetter, count, navigation,
+                      countParam = "count") =>
           async url => {
               const response = await api.get(url);
               cardsSetter(response?.results);
-              count.current = response.count;
+              count.current = response[countParam];
               navigation.current = {
                   currentPage: url,
                   prev: response.previous,
@@ -88,12 +100,20 @@ export function CardsProvider({ children }) {
     const prevPageOutstanding = getPrevPage(outstandingNavigation,
                                             getOutstanding);
 
+    // all cards
+    const getAllCards = getCards(setAllCards, allCardsCount,
+                                 allCardsNavigation, "overall_total");
+    const nextPageAllCards = getNextPage(allCardsNavigation, getAllCards);
+    const prevPageAllCards = getPrevPage(allCardsNavigation, getAllCards);
+
     useEffect(() => {
         if (api.isAuthenticated() && user !== undefined) {
+            const allCardsUrl = `/users/${user.id}/cards/`;
             const memorizedUrl = `/users/${user.id}/cards/memorized/`;
             const queuedUrl = `/users/${user.id}/cards/queued/`;
             const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
 
+            getAllCards(allCardsUrl);
             getMemorized(memorizedUrl);
             getQueued(queuedUrl);
             getOutstanding(outstandingUrl);
@@ -127,8 +147,18 @@ export function CardsProvider({ children }) {
         prevPage: prevPageOutstanding
     };
 
+    const all = {
+        currentPage: allCards,
+        count: allCardsCount.current,
+        isFirst: Boolean(!allCardsNavigation.current.prev),
+        isLast: Boolean(!allCardsNavigation.current.next),
+        nextPage: nextPageAllCards,
+        prevPage: prevPageAllCards
+    };
+
     return (
-        <CardsContext.Provider value={{ memorized, queued, outstanding }}>
+        <CardsContext.Provider
+          value={{ memorized, queued, outstanding, all }}>
           { children }
         </CardsContext.Provider>
     );

@@ -1,9 +1,10 @@
 import {
     authToken, userData, userCategories, memorizedCardsSecondPage,
     memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
-    queuedCardsMiddlePage, queuedCardsThirdPage, outstandingFirstPage,
-    outstandingSecondPage, outstandingThirdPage
-}from "./mockData";
+    queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
+    outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
+    allCardsPrev
+} from "./mockData";
 
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
 const memorizedCards = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/$/;
@@ -13,8 +14,12 @@ const memCardsThirdPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][
 const queuedCardsMainPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/$/;
 const queuedCardsFirstPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/\?page=1$/;
 const queuedCardsThirdPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/\?page=3$/;
-const outstandingCardsFirstPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/$/;
-const outstandingCardsSecondPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/\?page=2$/;
+const outstandingCardsPrevPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/\?page=2$/;
+const outstandingCardsMainPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/$/;
+const outstandingCardsNextPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/\?page=3$/;
+const allCardsMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/$/;
+const allCardsNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=40$/;
+const allCardsPrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20$/;
 
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
@@ -24,11 +29,23 @@ export const axiosMatch = {
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
         }
-        else if (outstandingCardsSecondPageRoute.test(config.url)) {
-            return Promise.resolve({ data: outstandingSecondPage });
+        else if (allCardsPrevRoute.test(config.url)) {
+            return Promise.resolve({ data: allCardsPrev });
         }
-        else if (outstandingCardsFirstPageRoute.test(config.url)) {
-            return Promise.resolve({ data: outstandingFirstPage });
+        else if (allCardsNextRoute.test(config.url)) {
+            return Promise.resolve({ data: allCardsNext });
+        }
+        else if (allCardsMiddleRoute.test(config.url)) {
+            return Promise.resolve({ data: allCardsMiddle });
+        }
+        else if (outstandingCardsPrevPageRoute.test(config.url)) {
+            return Promise.resolve({ data: outstandingPrevPage });
+        }
+        else if (outstandingCardsNextPageRoute.test(config.url)) {
+            return Promise.resolve({ data: outstandingNextPage });
+        }
+        else if (outstandingCardsMainPageRoute.test(config.url)) {
+            return Promise.resolve({ data: outstandingMiddlePage });
         }
         else if (queuedCardsFirstPageRoute.test(config.url)) {
             return Promise.resolve({ data: queuedCardsFirstPage });

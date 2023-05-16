@@ -182,10 +182,10 @@ function getProviderGeneralTestingComponent (cardsGroup) {
         return (
             <>
               <span data-testid="is-first">
-                { Boolean(isFirst) ? "true" : "false" }
+                { isFirst ? "true" : "false" }
               </span>
               <span data-testid="is-last">
-                { Boolean(isLast) ? "true" : "false"}
+                { isLast ? "true" : "false"}
               </span>
               <span data-testid="count">{ count }</span>
               <CardsCurrentPage
@@ -416,7 +416,7 @@ describe("<CardsProvider/> - outstanding (scheduled) - general", () => {
 
     test("if currentPage returned expected output", () => {
         const receivedCard = screen.getByTestId(
-            "91d1ef25-b1c8-4c49-8b00-215f90088232");
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");
         expect(receivedCard).toBeInTheDocument();
     });
 
@@ -425,9 +425,9 @@ describe("<CardsProvider/> - outstanding (scheduled) - general", () => {
         expect(receivedCard).toHaveTextContent("3");
     });
 
-    test("if isFirst correctly indicates we're on the first page", () => {
+    test("if isFirst correctly indicates we're not on the first page", () => {
         const isFirst = screen.getByTestId("is-first");
-        expect(isFirst).toHaveTextContent("true");
+        expect(isFirst).toHaveTextContent("false");
     });
 
     test("if isLast correctly indicates we are not on the last page", () => {
@@ -450,10 +450,76 @@ describe("<CardsProvider/> - outstanding (scheduled) - navigation", () => {
         const clickNext = await screen.findByTestId("click_nextPage");
         fireEvent.click(clickNext);
         const card = await screen.findByTestId(
-            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");
+            "c6168ba7-6eac-4e1c-806b-3ce111bcdec3");
         expect(card).toBeInTheDocument();
     });
 
-    // test rendering previous page - how to do that?
+    test("rendering previous page", async () => {
+        const clickPrev = await screen.findByTestId("click_prevPage");
+        fireEvent.click(clickPrev);
+        const card = await screen.findByTestId(
+            "91d1ef25-b1c8-4c49-8b00-215f90088232");
+        expect(card).toBeInTheDocument();
+    });
 });
 
+describe("<CardsProvider/> - all cards - general", () => {
+    const TestingComponent = () => getProviderGeneralTestingComponent(
+        useCards().all)();
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
+
+    beforeEach(async () => await act(() => render(
+        <ComponentWithProviders/>)));
+
+    test("if currentPage returned expected output", () => {
+        // data: allCardsMiddle
+        const receivedCard = screen.getByTestId(
+            "f8f3ef31-1554-450f-ad7b-589bfd0e068d");  // memorized
+        expect(receivedCard).toBeInTheDocument();
+    });
+
+    test("if count shows expected number of outstanding cards", () => {
+        const receivedCard = screen.getByTestId("count");
+        expect(receivedCard).toHaveTextContent("122");
+    });
+
+    test("if isFirst correctly indicates we're not on the first page",
+         async () => {
+             const isFirst = await screen.findByTestId("is-first");
+             expect(isFirst).toHaveTextContent("false");
+    });
+
+    test("if isLast correctly indicates we are not on the last page",
+         () => {
+             const isLast = screen.getByTestId("is-last");
+             expect(isLast).toHaveTextContent("false");
+    });
+});
+
+describe("<CardsProvider/> - all cards - navigation", () => {
+    const QueuedTestingComponent = () => getNavigationTestingComponent(
+        useCards().all)();
+    const ComponentWithProviders = getComponentWithProviders(
+        QueuedTestingComponent);
+
+    beforeEach(async () => await act(() => render(
+            <ComponentWithProviders/>
+        )));
+
+    test("rendering next page", async () => {
+        const clickNext = await screen.findByTestId("click_nextPage");
+        fireEvent.click(clickNext);
+        const card = await screen.findByTestId(
+            "f4055d8c-c97f-419f-b6db-62d36f53da47");
+        expect(card).toBeInTheDocument();
+    });
+
+    test("rendering previous page", async () => {
+        const clickPrev = await screen.findByTestId("click_prevPage");
+        fireEvent.click(clickPrev);
+        const card = await screen.findByTestId(
+            "5cd3446f-0b68-4224-8bb8-f04fe4ed83cb");
+        expect(card).toBeInTheDocument();
+    });
+});
