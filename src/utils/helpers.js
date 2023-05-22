@@ -1,3 +1,21 @@
+export function stripHTMLShortenText(text) {
+    // strips text of html tags and shortens it
+    const textLen = 50;
+    const strippedText = stripOfHtmlTags(text);
+    if (strippedText.length < textLen) {
+        return strippedText;
+    }
+    return strippedText.slice(0, textLen) + "...";
+};
+
+export function stripOfHtmlTags(html) {
+    // got it from StackOverflow:
+    // https://stackoverflow.com/questions/822452/strip-html-from-text-javascript
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+};
+
 export function getAuthToken() {
     const tokenString = localStorage.getItem('userToken');
     let userToken;

@@ -45,6 +45,17 @@ export function CardsProvider({ children }) {
         next: null
     });
 
+    const allCardsOnLoadMore = async () => {
+        if (!Boolean(allCardsNavigation.current.next)) {
+            return;
+        }
+        const url = allCardsNavigation.current.next;
+        // cards from next page
+        const cards = await api.get(url);
+        const newCardList = allCards.concat(cards.results);
+        setAllCards(newCardList);
+    };
+
     // later this should come from a separate module used by both
     // front-end app and back-end app
     // or: be imported by a backend-app and then stored as a field
@@ -147,18 +158,38 @@ export function CardsProvider({ children }) {
         prevPage: prevPageOutstanding
     };
 
+    const allCardsGoToFirst = () => {
+        if (user === undefined) {
+            return;
+        }
+        getAllCards(`/users/${user.id}/cards/`);
+    };
+
     const all = {
         currentPage: allCards,
         count: allCardsCount.current,
         isFirst: Boolean(!allCardsNavigation.current.prev),
         isLast: Boolean(!allCardsNavigation.current.next),
         nextPage: nextPageAllCards,
-        prevPage: prevPageAllCards
+        prevPage: prevPageAllCards,
+        loadMore: allCardsOnLoadMore,
+        goToFirst: allCardsGoToFirst
+    };
+
+    const functions = {
+        memorize: async function(cardId, grade) {
+            if (user === undefined || !api.isAuthenticated) {
+                return;
+            }
+            const url = `/users/${user.id}/cards/queued/${cardId}`;
+            const response = await api.patch(url, {data: {grade: grade}});
+            // TODO: add interactions
+        }
     };
 
     return (
         <CardsContext.Provider
-          value={{ memorized, queued, outstanding, all }}>
+          value={{ memorized, queued, outstanding, all, functions }}>
           { children }
         </CardsContext.Provider>
     );

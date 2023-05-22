@@ -722,3 +722,22 @@ export const allCardsNext = {
         }
     ]
 };
+
+export const memorizedCard = {
+   "id": "a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad",
+   "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>House moment.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Sound high short.</p>\n</div>\n\n</div>",
+   "projected_review_data": null,
+   "categories": [],
+   "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad",
+   "computed_interval": 1,
+   "lapses": 0,
+   "reviews": 0,
+   "total_reviews": 1,
+   "last_reviewed": "2023-05-22",
+   "introduced_on": "2023-05-22T18:40:59.069564Z",
+   "review_date": "2023-05-23",
+   "grade": 1,
+   "easiness_factor": 1.96,
+   "comment": null
+}
+

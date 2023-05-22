@@ -3,7 +3,7 @@ import {
     memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
-    allCardsPrev
+    allCardsPrev, memorizedCard
 } from "./mockData";
 
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
@@ -20,6 +20,7 @@ const outstandingCardsNextPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0
 const allCardsMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/$/;
 const allCardsNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=40$/;
 const allCardsPrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20$/;
+const memorizeRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
@@ -79,6 +80,16 @@ export const axiosMatch = {
     }),
     put: jest.fn(() => {
         return Promise.resolve({ status: 204 });
+    }),
+    patch: jest.fn().mockImplementation(config => {
+	if (memorizeRoute.test(config.url)) {
+	    return Promise.resolve({ data: memorizedCard })
+	}
+	else {
+	    console.error("Placeholder return in __mocks__/axios.js - url: ",
+                          config.url);
+            return 1;
+	}
     })
 };
 
@@ -93,6 +104,9 @@ function axios(config) {
     case "put":
         return axiosMatch.put(config);
         break;
+    case "patch":
+	return axiosMatch.patch(config);
+	break;
     }
 }
 

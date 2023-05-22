@@ -243,7 +243,7 @@ describe("<CardsProvider/> - memorized (general)", () => {
 
 function getNavigationTestingComponent(cardsGroup) {
     return () => {
-        const { currentPage, prevPage, nextPage,
+        const { currentPage, prevPage, nextPage, loadMore, goToFirst,
                 isFirst, isLast } = cardsGroup;
 
         return (
@@ -262,6 +262,14 @@ function getNavigationTestingComponent(cardsGroup) {
                                        <div data-testid="click_nextPage"
                                              onClick={nextPage}>
                                          Click for next page
+                                       </div>
+                                       <div data-testid="load-more"
+                                            onClick={loadMore}>
+                                         Click to load more
+                                       </div>
+                                       <div data-testid="go-to-first"
+                                            onClick={goToFirst}>
+                                         Go to first page (reset)
                                        </div>
                                      </>
                 
@@ -522,4 +530,75 @@ describe("<CardsProvider/> - all cards - navigation", () => {
             "5cd3446f-0b68-4224-8bb8-f04fe4ed83cb");
         expect(card).toBeInTheDocument();
     });
+
+    test("load more", async () => {
+        // currentPage, after hitting loadMore, shows items from the first
+        // and second page
+        const loadMore = await screen.findByTestId("load-more");
+        fireEvent.click(loadMore);
+        const cardMiddle = await screen.findByTestId(
+            "f8f3ef31-1554-450f-ad7b-589bfd0e068d");  // allCardsMiddle
+        const cardNext = await screen.findByTestId(
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");  // allCardsNext
+
+        // assert cards from the first and 2nd page
+        expect(cardMiddle).toBeInTheDocument();
+        expect(cardNext).toBeInTheDocument();
+    });
+
+    test("goToFirst - reseting and returning to the first page", async () => {
+        const loadMore = await screen.findByTestId("load-more");
+        const goToFirst = await screen.findByTestId("go-to-first");
+        fireEvent.click(loadMore);
+        fireEvent.click(goToFirst);
+
+        // StackOverflow recipe:
+        // https://stackoverflow.com/questions/68400489/how-to-wait-to-assert
+        // -an-element-never-appears-in-the-document
+        await expect(async () => {
+            await waitFor(
+                () => expect(screen.getByTestId(
+                    "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa"))
+                    .toBeInTheDocument()
+            );
+        }).rejects.toEqual(expect.anything());        
+    });
 });
+
+describe("<CardsProvider/> - functions (memorize, forget, cram)", () => {
+    function FunctionsTestingComponent() {
+        const { memorize } = useCards().functions;
+        const cardId = "a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad";
+        const grade = 2;
+
+        return (
+            <span onClick={ () => memorize(cardId, grade) }
+                  data-testid="click-memorize-card">
+              Click to memorize card
+            </span>
+        );
+    }
+    
+    const ComponentWithProviders = getComponentWithProviders(
+        FunctionsTestingComponent);
+    beforeEach(async () => await act(() => render(
+            <ComponentWithProviders/>
+        )));
+
+    test("memorizing queued card", async () => {
+        const memorize = await screen.findByTestId("click-memorize-card");
+        const expectedUrl = "http://localhost:8000/api/users/626e4d32-a5"
+              + "2f-4c15-8f78-aacf3b69a9b2/cards/queued/a0a5e0bb-d17a"
+              + "-4f1a-9945-ecb0bc5fc4ad";
+        const expectedGrade = 2;
+
+        fireEvent.click(memorize);
+        await waitFor(() => expect(
+            axiosMatch.patch).toHaveBeenCalledTimes(1));
+        const mockCalls = axiosMatch.patch.mock.calls[0][0];
+        expect(mockCalls.url).toEqual(expectedUrl);
+        expect(mockCalls.data.grade).toEqual(expectedGrade);
+    });
+});
+
+
