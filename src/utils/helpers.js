@@ -1,12 +1,32 @@
-export function stripHTMLShortenText(text) {
-    // strips text of html tags and shortens it
+export function cardTextForList(text) {
+    // strips text of html tags and shortens it, removes white spaces
+    // from start and end of the text
     const textLen = 50;
-    const strippedText = stripOfHtmlTags(text);
-    if (strippedText.length < textLen) {
-        return strippedText;
+    const textCleaner = composeAll(
+        stripOfHtmlTags,
+        text => text.trim(),
+        removeNewlines,
+        reduceWhiteSpaces);
+    const outputText = textCleaner(text);
+
+    if (outputText.length < textLen) {
+        return outputText;
     }
-    return strippedText.slice(0, textLen) + "...";
+    return outputText.slice(0, textLen) + "...";
 };
+
+// compose() and composeALl() - composing functions for a single input
+// of StackOverflow origin: "Javascript Reduce from a compose function"
+
+function compose(f, g) {
+    return function(...args) {
+        return f(g(...args));
+    };
+}
+
+function composeAll(...fns) {
+    return fns.reduceRight(compose);
+}
 
 export function stripOfHtmlTags(html) {
     // got it from StackOverflow:
@@ -15,6 +35,15 @@ export function stripOfHtmlTags(html) {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || "";
 };
+
+export function reduceWhiteSpaces(text) {
+    return text.replace(/\s+/g, " ");
+}
+
+export function removeNewlines(text) {
+    // got it from StackOverflow
+    return text.replace(/(\r\n|\n|\r)/gm, "");
+}
 
 export function getAuthToken() {
     const tokenString = localStorage.getItem('userToken');

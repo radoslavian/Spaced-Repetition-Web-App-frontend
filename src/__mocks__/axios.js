@@ -24,6 +24,9 @@ const memorizeRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az]
 
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
+export const downloadCards = jest.fn();
+export const categoriesCalls = jest.fn();
+
 export const axiosMatch = {
     post: jest.fn(() => Promise.resolve({ data: authToken })),
     get: jest.fn().mockImplementation(config => {
@@ -37,6 +40,7 @@ export const axiosMatch = {
             return Promise.resolve({ data: allCardsNext });
         }
         else if (allCardsMiddleRoute.test(config.url)) {
+            downloadCards(config);
             return Promise.resolve({ data: allCardsMiddle });
         }
         else if (outstandingCardsPrevPageRoute.test(config.url)) {
@@ -58,6 +62,7 @@ export const axiosMatch = {
             return Promise.resolve({ data: queuedCardsThirdPage });
         }
         else if (categoriesUrlMatch.test(config.url)) {
+            categoriesCalls(config);
             return Promise.resolve({ data: userCategories });
         }
         else if (memorizedCards.test(config.url)) {

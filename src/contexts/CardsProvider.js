@@ -45,17 +45,6 @@ export function CardsProvider({ children }) {
         next: null
     });
 
-    const allCardsOnLoadMore = async () => {
-        if (!Boolean(allCardsNavigation.current.next)) {
-            return;
-        }
-        const url = allCardsNavigation.current.next;
-        // cards from next page
-        const cards = await api.get(url);
-        const newCardList = allCards.concat(cards.results);
-        setAllCards(newCardList);
-    };
-
     // later this should come from a separate module used by both
     // front-end app and back-end app
     // or: be imported by a backend-app and then stored as a field
@@ -117,6 +106,21 @@ export function CardsProvider({ children }) {
     const nextPageAllCards = getNextPage(allCardsNavigation, getAllCards);
     const prevPageAllCards = getPrevPage(allCardsNavigation, getAllCards);
 
+    const allCardsMoreSetter = cards => {
+        const newCards = allCards.concat(cards);
+        setAllCards(newCards);
+    };
+
+    const allCardsLoadMore = getCards(allCardsMoreSetter, allCardsCount,
+                                      allCardsNavigation, "overall_total");
+
+    const allCardsOnLoadMore = async () => {
+        if (!Boolean(allCardsNavigation.current.next)) {
+            return;
+        }
+        allCardsLoadMore(allCardsNavigation.current.next);
+    };
+
     useEffect(() => {
         if (api.isAuthenticated() && user !== undefined) {
             const allCardsUrl = `/users/${user.id}/cards/`;
@@ -177,14 +181,20 @@ export function CardsProvider({ children }) {
     };
 
     const functions = {
-        memorize: async function(cardId, grade) {
-            if (user === undefined || !api.isAuthenticated) {
+        memorize: async function(card, grade = 4) {
+            if (user === undefined || !api.isAuthenticated()) {
                 return;
             }
-            const url = `/users/${user.id}/cards/queued/${cardId}`;
+            const url = `/users/${user.id}/cards/queued/${card.id}`;
             const response = await api.patch(url, {data: {grade: grade}});
             // TODO: add interactions
-        }
+            console.log(response);
+        },
+	// placeholders:
+	forget: async function() {},
+	cram: async function() {},
+	disable: async function() {},
+	enable: async function() {}
     };
 
     return (

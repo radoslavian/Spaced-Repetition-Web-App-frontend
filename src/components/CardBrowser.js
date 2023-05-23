@@ -1,10 +1,11 @@
-import { List } from "antd";
-import { stripHTMLShortenText } from "../utils/helpers";
+import { List, Button } from "antd";
+import { cardTextForList } from "../utils/helpers";
 
-export default function CardBrowser({ cards }) {
+export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     const queuedStamp = "[queue]";
     const memorizedStamp = "[mem]";
     const disabledStamp = "[dis]";
+    const { memorize, forget, cram, disable, enable } = functions;
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -15,11 +16,11 @@ export default function CardBrowser({ cards }) {
             cardStamp = queuedStamp;
             actions = [
                 <a title="memorize queued card"
-                   onClick={card.memorize}>
+                   onClick={() => memorize(card)}>
                   memorize
                 </a>,
                 <a title="disable queued card"
-                   onClick={card.disable}>
+                   onClick={() => disable(card)}>
                   disable
                 </a>
             ];
@@ -28,15 +29,15 @@ export default function CardBrowser({ cards }) {
             cardStamp = memorizedStamp;
             actions = [
                 <a title="forget memorized card"
-                   onClick={card.forget}>
+                   onClick={() => forget(card)}>
                   forget
                 </a>,
                 <a title="cram memorized card"
-                   onClick={card.cram}>
+                   onClick={() => cram(cram)}>
                   cram
                 </a>,
                 <a title="disable memorized card"
-                   onClick={card.disable}>
+                   onClick={() => disable(card)}>
                   disable
                 </a>
             ];
@@ -45,7 +46,7 @@ export default function CardBrowser({ cards }) {
             cardStamp = disabledStamp;
             actions = [
                 <a title="re-enable disabled card"
-                   onClick={card.enable}>
+                   onClick={() => enable(card)}>
                   enable
                 </a>
             ];
@@ -57,21 +58,25 @@ export default function CardBrowser({ cards }) {
         return (
             <List.Item
               className={cardClass}
-              actions={actions}>
+              actions={actions}
+              data-testid={card.id}>
               <span>
                 { cardStamp }
               </span>
-              { stripHTMLShortenText(card.body) }
+              { cardTextForList(card.body) }
             </List.Item>
         );
     };
 
     return (
-        <List
-          bordered
-          dataSource={cards}
-          renderItem={renderCard}
-        />
+        <>
+          <List
+            bordered
+            dataSource={cards}
+            renderItem={renderCard}
+          />
+          <Button onClick={loadMore}>load more</Button>
+        </>
     );
 }
 

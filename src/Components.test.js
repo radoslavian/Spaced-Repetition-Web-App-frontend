@@ -3,13 +3,14 @@ import { render, screen, act, fireEvent,
 import { within } from "@testing-library/dom";
 import CategorySelector from "./components/CategorySelector.js";
 import { UserProvider, useUser } from "./contexts/UserProvider";
+import { CardsProvider, useCards } from "./contexts/CardsProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { CategoriesProvider,
          useCategories } from "./contexts/CategoriesProvider";
 import CardBrowser from "./components/CardBrowser";
 import { userCategories2 as userCategories } from "./__mocks__/mockData";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
-import axios, { axiosMatch } from "axios";
+import axios, { downloadCards, axiosMatch } from "axios";
 
 describe("CategorySelector tests.", () => {
     beforeAll(() => render(
@@ -26,20 +27,42 @@ describe("CategorySelector tests.", () => {
 });
 
 describe("<CardCategoryBrowser/>", () => {
-    beforeAll(async () => act(async () => render(
-        <ApiProvider>
-          <UserProvider>
-            <CategoriesProvider>
-              <CardCategoryBrowser/>
-            </CategoriesProvider>
-          </UserProvider>
-        </ApiProvider>
-    )));
+    beforeEach(async () => {
+        await act(async () => render(
+            <ApiProvider>
+              <UserProvider>
+                <CategoriesProvider>
+                  <CardsProvider>
+                    <CardCategoryBrowser/>
+                  </CardsProvider>
+                </CategoriesProvider>
+              </UserProvider>
+            </ApiProvider>
+        ));
+    });
+
+    test("if component downloads cards from the server", async () => {
+        await waitFor(() => expect(downloadCards).toHaveBeenCalledTimes(1));
+    });
+
+    test("if clicking 'load more' works", async () => {
+        const loadMoreButton = await screen.findByText("load more");
+        fireEvent.click(loadMoreButton);
+        const cardMiddle = await screen.findByTestId(
+            "f8f3ef31-1554-450f-ad7b-589bfd0e068d");  // allCardsMiddle
+        const cardNext = await screen.findByTestId(
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");  // allCardsNext
+
+        // assert cards from the first and 2nd page
+        expect(cardMiddle).toBeInTheDocument();
+        expect(cardNext).toBeInTheDocument();
+    });
+
 
     test("if selecting category sends selected categories to the server",
          () => {
              // TODO
-    });
+         });
 });
 
 describe("<CardBrowser>", () => {
@@ -48,32 +71,39 @@ describe("<CardBrowser>", () => {
     const cram = jest.fn();
     const disable = jest.fn();
     const enable = jest.fn();
+    const loadMore = jest.fn();
+
+    const functions = { memorize, forget, cram, disable, enable };
 
     const fakeCards = [
         {
             type: "queued",
             body: "<p>Fake <b>card</b> one Very long title Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis rutrum lacus quis tellus aliquet, quis ornare felis imperdiet. Vivamus et elit scelerisque sapien blandit consequat vel non eros.</p>",
             id: "3475ddea-2f52-4669-93ee-b1298b1f6c97",
-            disable: disable,
-            memorize: memorize
         },
         {
             type: "memorized",
             body: "<p>Fake card two</p>",
             id: "9e477201-5852-48c8-92fb-3520c2bef099",
-            forget: forget,
-            disable: disable,
-            cram: cram
         },
         {
             type: "disabled",
             body: "<p>Fake card three</p>",
             id: "2ccd1b58-945e-40b3-98df-da6b6fe44266",
-            enable: enable
         }
     ];
 
-    beforeEach(() => render(<CardBrowser cards={fakeCards}/>));
+    beforeEach(() => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
+    });
+
+    test("if clicking on the 'load more' works", async () => {
+        const loadMoreButton = await screen.findByText("load more");
+        fireEvent.click(loadMoreButton);
+        expect(loadMore).toHaveBeenCalledTimes(1);
+    });
 
     test("if list of cards displays", async () => {
         const listItem = await screen.findByText("Fake card two");
@@ -138,3 +168,4 @@ describe("<CardBrowser>", () => {
         expect(enable).toHaveBeenCalledTimes(1);
     });
 });
+

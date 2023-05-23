@@ -1,5 +1,6 @@
 import { waitFor } from "@testing-library/react";
 import APIClient from "./utils/APIClient";
+import { removeNewlines, cardTextForList, reduceWhiteSpaces } from "./utils/helpers";
 
 describe("APIClient", () => {
     const apiClient = new APIClient();
@@ -19,4 +20,40 @@ describe("APIClient", () => {
             .rejects
             .toThrow("Attempt to make request with an unknowon origin: ");
     });
+});
+
+test("removeNewlines()", () => {
+    const testText = `
+
+some 
+
+text
+
+`;
+    const expectedOutput = "some text";
+    const receivedOutput = removeNewlines(testText);
+    expect(receivedOutput).toEqual(expectedOutput);
+});
+
+describe("cardTextForList()", () => {
+    test("short output text - no ...", () => {
+        const testText = "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>House moment.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Sound high short.</p>\n</div>\n\n</div>";
+        const expectedOutput = "House moment. Sound high short.";
+        const receivedOutput = cardTextForList(testText);
+        expect(receivedOutput).toEqual(expectedOutput);
+    });
+
+    test("longer output text with ...", () => {
+        const testText = "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>House <i>moment</i> Nunc nunc diam, cursus sit amet ligula eget, accumsan aliquet eros.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Sound high <b>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed gravida semper mauris, sit amet vehicula velit scelerisque eget.</b> short.</p>\n</div>\n\n</div>";
+        const expectedOutput = "House moment Nunc nunc diam, cursus sit amet ligul...";
+        const receivedOutput = cardTextForList(testText);
+        expect(receivedOutput).toEqual(expectedOutput);
+    });
+});
+
+test("reduceWhiteSpaces()", () => {
+    const testText = "a     	 b";  // several spaces and a tab
+    const expectedOutput = "a b";
+    const receivedOutput = reduceWhiteSpaces(testText);
+    expect(receivedOutput).toEqual(expectedOutput);
 });

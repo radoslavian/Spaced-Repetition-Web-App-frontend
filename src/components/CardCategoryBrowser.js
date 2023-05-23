@@ -1,14 +1,17 @@
 import React from "react";
 import CategorySelector from "./CategorySelector";
+import { useCards } from "../contexts/CardsProvider";
 import CardBrowser from "./CardBrowser";
 import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardCategoryBrowser() {
     const { categories, selectedCategories,
             setSelectedCategories } = useCategories();
+    const allCards = useCards().all;
+    const functions = useCards().functions;
+    const { loadMore } = allCards;
 
     const onCheck = checkedKeysValues => {
-        console.log(checkedKeysValues);
         setSelectedCategories(checkedKeysValues);
     };
 
@@ -19,7 +22,9 @@ export default function CardCategoryBrowser() {
             selectedCategories={selectedCategories}
             onCheck={onCheck}
           />
-          {/* <CardBrowser/> */}
+          <CardBrowser loadMore={loadMore}
+                       cards={allCards.currentPage}
+                       functions={functions}/>
         </>
     );
 }

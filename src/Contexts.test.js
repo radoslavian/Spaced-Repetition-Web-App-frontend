@@ -1,7 +1,7 @@
 import { render, act, waitFor, screen, within,
          fireEvent } from "@testing-library/react";
 import { useRef, useEffect } from "react";
-import axios, { axiosMatch } from "axios";
+import axios, { axiosMatch, categoriesCalls } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { timeOut } from "./utils/helpers";
@@ -9,7 +9,7 @@ import { CategoriesProvider,
          useCategories } from "./contexts/CategoriesProvider";
 import { CardsProvider, useCards } from "./contexts/CardsProvider.js";
 import CategorySelector from "./components/CategorySelector.js";
-import { memorizedCardsSecondPage,
+import { memorizedCardsSecondPage, memorizedCard,
          queuedCardsMiddlePage } from "./__mocks__/mockData";
 
 describe("<ApiProvider/>", () => {
@@ -145,9 +145,8 @@ describe("<CategoriesProvider/>", () => {
                          "url": "http://localhost:8000/api/users/626e4d32-a5"
                          + "2f-4c15-8f78-aacf3b69a9b2/categories/"};
 
-        // once for users.../me, once for obtaining categories
-        expect(axiosMatch.get).toHaveBeenCalledTimes(2);
-        expect(axiosMatch.get).toHaveBeenCalledWith(options);
+        expect(categoriesCalls).toHaveBeenCalledTimes(1);
+        expect(categoriesCalls).toHaveBeenCalledWith(options);
     });
 
     test("if provider returns categories", () => {
@@ -568,11 +567,10 @@ describe("<CardsProvider/> - all cards - navigation", () => {
 describe("<CardsProvider/> - functions (memorize, forget, cram)", () => {
     function FunctionsTestingComponent() {
         const { memorize } = useCards().functions;
-        const cardId = "a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad";
         const grade = 2;
 
         return (
-            <span onClick={ () => memorize(cardId, grade) }
+            <span onClick={ () => memorize(memorizedCard, grade) }
                   data-testid="click-memorize-card">
               Click to memorize card
             </span>

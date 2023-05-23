@@ -5,6 +5,7 @@ import useToken from "./hooks/useToken";
 import { useApi } from "./contexts/ApiProvider";
 import { UserProvider } from './contexts/UserProvider';
 import { CategoriesProvider } from "./contexts/CategoriesProvider";
+import { CardsProvider } from "./contexts/CardsProvider";
 import { getAuthToken } from "./utils/helpers.js";
 
 function App() {
@@ -33,7 +34,9 @@ function App() {
               <UserProvider>
                 <UserProvider>
                   <CategoriesProvider>
-                    <CardCategoryBrowser/>
+                    <CardsProvider>
+                      <CardCategoryBrowser/>
+                    </CardsProvider>
                   </CategoriesProvider>
                 </UserProvider>
               </UserProvider>
