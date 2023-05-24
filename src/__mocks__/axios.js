@@ -3,14 +3,13 @@ import {
     memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
-    allCardsPrev, memorizedCard
+    allCardsPrev, memorizedCard, allCardsNext_1
 } from "./mockData";
 
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
 const memorizedCards = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/$/;
 const memCardsFirstPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/\?page=1/;
 const memCardsThirdPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/\?page=3/;
-
 const queuedCardsMainPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/$/;
 const queuedCardsFirstPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/\?page=1$/;
 const queuedCardsThirdPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/\?page=3$/;
@@ -19,6 +18,7 @@ const outstandingCardsMainPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0
 const outstandingCardsNextPageRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/outstanding\/\?page=3$/;
 const allCardsMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/$/;
 const allCardsNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=40$/;
+const allCardsNext_1_route = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=60$/;
 const allCardsPrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20$/;
 const memorizeRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -32,6 +32,9 @@ export const axiosMatch = {
     get: jest.fn().mockImplementation(config => {
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
+        }
+        else if (allCardsNext_1_route.test(config.url)) {
+            return Promise.resolve({ data: allCardsNext_1 });
         }
         else if (allCardsPrevRoute.test(config.url)) {
             return Promise.resolve({ data: allCardsPrev });
@@ -88,7 +91,7 @@ export const axiosMatch = {
     }),
     patch: jest.fn().mockImplementation(config => {
 	if (memorizeRoute.test(config.url)) {
-	    return Promise.resolve({ data: memorizedCard })
+	    return Promise.resolve({ data: memorizedCard });
 	}
 	else {
 	    console.error("Placeholder return in __mocks__/axios.js - url: ",

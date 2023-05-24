@@ -52,14 +52,18 @@ describe("<CardCategoryBrowser/>", () => {
             "f8f3ef31-1554-450f-ad7b-589bfd0e068d");  // allCardsMiddle
         const cardNext = await screen.findByTestId(
             "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");  // allCardsNext
+        fireEvent.click(loadMoreButton);
+        const cardNext_1 = await screen.findByTestId(
+        "e6e7b3ea-72d7-4663-8c0d-591c7b9fcafb");
 
-        // assert cards from the first and 2nd page
+        // assert cards from all pages
         expect(cardMiddle).toBeInTheDocument();
         expect(cardNext).toBeInTheDocument();
+        expect(cardNext_1).toBeInTheDocument();
     });
 
 
-    test("if selecting category sends selected categories to the server",
+    test("if component sends selected categories to the server",
          () => {
              // TODO
          });

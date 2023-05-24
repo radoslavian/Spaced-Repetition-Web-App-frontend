@@ -122,17 +122,18 @@ export function CardsProvider({ children }) {
     };
 
     useEffect(() => {
-        if (api.isAuthenticated() && user !== undefined) {
-            const allCardsUrl = `/users/${user.id}/cards/`;
-            const memorizedUrl = `/users/${user.id}/cards/memorized/`;
-            const queuedUrl = `/users/${user.id}/cards/queued/`;
-            const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
-
-            getAllCards(allCardsUrl);
-            getMemorized(memorizedUrl);
-            getQueued(queuedUrl);
-            getOutstanding(outstandingUrl);
+        if (!api.isAuthenticated() || user === undefined) {
+            return;
         }
+        const allCardsUrl = `/users/${user.id}/cards/`;
+        const memorizedUrl = `/users/${user.id}/cards/memorized/`;
+        const queuedUrl = `/users/${user.id}/cards/queued/`;
+        const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
+
+        getAllCards(allCardsUrl);
+        getMemorized(memorizedUrl);
+        getQueued(queuedUrl);
+        getOutstanding(outstandingUrl);
     }, [user, api]);
 
     const memorized = {
@@ -166,7 +167,8 @@ export function CardsProvider({ children }) {
         if (user === undefined) {
             return;
         }
-        getAllCards(`/users/${user.id}/cards/`);
+        const url = `/users/${user.id}/cards/`;
+        getAllCards(url);
     };
 
     const all = {
@@ -180,17 +182,44 @@ export function CardsProvider({ children }) {
         goToFirst: allCardsGoToFirst
     };
 
+    const getRemoveFromList = (cardList, listSetter) => card => {
+        // maybe it should check if a card is on the list in the first place?
+        const newList = cardList.filter(
+            (cardFromList, i) => cardFromList.id !== card.id);
+        listSetter(newList);
+    };
+
+    const removeFromQueued = getRemoveFromList(queuedCards, setQueuedCards);
+    const getCardSwapper = (cardList, listSetter) => card => {
+        // optimization: should check first if card with a given id
+        // already is on the list
+        const newList = cardList.map(
+            cardFromList => cardFromList.id === card.id ?
+                card : cardFromList);
+        listSetter(newList);
+    };
+
+    const swapInAllCards = getCardSwapper(allCards, setAllCards);
+
     const functions = {
         memorize: async function(card, grade = 4) {
             if (user === undefined || !api.isAuthenticated()) {
+                console.error("Unauthenticated");
                 return;
             }
             const url = `/users/${user.id}/cards/queued/${card.id}`;
-            const response = await api.patch(url, {data: {grade: grade}});
-            // TODO: add interactions
-            console.log(response);
+            const updatedCard = await api.patch(url, {data: {grade: grade}});
+
+            // if success -> remove card from the queued list
+            if (updatedCard.id === undefined) {
+                // this should be handled within the ApiClient
+                console.error("Failed to memorize card ", card.id);
+                return;
+            }
+            removeFromQueued(card);
+            swapInAllCards(updatedCard);
         },
-	// placeholders:
+	// placeholders (due to implement):
 	forget: async function() {},
 	cram: async function() {},
 	disable: async function() {},

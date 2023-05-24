@@ -236,7 +236,6 @@ export const queuedCardsFirstPage = {
     ]
 };
 
-// here we start
 export const queuedCardsMiddlePage = {
     "count": 60,
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/queued/?page=3",
@@ -244,6 +243,16 @@ export const queuedCardsMiddlePage = {
     "results": [
         {
             "id": "5f143904-c9d1-4e5b-ac00-01258d09965a",
+            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Employee baby.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Move her light hope.</p>\n</div>\n\n</div>",
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ]
+        },
+	{
+            "id": "4a58594b-1c84-41f5-b4f0-72dc573b6406",
             "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Employee baby.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Move her light hope.</p>\n</div>\n\n</div>",
             "categories": [
                 {
@@ -642,12 +651,12 @@ export const allCardsMiddle = {
 export const allCardsNext = {
     "highest_count": 62,
     "overall_total": 122,
-    "next": null,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=60",
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=20",
     "results": [
         {
             "id": "f4055d8c-c97f-419f-b6db-62d36f53da47",
-            "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Serve give phone.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Quality project.</p>\n</div>\n\n</div>",
+            "body": "next body",
             "categories": [
                 {
                     "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
@@ -659,54 +668,56 @@ export const allCardsNext = {
         {
             "id": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa",
             "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
-            "projected_review_data": {
-                "0": {
-                    "easiness": 1.7000000000000002,
-                    "interval": 1,
-                    "reviews": 0,
-                    "review_date": "2023-05-17"
-                },
-                "1": {
-                    "easiness": 1.96,
-                    "interval": 1,
-                    "reviews": 0,
-                    "review_date": "2023-05-17"
-                },
-                "2": {
-                    "easiness": 2.1799999999999997,
-                    "interval": 1,
-                    "reviews": 0,
-                    "review_date": "2023-05-17"
-                },
-                "3": {
-                    "easiness": 2.36,
-                    "interval": 6,
-                    "reviews": 2,
-                    "review_date": "2023-05-22"
-                },
-                "4": {
-                    "easiness": 2.5,
-                    "interval": 6,
-                    "reviews": 2,
-                    "review_date": "2023-05-22"
-                },
-                "5": {
-                    "easiness": 2.6,
-                    "interval": 6,
-                    "reviews": 2,
-                    "review_date": "2023-05-22"
-                }
-            },
+            "projected_review_data": null,
             "categories": [
-                {
-                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
-                    "title": "Grammar"
-                },
+		{
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+	    ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null,
+            "type": "memorized"
+        }
+    ]
+};
+
+export const allCardsNext_1 = {
+    "highest_count": 62,
+    "overall_total": 122,
+    "next": null,
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=40",
+    "results": [
+        {
+            "id": "57a00a2b-e020-4055-8146-edf12b4e7b36",
+            "body": "next body",
+            "categories": [
                 {
                     "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
                     "title": "Vocabulary"
                 }
             ],
+            "type": "queued"
+        },
+        {
+            "id": "e6e7b3ea-72d7-4663-8c0d-591c7b9fcafb",
+            "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
+            "projected_review_data": null,
+            "categories": [
+		{
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+	    ],
             "cram_link": null,
             "computed_interval": 1,
             "lapses": 0,
@@ -724,7 +735,7 @@ export const allCardsNext = {
 };
 
 export const memorizedCard = {
-    "id": "a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad",
+    "id": "5f143904-c9d1-4e5b-ac00-01258d09965a",
     "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>House moment.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Sound high short.</p>\n</div>\n\n</div>",
     "projected_review_data": null,
     "categories": [],
@@ -738,7 +749,8 @@ export const memorizedCard = {
     "review_date": "2023-05-23",
     "grade": 1,
     "easiness_factor": 1.96,
-    "comment": null
+    "comment": null,
+    "type": "memorized"
 };
 
 export const cardBrowserTestCards = [
