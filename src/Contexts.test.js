@@ -602,8 +602,8 @@ describe("<CardsProvider/> - memorizing cards", () => {
     });
 
     function TestCardMemorizing() {
-        const { memorize } = useCards().functions;
         const cards = useCards();
+        const { memorize } = cards.functions;
         const grade = 2;
 
         return (
@@ -622,6 +622,15 @@ describe("<CardsProvider/> - memorizing cards", () => {
                               key={card.id}
                               data-testid={card.id}
                               onClick={() => memorize(card)}>
+                              {card.type}
+                            </span>
+                ) }
+              </div>
+              <div data-testid="memorized-cards">
+                { cards.memorized.currentPage.map(
+                    card => <span
+                              key={card.id}
+                              data-testid={card.id}>
                               {card.type}
                             </span>
                 ) }
@@ -661,5 +670,21 @@ describe("<CardsProvider/> - memorizing cards", () => {
              // text-content change after memorization:
              expect(card).toHaveTextContent("memorized");
          });
+
+    test("if memorized card appeared on the list of memorized cards", async () => {
+        render(<TestCardMemorizingWithProviders/>);
+        const allCards = screen.getByTestId("all-cards");
+        const card = await within(allCards)
+              .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
+        // memorize card
+        await act(() => fireEvent.click(card));
+        const memorizedCards = screen.getByTestId("memorized-cards");
+        const memorizedCard = await within(memorizedCards)
+              .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
+        // assert card is in the list of memorized cards
+        expect(memorizedCard).toBeInTheDocument();
+    });
+
+    test("");
 });
 
