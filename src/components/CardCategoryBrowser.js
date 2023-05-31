@@ -11,9 +11,8 @@ export default function CardCategoryBrowser() {
     const functions = useCards().functions;
     const { loadMore } = allCards;
 
-    const onCheck = checkedKeysValues => {
+    const onCheck = checkedKeysValues =>
         setSelectedCategories(checkedKeysValues);
-    };
 
     return (
         <>

@@ -22,9 +22,10 @@ export function CategoriesProvider({ children }) {
             // categories downloading took place
             return;
         }
-        setSelectedCategories(categories);
         const url = `/users/${user.id}/categories/selected/`;
         const response = await api.put(url, {data: categories});
+        // here should go error handling
+        setSelectedCategories(categories);
     };
 
     useEffect(() => {

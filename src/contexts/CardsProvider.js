@@ -2,12 +2,14 @@ import { createContext, useContext, useState,
          useRef, useEffect } from "react";
 import { useApi } from "./ApiProvider";
 import { useUser } from "./UserProvider";
+import { useCategories } from "./CategoriesProvider";
 
 const CardsContext = createContext();
 
 export function CardsProvider({ children }) {
     const api = useApi();
     const { user } = useUser();
+    const { selectedCategories } = useCategories();
 
     // memorized
     const [memorizedCards, setMemorizedCards] = useState([]);
@@ -145,13 +147,20 @@ export function CardsProvider({ children }) {
         const memorizedUrl = `/users/${user.id}/cards/memorized/`;
         const queuedUrl = `/users/${user.id}/cards/queued/`;
         const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
-        const cramQueueUrl = `/users/${user.id}/cards/cram-queue/`;
 
         getAllCards(allCardsUrl);
         getMemorized(memorizedUrl);
         getQueued(queuedUrl);
         getOutstanding(outstandingUrl);
-        getCram(cramQueueUrl);
+    }, [user, api, selectedCategories.length]);
+
+    useEffect(() => {
+        // cram shall be loaded separately since its independent
+        // from categories
+        if (user === undefined) {
+            return;
+        }
+        getCram(`/users/${user.id}/cards/cram-queue/`);
     }, [user, api]);
 
     const memorized = {

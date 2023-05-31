@@ -42,7 +42,7 @@ describe("<CardCategoryBrowser/>", () => {
     });
 
     test("if component downloads cards from the server", async () => {
-        await waitFor(() => expect(downloadCards).toHaveBeenCalledTimes(1));
+        await waitFor(() => expect(downloadCards).toHaveBeenCalledTimes(2));
     });
 
     test("if clicking 'load more' works", async () => {

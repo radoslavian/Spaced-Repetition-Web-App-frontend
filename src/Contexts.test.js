@@ -1,7 +1,8 @@
 import { render, act, waitFor, screen, within,
          fireEvent, waitForElementToBeRemoved } from "@testing-library/react";
 import { useRef, useEffect } from "react";
-import axios, { axiosMatch, categoriesCalls, addToCramQueue } from "axios";
+import axios, { axiosMatch, categoriesCalls, addToCramQueue,
+                downloadCards } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { timeOut } from "./utils/helpers";
@@ -241,6 +242,23 @@ describe("<CardsProvider/> - memorized (general)", () => {
         const isLast = screen.getByTestId("is-last");
         expect(isLast).toHaveTextContent("false");
     });
+});
+
+test("if setting categories causes update to <CardsProvider/>", async () => {
+    const CategoriesComponent = () => {
+        const { categories, selectedCategories,
+                setSelectedCategories } = useCategories();
+        const categoryId = "6d18daff-94d1-489b-97ce-969d1c2912a6";
+        setSelectedCategories([categoryId]);
+    };
+
+    const CategoriesComponentWithProviders = getComponentWithProviders(
+        CategoriesComponent);
+
+    downloadCards.mockClear();
+    render(<CategoriesComponentWithProviders/>);
+    await waitFor(() => expect(
+        downloadCards).toHaveBeenCalledTimes(2));
 });
 
 function getNavigationTestingComponent(cardsGroup) {
