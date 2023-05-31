@@ -2,11 +2,6 @@ export function cardTextForList(text) {
     // strips text of html tags and shortens it, removes white spaces
     // from start and end of the text
     const textLen = 50;
-    const textCleaner = composeAll(
-        stripOfHtmlTags,
-        text => text.trim(),
-        removeNewlines,
-        reduceWhiteSpaces);
     const outputText = textCleaner(text);
 
     if (outputText.length < textLen) {
@@ -15,8 +10,16 @@ export function cardTextForList(text) {
     return outputText.slice(0, textLen) + "...";
 };
 
+const textCleaner = composeAll(
+    stripOfHtmlTags,
+    text => text.trim(),
+    removeNewlines,
+    reduceWhiteSpaces);
+
+
 // compose() and composeALl() - composing functions for a single input
-// of StackOverflow origin: "Javascript Reduce from a compose function"
+// solution with StackOverflow origin:
+// "Javascript Reduce from a compose function"
 
 function compose(f, g) {
     return function(...args) {

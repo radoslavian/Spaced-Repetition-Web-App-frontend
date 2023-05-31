@@ -3,10 +3,13 @@ import {
     memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
-    allCardsPrev, memorizedCard, allCardsNext_1
+    allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
+    cramQueueSecondPage, cramQueueThirdPage
 } from "./mockData";
 
+const addToCramRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}$/;
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
+const categoriesSelectedUrlRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/selected\/?$/;
 const memorizedCards = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/$/;
 const memCardsFirstPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/\?page=1/;
 const memCardsThirdPage = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/\?page=3/;
@@ -21,6 +24,9 @@ const allCardsNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[8
 const allCardsNext_1_route = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=60$/;
 const allCardsPrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20$/;
 const memorizeRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}$/;
+const cramQueueMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
+const cramQueueNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/\?page=3$/;
+const cramQueuePrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/\?page=1$/;
 
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
@@ -55,6 +61,15 @@ export const axiosMatch = {
         else if (outstandingCardsMainPageRoute.test(config.url)) {
             return Promise.resolve({ data: outstandingMiddlePage });
         }
+        else if (cramQueueMiddleRoute.test(config.url)) {
+            return Promise.resolve({ data: cramQueueSecondPage });
+        }
+        else if (cramQueueNextRoute.test(config.url)) {
+            return Promise.resolve({ data: cramQueueThirdPage });
+        }
+        else if (cramQueuePrevRoute.test(config.url)) {
+            return Promise.resolve({ data: cramQueueFirstPage });
+        }
         else if (queuedCardsFirstPageRoute.test(config.url)) {
             return Promise.resolve({ data: queuedCardsFirstPage });
         }
@@ -86,16 +101,35 @@ export const axiosMatch = {
             return 1;
         }
     }),
-    put: jest.fn(() => {
-        return Promise.resolve({ status: 204 });
+    put: jest.fn().mockImplementation(config => {
+        if (categoriesUrlMatch.test(config.url)) {
+            return Promise.resolve({ status: 204 });
+        }
+        else if (categoriesSelectedUrlRoute.test(config.url)) {
+            return Promise.resolve({ status: 204 });
+        }
+        else if(addToCramRoute.test(config.url)) {
+            return Promise.resolve(
+                {
+                    data: {
+                        "id": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa",
+                    }
+                }
+            );
+        }
+        else {
+            console.error("Placeholder return in __mocks__/axios.js"
+                          + "(put) - url: ", config.url);
+            return 1;
+        }
     }),
     patch: jest.fn().mockImplementation(config => {
 	if (memorizeRoute.test(config.url)) {
 	    return Promise.resolve({ data: memorizedCard });
 	}
 	else {
-	    console.error("Placeholder return in __mocks__/axios.js - url: ",
-                          config.url);
+	    console.error("Placeholder return in __mocks__/axios.js "
+                          +" (patch) - url: ", config.url);
             return 1;
 	}
     })

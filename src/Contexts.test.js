@@ -1,7 +1,7 @@
 import { render, act, waitFor, screen, within,
          fireEvent, waitForElementToBeRemoved } from "@testing-library/react";
 import { useRef, useEffect } from "react";
-import axios, { axiosMatch, categoriesCalls } from "axios";
+import axios, { axiosMatch, categoriesCalls, addToCramQueue } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { timeOut } from "./utils/helpers";
@@ -169,12 +169,12 @@ describe("<CategoriesProvider/>", () => {
 
         expect(testedComponent).toHaveTextContent(categoryKey);
     });
-/*
-    test("if categories setter called the api", async () => {
-        // fix that!
-        await waitFor(() => expect(axiosMatch.put).toHaveBeenCalledTimes(4));
-    });
-*/
+    /*
+      test("if categories setter called the api", async () => {
+      // fix that!
+      await waitFor(() => expect(axiosMatch.put).toHaveBeenCalledTimes(4));
+      });
+    */
 });
 
 function getProviderGeneralTestingComponent (cardsGroup) {
@@ -200,14 +200,14 @@ function getProviderGeneralTestingComponent (cardsGroup) {
 
 function getComponentWithProviders(Component) {
     return () => (<ApiProvider>
-                    <UserProvider>
-                      <CategoriesProvider>
-                        <CardsProvider>
-                          <Component/>
-                        </CardsProvider>
-                      </CategoriesProvider>
-                    </UserProvider>
-                  </ApiProvider>
+            <UserProvider>
+              <CategoriesProvider>
+                <CardsProvider>
+                  <Component/>
+                </CardsProvider>
+              </CategoriesProvider>
+            </UserProvider>
+          </ApiProvider>
                  );
 }
 
@@ -256,25 +256,25 @@ function getNavigationTestingComponent(cardsGroup) {
               <div data-testid="isLast">
                 { isLast ? "true" : "false" }
               </div>
-              { currentPage !== [] ? <>
-                                       <div data-testid="click_prevPage"
-                                             onClick={prevPage}>
-                                         Click for previous page
-                                       </div>
-                                       <div data-testid="click_nextPage"
-                                             onClick={nextPage}>
-                                         Click for next page
-                                       </div>
-                                       <div data-testid="load-more"
-                                            onClick={loadMore}>
-                                         Click to load more
-                                       </div>
-                                       <div data-testid="go-to-first"
-                                            onClick={goToFirst}>
-                                         Go to first page (reset)
-                                       </div>
-                                     </>
-                
+              { currentPage !== [] ?
+                <>
+                  <div data-testid="click_prevPage"
+                       onClick={prevPage}>
+                    Click for previous page
+                  </div>
+                  <div data-testid="click_nextPage"
+                       onClick={nextPage}>
+                    Click for next page
+                  </div>
+                  <div data-testid="load-more"
+                       onClick={loadMore}>
+                    Click to load more
+                  </div>
+                  <div data-testid="go-to-first"
+                       onClick={goToFirst}>
+                    Go to first page (reset)
+                  </div>
+                </>
                 : "" }
               <div data-testid="page-data">
                 { currentPage.map(card => (
@@ -371,8 +371,8 @@ describe("<CardsProvider/> - queued: navigation", () => {
         QueuedTestingComponent);
 
     beforeEach(async () => await act(() => render(
-            <ComponentWithProviders/>
-        )));
+        <ComponentWithProviders/>
+    )));
 
     test("rendering next page", async () => {
         const clickNext = await screen.findByTestId("click_nextPage");
@@ -453,8 +453,8 @@ describe("<CardsProvider/> - outstanding (scheduled) - navigation", () => {
         QueuedTestingComponent);
 
     beforeEach(async () => await act(() => render(
-            <ComponentWithProviders/>
-        )));
+        <ComponentWithProviders/>
+    )));
 
     test("rendering next page", async () => {
         const clickNext = await screen.findByTestId("click_nextPage");
@@ -498,13 +498,13 @@ describe("<CardsProvider/> - all cards - general", () => {
          async () => {
              const isFirst = await screen.findByTestId("is-first");
              expect(isFirst).toHaveTextContent("false");
-    });
+         });
 
     test("if isLast correctly indicates we are not on the last page",
          () => {
              const isLast = screen.getByTestId("is-last");
              expect(isLast).toHaveTextContent("false");
-    });
+         });
 });
 
 describe("<CardsProvider/> - all cards - navigation", () => {
@@ -514,8 +514,8 @@ describe("<CardsProvider/> - all cards - navigation", () => {
         QueuedTestingComponent);
 
     beforeEach(async () => await act(() => render(
-            <ComponentWithProviders/>
-        )));
+        <ComponentWithProviders/>
+    )));
 
     test("rendering next page", async () => {
         const clickNext = await screen.findByTestId("click_nextPage");
@@ -575,10 +575,10 @@ describe("<CardsProvider/> - memorizing cards", () => {
 
         return (
             user !== undefined ?
-            <span onClick={ () => memorize(memorizedCard, grade) }
-                  data-testid="click-memorize-card">
-              Click to memorize card
-            </span> : <span/>
+                <span onClick={ () => memorize(memorizedCard, grade) }
+                      data-testid="click-memorize-card">
+                  Click to memorize card
+                </span> : <span/>
         );
     }
     
@@ -611,19 +611,19 @@ describe("<CardsProvider/> - memorizing cards", () => {
               <div data-testid="queued-cards">
                 { cards.queued.currentPage.map(
                     card => <span
-                             key={card.id}
-                             data-testid={card.id}
-                             onClick={() => memorize(card)}/>
+                key={card.id}
+                data-testid={card.id}
+                onClick={() => memorize(card)}/>
                 ) }
               </div>
               <div data-testid="all-cards">
                 { cards.all.currentPage.map(
                     card => <span
-                              key={card.id}
-                              data-testid={card.id}
-                              onClick={() => memorize(card)}>
-                              {card.type}
-                            </span>
+                                   key={card.id}
+                                   data-testid={card.id}
+                                   onClick={() => memorize(card)}>
+                                {card.type}
+                              </span>
                 ) }
               </div>
               <div data-testid="memorized-cards">
@@ -631,8 +631,8 @@ describe("<CardsProvider/> - memorizing cards", () => {
                     card => <span
                               key={card.id}
                               data-testid={card.id}>
-                              {card.type}
-                            </span>
+              {card.type}
+            </span>
                 ) }
               </div>
             </>
@@ -684,7 +684,121 @@ describe("<CardsProvider/> - memorizing cards", () => {
         // assert card is in the list of memorized cards
         expect(memorizedCard).toBeInTheDocument();
     });
-
-    test("");
 });
 
+import { cramQueueSecondPage } from "./__mocks__/mockData";
+
+describe("<CardsProvider/> - queued (general)", () => {
+    const TestingComponent = () => getProviderGeneralTestingComponent(
+        useCards().cram)();
+    const card = cramQueueSecondPage.results[0];
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
+
+    // should be: beforeAll instead, but gets reset to <body/>
+    // after each test
+    beforeEach(async () => await act(() => render(
+        <ComponentWithProviders/>)));
+
+    test("if currentPage returned expected output", () => {
+        const receivedCard = screen.getByTestId(card.id);
+        expect(receivedCard).toBeInTheDocument();
+    });
+
+    test("if count shows expected number of queued cards", () => {
+        const receivedCard = screen.getByTestId("count");
+        expect(receivedCard).toHaveTextContent("62");
+    });
+
+    test("if isFirst correctly indicates we're not on the first page", () => {
+        const isFirst = screen.getByTestId("is-first");
+        expect(isFirst).toHaveTextContent("false");
+    });
+
+    test("if isLast correctly indicates we are not on the last page", () => {
+        const isLast = screen.getByTestId("is-last");
+        expect(isLast).toHaveTextContent("false");
+    });
+});
+
+
+describe("<CardsProvider/> - cram: navigation", () => {
+    afterAll(jest.clearAllMocks);
+
+    const TestingComponent = () => getNavigationTestingComponent(
+        useCards().cram)();
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
+
+    test("rendering next page", async () => {
+        await act(() => render(
+            <ComponentWithProviders/>
+        ));
+        const clickNext = await screen.findByTestId("click_nextPage");
+        fireEvent.click(clickNext);
+        
+        const card = await screen.findByTestId(
+            "c9f2a0ec-fac1-4573-a553-26c5e8d8b5ab");
+        expect(card).toBeInTheDocument();
+    });
+
+    test("rendering previous page", async () => {
+        await act(() => render(
+            <ComponentWithProviders/>
+        ));
+        const clickPrev = await screen.findByTestId("click_prevPage");
+        fireEvent.click(clickPrev);
+        const card = await screen.findByTestId(
+            "3dc52454-4131-4583-9737-81j6a56ac127");
+        expect(card).toBeInTheDocument();
+    });
+});
+
+describe("<CardsProvider/> - cram queue", () => {
+    const CramTestingComponent = () => {
+        const cards = useCards();
+        const { cram } = cards.functions;
+        const memorized = cards.memorized;
+        const cramQueue = cards.cram;
+
+        return (
+            <>
+              <div data-testid="memorized-cards">
+                { memorized.currentPage.map(
+                    card => <span key={card.id}
+                                  data-testid={card.id}
+                                  onClick={() => cram(card)}
+                            />)}
+              </div>
+              <div data-testid="cram-list">
+                { cramQueue.currentPage.map(
+                    card => <span key={card.id}
+                                  data-testid={card.id}
+                            />)}
+              </div>
+            </>
+        );
+    };
+
+    const CramComponentWithProviders = getComponentWithProviders(
+        CramTestingComponent);
+
+    test("adding memorized card to cram queue", async () => {
+        render(<CramComponentWithProviders/>);
+        const cardId = "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa";
+        const memorizedCards = screen.getByTestId("memorized-cards");
+        const crammedCards = screen.getByTestId("cram-list");
+        const memorizedCard = await within(memorizedCards)
+              .findByTestId(cardId);
+        fireEvent.click(memorizedCard);
+        const crammedCard = await within(crammedCards)
+              .findByTestId(cardId);
+
+        expect(axiosMatch.put).toHaveBeenCalledTimes(1);
+        expect(crammedCard).toBeInTheDocument();
+        expect(axiosMatch.put).toHaveBeenCalledWith(
+            expect.objectContaining({
+                url: 'http://localhost:8000/api/users/626e4d32-a52f-4c15-8f78-aacf3b69a9b2/cards/cram-queue/7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa'
+            }));
+    });
+});

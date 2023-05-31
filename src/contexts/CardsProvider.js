@@ -36,6 +36,16 @@ export function CardsProvider({ children }) {
         next: null
     });
 
+    // cram queue
+    const [cramQueue, setCramQueue] = useState([]);
+    const cramQueueCount = useRef(0);
+    const cramQueueNavigation = useRef({
+        current: null,
+        prev: null,
+        next: null
+    });
+
+
     // all cards
     const [allCards, setAllCards] = useState([]);
     const allCardsCount = useRef(0);
@@ -92,6 +102,12 @@ export function CardsProvider({ children }) {
     const nextPageQueued = getNextPage(queuedNavigation, getQueued);
     const prevPageQueued = getPrevPage(queuedNavigation, getQueued);
 
+    // cram
+    const getCram = getCards(setCramQueue, cramQueueCount,
+                             cramQueueNavigation);
+    const nextPageCram = getNextPage(cramQueueNavigation, getCram);
+    const prevPageCram = getPrevPage(cramQueueNavigation, getCram);
+
     // outstanding (scheduled)
     const getOutstanding = getCards(setOutstandingCards, outstandingCount,
                                     outstandingNavigation);
@@ -129,11 +145,13 @@ export function CardsProvider({ children }) {
         const memorizedUrl = `/users/${user.id}/cards/memorized/`;
         const queuedUrl = `/users/${user.id}/cards/queued/`;
         const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
+        const cramQueueUrl = `/users/${user.id}/cards/cram-queue/`;
 
         getAllCards(allCardsUrl);
         getMemorized(memorizedUrl);
         getQueued(queuedUrl);
         getOutstanding(outstandingUrl);
+        getCram(cramQueueUrl);
     }, [user, api]);
 
     const memorized = {
@@ -152,6 +170,15 @@ export function CardsProvider({ children }) {
         isLast: Boolean(!queuedNavigation.current.next),
         nextPage: nextPageQueued,
         prevPage: prevPageQueued
+    };
+
+    const cram = {
+        currentPage: cramQueue,
+        count: cramQueueCount.current,
+        isFirst: Boolean(!cramQueueNavigation.current.prev),
+        isLast: Boolean(!cramQueueNavigation.current.next),
+        nextPage: nextPageCram,
+        prevPage: prevPageCram
     };
 
     const outstanding = {
@@ -199,6 +226,10 @@ export function CardsProvider({ children }) {
         listSetter(newList);
     };
 
+    // rudimentary functionality -> expand according to wsra-226
+    const addToMemorized = card => setMemorizedCards(
+        [...memorizedCards, card]);
+
     const swapInAllCards = getCardSwapper(allCards, setAllCards);
 
     const functions = {
@@ -210,25 +241,42 @@ export function CardsProvider({ children }) {
             const url = `/users/${user.id}/cards/queued/${card.id}`;
             const updatedCard = await api.patch(url, {data: {grade: grade}});
 
-            // if success -> remove card from the queued list
-            if (updatedCard.id === undefined) {
+            // if success -> remove card from the queue list
+            if (updatedCard?.id === undefined) {
                 // this should be handled within the ApiClient
                 console.error("Failed to memorize card ", card.id);
                 return;
             }
             removeFromQueued(card);
             swapInAllCards(updatedCard);
+            addToMemorized(updatedCard);
         },
-	// placeholders (due to implement):
-	forget: async function() {},
-	cram: async function() {},
+
+	cram: async function(card) {
+            if (user === undefined) {
+                return;
+            }
+            const url = `/users/${user.id}/cards/cram-queue/${card.id}`;
+            const updatedCard = await api.put(url);
+            if (updatedCard?.id === undefined) {
+                console.error(`Failed to add card ${card.id} to cram queue`);
+                return;
+            }
+            // doesn't replace card - should check first if card isn't
+            // already in the list
+            const newList = [...cramQueue, updatedCard];
+            setCramQueue(newList);
+        },
+
+        // TODO: implement placeholders
+        forget: async function() {},
 	disable: async function() {},
 	enable: async function() {}
     };
 
     return (
         <CardsContext.Provider
-          value={{ memorized, queued, outstanding, all, functions }}>
+          value={{ memorized, queued, cram, outstanding, all, functions }}>
           { children }
         </CardsContext.Provider>
     );

@@ -243,6 +243,7 @@ export const queuedCardsMiddlePage = {
     "results": [
         {
             "id": "5f143904-c9d1-4e5b-ac00-01258d09965a",
+            "created_on": "2023-04-06 13:10:48.900927+00:00",
             "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Employee baby.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Move her light hope.</p>\n</div>\n\n</div>",
             "categories": [
                 {
@@ -642,6 +643,7 @@ export const allCardsMiddle = {
                     "title": "Vocabulary"
                 }
             ],
+            "created_on": "2023-04-06 13:10:48.900927+00:00",
             "type": "queued"
         },
     ]
@@ -747,6 +749,7 @@ export const memorizedCard = {
     "last_reviewed": "2023-05-22",
     "introduced_on": "2023-05-22T18:40:59.069564Z",
     "review_date": "2023-05-23",
+    "created_on": "2023-04-06 13:10:48.900927+00:00",
     "grade": 1,
     "easiness_factor": 1.96,
     "comment": null,
@@ -770,3 +773,101 @@ export const cardBrowserTestCards = [
         id: "2ccd1b58-945e-40b3-98df-da6b6fe44266",
     }
 ];
+
+export const cramQueueFirstPage = {
+    "count": 62,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/cram-queue/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "3dc52454-4131-4583-9737-81j6a56ac127",
+            "body": "<b>Example question on a card in a \"Vocabulary\" category.\r\n<p>A few special cases to note about <code class=\"docutils literal notranslate\"><span class=\"pre\">list_display</span></code>:</p></b>\r\n<hr />\r\nExample answer on a card.",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.224005Z",
+            "review_date": "2023-05-12",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+    ]
+};
+
+export const cramQueueSecondPage = {
+    "count": 62,
+    "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/cram-queue/?page=3",
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/cram-queue/?page=1",
+    "results": [
+        {
+            "id": "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa",
+            "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+    ]
+};
+
+export const cramQueueThirdPage = {
+    "count": 62,
+    "next": null,
+    "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/cram-queue/?page=2",
+    "results": [
+        {
+            "id": "c9f2a0ec-fac1-4573-a553-26c5e8d8b5ab",
+            "body": "<b><a>front</a></b>\r\n<hr />\r\n<b><i>odpowiedź</i></i>",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.236892Z",
+            "review_date": "2023-05-13",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+    ]
+};
