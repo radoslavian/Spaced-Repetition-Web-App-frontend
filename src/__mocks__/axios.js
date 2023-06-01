@@ -4,7 +4,7 @@ import {
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
     allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
-    cramQueueSecondPage, cramQueueThirdPage
+    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess
 } from "./mockData";
 
 const addToCramRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -27,11 +27,14 @@ const memorizeRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az]
 const cramQueueMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
 const cramQueueNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/\?page=3$/;
 const cramQueuePrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/\?page=1$/;
+const gradeSuccessRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa$/;
+const gradeFailRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/c0320d44-c157-4857-a2b8-39ce89d168f5$/;
 
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
 export const downloadCards = jest.fn();
 export const categoriesCalls = jest.fn();
+export const gradeCard = jest.fn();
 
 export const axiosMatch = {
     post: jest.fn(() => Promise.resolve({ data: authToken })),
@@ -127,6 +130,18 @@ export const axiosMatch = {
 	if (memorizeRoute.test(config.url)) {
 	    return Promise.resolve({ data: memorizedCard });
 	}
+        else if (gradeSuccessRoute.test(config.url)) {
+            gradeCard(config);
+            return Promise.resolve({ data: reviewSuccess });
+        }
+        else if (gradeFailRoute.test(config.url)) {
+            const data = {
+                "status_code": 400,
+                "detail": "Reviewing before card's due "
+                    + "review date is forbidden."
+            };
+            return Promise.resolve({ data: data });
+        }
 	else {
 	    console.error("Placeholder return in __mocks__/axios.js "
                           +" (patch) - url: ", config.url);

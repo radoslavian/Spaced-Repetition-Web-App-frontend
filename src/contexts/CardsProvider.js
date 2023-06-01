@@ -92,6 +92,13 @@ export function CardsProvider({ children }) {
               }
           };
 
+    const getRemoveFromList = (cardList, listSetter) => card => {
+        // maybe it should check if a card is on the list in the first place?
+        const newList = cardList.filter(
+            (cardFromList, i) => cardFromList.id !== card.id);
+        listSetter(newList);
+    };
+
     // should I employ useCallback or useMemo for that?
     // memorized
     const getMemorized = getCards(setMemorizedCards, memorizedCount,
@@ -117,6 +124,8 @@ export function CardsProvider({ children }) {
                                             getOutstanding);
     const prevPageOutstanding = getPrevPage(outstandingNavigation,
                                             getOutstanding);
+    const removeFromOutstanding = getRemoveFromList(
+        outstandingCards, setOutstandingCards);
 
     // all cards
     const getAllCards = getCards(setAllCards, allCardsCount,
@@ -218,13 +227,6 @@ export function CardsProvider({ children }) {
         goToFirst: allCardsGoToFirst
     };
 
-    const getRemoveFromList = (cardList, listSetter) => card => {
-        // maybe it should check if a card is on the list in the first place?
-        const newList = cardList.filter(
-            (cardFromList, i) => cardFromList.id !== card.id);
-        listSetter(newList);
-    };
-
     const removeFromQueued = getRemoveFromList(queuedCards, setQueuedCards);
     const getCardSwapper = (cardList, listSetter) => card => {
         // optimization: should check first if card with a given id
@@ -277,7 +279,27 @@ export function CardsProvider({ children }) {
             setCramQueue(newList);
         },
 
-        // TODO: implement placeholders
+        grade: async function(card, grade = 4) {
+            if (user === undefined) {
+                return;
+            }
+            const url = `/users/${user.id}/cards/memorized/${card.id}`;
+            const updatedCard = await api.patch(url, {data: {grade: grade}});
+
+            if (updatedCard?.id === undefined) {
+                console.error(`Failed to grade card ${card.id}: `
+                              + `${updatedCard?.detail}`);
+                return;
+            }
+            removeFromOutstanding(card);
+
+            if (grade < 4) {
+                const newList = [...cramQueue, updatedCard];
+                setCramQueue(newList);
+                cramQueueCount.current++;               
+            }
+            outstandingCount.current--;
+        },
         forget: async function() {},
 	disable: async function() {},
 	enable: async function() {}
