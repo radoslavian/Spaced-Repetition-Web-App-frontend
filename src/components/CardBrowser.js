@@ -33,7 +33,7 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                   forget
                 </a>,
                 <a title="cram memorized card"
-                   onClick={() => cram(cram)}>
+                   onClick={() => cram(card)}>
                   cram
                 </a>,
                 <a title="disable memorized card"

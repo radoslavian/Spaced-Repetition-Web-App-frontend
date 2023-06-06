@@ -6,12 +6,12 @@ import axios, { axiosMatch, categoriesCalls, addToCramQueue,
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { timeOut } from "./utils/helpers";
-import { CategoriesProvider,
-         useCategories } from "./contexts/CategoriesProvider";
+import { CategoriesProvider, useCategories } from "./contexts/CategoriesProvider";
 import { CardsProvider, useCards } from "./contexts/CardsProvider.js";
 import CategorySelector from "./components/CategorySelector.js";
 import { memorizedCardsSecondPage, memorizedCard,
          queuedCardsMiddlePage } from "./__mocks__/mockData";
+import { getComponentWithProviders } from "./utils/testHelpers";
 
 describe("<ApiProvider/>", () => {
     function FakeComponent() {
@@ -197,19 +197,6 @@ function getProviderGeneralTestingComponent (cardsGroup) {
             </>
         );
     };
-}
-
-function getComponentWithProviders(Component) {
-    return () => (<ApiProvider>
-            <UserProvider>
-              <CategoriesProvider>
-                <CardsProvider>
-                  <Component/>
-                </CardsProvider>
-              </CategoriesProvider>
-            </UserProvider>
-          </ApiProvider>
-                 );
 }
 
 describe("<CardsProvider/> - memorized (general)", () => {
@@ -815,9 +802,8 @@ describe("<CardsProvider/> - cram queue", () => {
         expect(axiosMatch.put).toHaveBeenCalledTimes(1);
         expect(crammedCard).toBeInTheDocument();
         expect(axiosMatch.put).toHaveBeenCalledWith(
-            expect.objectContaining({
-                url: 'http://localhost:8000/api/users/626e4d32-a52f-4c15-8f78-aacf3b69a9b2/cards/cram-queue/7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa'
-            }));
+            expect.objectContaining(
+                {data: {"card_pk": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa"}}));
     });
 });
 

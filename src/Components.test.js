@@ -8,9 +8,12 @@ import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { CategoriesProvider,
          useCategories } from "./contexts/CategoriesProvider";
 import CardBrowser from "./components/CardBrowser";
+import CardBody from "./components/CardBody";
 import { userCategories2 as userCategories } from "./__mocks__/mockData";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
-import axios, { downloadCards, axiosMatch } from "axios";
+import CardsReviewer from "./components/CardsReviewer";
+import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
+import { getComponentWithProviders } from "./utils/testHelpers";
 
 describe("CategorySelector tests.", () => {
     beforeAll(() => render(
@@ -26,18 +29,14 @@ describe("CategorySelector tests.", () => {
     });
 });
 
+
 describe("<CardCategoryBrowser/>", () => {
+    const ComponentWithProviders = getComponentWithProviders(
+        CardCategoryBrowser);
+
     beforeEach(async () => {
         await act(async () => render(
-            <ApiProvider>
-              <UserProvider>
-                <CategoriesProvider>
-                  <CardsProvider>
-                    <CardCategoryBrowser/>
-                  </CardsProvider>
-                </CategoriesProvider>
-              </UserProvider>
-            </ApiProvider>
+            <ComponentWithProviders/>
         ));
     });
 
@@ -151,6 +150,7 @@ describe("<CardBrowser>", () => {
         const cramTrigger = screen.getByTitle("cram memorized card");
         fireEvent.click(cramTrigger);
         expect(cram).toHaveBeenCalledTimes(1);
+        expect(cram).toHaveBeenCalledWith(fakeCards[1]);
     });
 
     test("if queued card can be disabled", () => {
@@ -170,6 +170,114 @@ describe("<CardBrowser>", () => {
         const enableTrigger = screen.getByTitle("re-enable disabled card");
         fireEvent.click(enableTrigger);
         expect(enable).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("<CardBody/>", () => {
+    const card = {
+        body: `<div class="card-body">
+  <div class="card-question">
+    Example <b>card</b> <i>question</i>.
+  </div>
+  <div class="card-answer">
+    Example Card answer.
+  </div>
+</div>`
+    };
+
+    test("rendering html tags", () => {
+        render(<CardBody card={card}/>);
+        const searchedText = "Example Card answer.";
+        const renderedText = screen.getByText(searchedText);
+        expect(renderedText).toBeInTheDocument();
+    });
+});
+
+describe("<CardsReviewer/>", () => {
+    const TestingComponent = getComponentWithProviders(CardsReviewer);
+
+    beforeEach(() => gradeCard.mockClear());
+
+    beforeEach(async () => await act(() => render(
+        <TestingComponent/>)));
+
+    test("if <CardsReviewer/> displays first card from the queue", () => {
+        const lookUpText = "Example question on a grammar card. Example anwer.";
+        const component = screen.getByText(lookUpText);
+        expect(component).toBeInTheDocument();
+    });
+
+    test("grading - url & pass grade", async () => {
+        const gradePass = screen.getByTestId("grade-button-pass");
+        await act(() => fireEvent.click(gradePass));
+        const expectedGrade = 3;
+        const expectedUrl = "http://localhost:8000/api/users/626e4d32-a52f-4c"
+              + "15-8f78-aacf3b69a9b2/cards/memorized/7cf7ed26-bfd2-45a8-a9fc"
+              + "-a284a86a6bfa";
+
+        expect(gradeCard).toHaveBeenCalledTimes(1);
+        expect(gradeCard).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {data: {"grade": expectedGrade},
+                "url": expectedUrl})
+        );
+    });
+
+    // remaining grade tests
+
+    test("grading - the 'null' grade", async () => {
+        const gradeNull = screen.getByTestId("grade-button-null");
+        await act(() => fireEvent.click(gradeNull));
+        const expectedGrade = 0;
+
+        expect(gradeCard).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {data: {"grade": expectedGrade}})
+        );
+    });
+
+    test("grading - the 'bad' grade", async () => {
+        const gradeBad = screen.getByTestId("grade-button-bad");
+        await act(() => fireEvent.click(gradeBad));
+        const expectedGrade = 1;
+
+        expect(gradeCard).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {data: {"grade": expectedGrade}})
+        );
+    });
+
+    test("grading - the 'fail' grade", async () => {
+        const gradeFail = screen.getByTestId("grade-button-fail");
+        await act(() => fireEvent.click(gradeFail));
+        const expectedGrade = 2;
+
+        expect(gradeCard).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {data: {"grade": expectedGrade}})
+        );
+    });
+
+    test("grading - the 'good' grade", async () => {
+        const gradeGood = screen.getByTestId("grade-button-good");
+        await act(() => fireEvent.click(gradeGood));
+        const expectedGrade = 4;
+
+        expect(gradeCard).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {data: {"grade": expectedGrade}})
+        );
+    });
+
+    test("grading - the 'ideal' grade", async () => {
+        const gradeIdeal = screen.getByTestId("grade-button-ideal");
+        await act(() => fireEvent.click(gradeIdeal));
+        const expectedGrade = 5;
+
+        expect(gradeCard).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {data: {"grade": expectedGrade}})
+        );
     });
 });
 

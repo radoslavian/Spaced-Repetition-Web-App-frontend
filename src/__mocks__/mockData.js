@@ -357,7 +357,7 @@ export const outstandingMiddlePage = {
     "results": [
         {
             "id": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa",
-            "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
+            "body": "Example question on a grammar card. Example anwer.",
             "projected_review_data": {
                 "0": {
                     "easiness": 1.7000000000000002,
@@ -816,7 +816,6 @@ export const memorizedCard = {
     "grade": 1,
     "easiness_factor": 1.96,
     "comment": null,
-    "type": "memorized"
 };
 
 export const cardBrowserTestCards = [

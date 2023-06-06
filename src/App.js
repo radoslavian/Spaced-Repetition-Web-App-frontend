@@ -1,6 +1,7 @@
 import './App.css';
 import { useEffect } from "react";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
+import CardsReviewer from "./components/CardCategoryBrowser";
 import useToken from "./hooks/useToken";
 import { useApi } from "./contexts/ApiProvider";
 import { UserProvider } from './contexts/UserProvider';
@@ -29,20 +30,21 @@ function App() {
     }, []);
 
     return (
-        api.isAuthenticated() ?
-            <div className="App">
-              <UserProvider>
+          api.isAuthenticated() ?
+          <div className="App">
+            <UserProvider>
                 <UserProvider>
                   <CategoriesProvider>
                     <CardsProvider>
                       <CardCategoryBrowser/>
+                      <CardsReviewer/>
                     </CardsProvider>
                   </CategoriesProvider>
                 </UserProvider>
               </UserProvider>
             </div> : <p>Api - is authenticated:
                        { api.isAuthenticated().toString() }
-                     </p>
+        </p>
   );
 }
 

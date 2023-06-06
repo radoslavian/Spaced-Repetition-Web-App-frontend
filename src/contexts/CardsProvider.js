@@ -251,6 +251,7 @@ export function CardsProvider({ children }) {
             }
             const url = `/users/${user.id}/cards/queued/${card.id}`;
             const updatedCard = await api.patch(url, {data: {grade: grade}});
+            const newCard = {...updatedCard, type: "memorized"};
 
             // if success -> remove card from the queue list
             if (updatedCard?.id === undefined) {
@@ -259,16 +260,16 @@ export function CardsProvider({ children }) {
                 return;
             }
             removeFromQueued(card);
-            swapInAllCards(updatedCard);
-            addToMemorized(updatedCard);
+            swapInAllCards(newCard);
+            addToMemorized(newCard);
         },
 
 	cram: async function(card) {
             if (user === undefined) {
                 return;
             }
-            const url = `/users/${user.id}/cards/cram-queue/${card.id}`;
-            const updatedCard = await api.put(url);
+            const url = `/users/${user.id}/cards/cram-queue/`;
+            const updatedCard = await api.put(url, {data: {"card_pk": card.id}});
             if (updatedCard?.id === undefined) {
                 console.error(`Failed to add card ${card.id} to cram queue`);
                 return;
@@ -300,6 +301,7 @@ export function CardsProvider({ children }) {
             }
             outstandingCount.current--;
         },
+
         forget: async function() {},
 	disable: async function() {},
 	enable: async function() {}
