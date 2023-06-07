@@ -1,7 +1,7 @@
 import './App.css';
 import { useEffect } from "react";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
-import CardsReviewer from "./components/CardCategoryBrowser";
+import CardsReviewer from "./components/CardsReviewer";
 import useToken from "./hooks/useToken";
 import { useApi } from "./contexts/ApiProvider";
 import { UserProvider } from './contexts/UserProvider';
@@ -36,14 +36,17 @@ function App() {
                 <UserProvider>
                   <CategoriesProvider>
                     <CardsProvider>
-                      <CardCategoryBrowser/>
+                      {/* <CardCategoryBrowser/> */}
                       <CardsReviewer/>
                     </CardsProvider>
                   </CategoriesProvider>
                 </UserProvider>
               </UserProvider>
-            </div> : <p>Api - is authenticated:
-                       { api.isAuthenticated().toString() }
+          </div>
+        :
+        <p>
+          Api - is authenticated:
+          { api.isAuthenticated().toString() }
         </p>
   );
 }

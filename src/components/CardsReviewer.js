@@ -1,4 +1,5 @@
 import CardBody from "./CardBody";
+import { useState } from "react";
 import { Button } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 
@@ -56,12 +57,30 @@ export default function CardsReviewer() {
     const cards = useCards();
     const { outstanding } = cards;
     const { grade } = cards.functions;
+    const [showAnswer, setShowAnswer] = useState(false);
     const card = outstanding.currentPage[0];
+    const flipAnswer = () => setShowAnswer(!showAnswer);
+    const gradeNFlipCard = async (gradedCard, cardGrade) => {
+        await grade(gradedCard, cardGrade);
+        flipAnswer();
+    };
+    const bottomBar = (
+        showAnswer ?
+            <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
+        :
+        <Button type="primary"
+                  id="show-answer-button"
+                  data-testid="show-answer-button"
+                  onClick={flipAnswer}>
+            Show&nbsp;answer
+        </Button>
+    );
 
     return (
         <>
-          <CardBody card={card}/>
-          <AnswerRater card={card} gradingFn={grade}/>
+          <CardBody card={card} showAnswer={showAnswer} />
+          { bottomBar }
         </>
     );
 }
+

@@ -187,22 +187,75 @@ describe("<CardBody/>", () => {
 
     test("rendering html tags", () => {
         render(<CardBody card={card}/>);
-        const searchedText = "Example Card answer.";
-        const renderedText = screen.getByText(searchedText);
-        expect(renderedText).toBeInTheDocument();
+        const answer = screen.getByText("Example Card answer.");
+        expect(answer).toBeInTheDocument();
+        expect(answer.className).toBe("card-answer");
+    });
+
+    test("displaying answer", () => {
+        render(<CardBody card={card} showAnswer={true}/>);
+        const answer = screen.getByText("Example Card answer.");
+        expect(answer.className).toBe("card-answer-shown");
     });
 });
 
 describe("<CardsReviewer/>", () => {
     const TestingComponent = getComponentWithProviders(CardsReviewer);
 
-    beforeEach(() => gradeCard.mockClear());
+    beforeEach(async () => {
+        // gradeCard.mockClear();  // What is this for here?
+        await act(() => render(<TestingComponent/>));
+    });
 
-    beforeEach(async () => await act(() => render(
-        <TestingComponent/>)));
+    test("if 'Show answer' click displays buttons with marks", async () => {
+        // expect - grade button was not found
+        const showAnswer = screen.getByText("Show answer");
+        expect(showAnswer).toBeInTheDocument();
+        await act(() => fireEvent.click(showAnswer));
+        const badGrade = await screen.findByTestId("grade-button-bad");
+        expect(badGrade).toBeInTheDocument();
+
+    });
+
+    test("if 'Show answer' click shows answer field", async () => {
+        const showAnswer = screen.getByText("Show answer");
+        await act(() => fireEvent.click(showAnswer));
+        const answer = screen.getByText("Example Card answer.");
+        expect(answer).toBeInTheDocument();
+        expect(answer.className).toBe("card-answer-shown");
+    });
+
+    test("if review process progresses", async () => {
+        // Clicking on the grade re-displays the "Show answer" bar,
+        // the answer has a "card-answer" class.
+
+        const showAnswer = screen.getByText("Show answer");
+        await act(() => fireEvent.click(showAnswer));
+        const answer = screen.getByText("Example Card answer.");
+        const idealGrade = await screen.findByTestId("grade-button-ideal");
+        await act(() => fireEvent.click(idealGrade));
+        const showAnswerNext = screen.getByText("Show answer");
+        expect(showAnswerNext).toBeInTheDocument();
+
+        // another card from the list is displayed
+        const nextCardText = "Example answer (outstanding).";
+        const nextCard = screen.getByText(nextCardText);
+        expect(nextCard).toBeInTheDocument();
+    });
+});
+
+describe("<CardsReviewer/> - grading", () => {
+    const TestingComponent = getComponentWithProviders(CardsReviewer);
+
+    beforeEach(async () => {
+        gradeCard.mockClear();
+        await act(() => render(<TestingComponent/>));
+        const showAnswer = screen.getByText("Show answer");
+        fireEvent.click(showAnswer);
+    });
 
     test("if <CardsReviewer/> displays first card from the queue", () => {
-        const lookUpText = "Example question on a grammar card. Example anwer.";
+        const lookUpText = "Example card question.";
         const component = screen.getByText(lookUpText);
         expect(component).toBeInTheDocument();
     });

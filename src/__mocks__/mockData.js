@@ -357,7 +357,14 @@ export const outstandingMiddlePage = {
     "results": [
         {
             "id": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa",
-            "body": "Example question on a grammar card. Example anwer.",
+            "body": `<div class="card-body">
+  <div class="card-question">
+    Example card question.
+  </div>
+  <div class="card-answer">
+    Example Card answer.
+  </div>
+</div>`,
             "projected_review_data": {
                 "0": {
                     "easiness": 1.7000000000000002,
@@ -420,7 +427,7 @@ export const outstandingMiddlePage = {
         },
         {
             "id": "c0320d44-c157-4857-a2b8-39ce89d168f5",
-            "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
+            "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample answer (outstanding).",
             "projected_review_data": {
                 "0": {
                     "easiness": 1.7000000000000002,
