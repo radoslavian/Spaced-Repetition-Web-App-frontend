@@ -30,6 +30,8 @@ export function CardsProvider({ children }) {
     });
 
     // outstanding
+    // TODO: all those attributes should be put in an object
+    // with a uniform interface
     const [outstandingCards, setOutstandingCards] = useState([]);
     const outstandingCount = useRef(0);
     const outstandingNavigation = useRef({
@@ -37,6 +39,7 @@ export function CardsProvider({ children }) {
         prev: null,
         next: null
     });
+    const [isOutstandingLoading, setOutstandingLoading] = useState(false);
 
     // cram queue
     const [cramQueue, setCramQueue] = useState([]);
@@ -65,9 +68,10 @@ export function CardsProvider({ children }) {
 
     // countParam - added due to naming differences of this attribute
     // between endpoint for all cards and the remaining
-    const getCards = (cardsSetter, count, navigation,
-                      countParam = "count") =>
+    const getCards = ({cardsSetter, count, navigation,
+                       countParam = "count", setIsLoading = f => f}) =>
           async url => {
+              setIsLoading(true);
               const response = await api.get(url);
               cardsSetter(response?.results);
               count.current = response[countParam];
@@ -76,6 +80,7 @@ export function CardsProvider({ children }) {
                   prev: response.previous,
                   next: response.next
               };
+              setIsLoading(false);
           };
 
     const getNextPage = (navigation, getCardsFn) => 
@@ -99,27 +104,44 @@ export function CardsProvider({ children }) {
         listSetter(newList);
     };
 
+    const getGoToFirst = (cardsGetter, getUrl) => () => {
+        if (user === undefined) {
+            return;
+        }
+        const url = getUrl();
+        cardsGetter(url);
+    };
+
     // should I employ useCallback or useMemo for that?
     // memorized
-    const getMemorized = getCards(setMemorizedCards, memorizedCount,
-                                  memorizedNavigation);
+    const getMemorized = getCards({cardsSetter: setMemorizedCards,
+                                   count: memorizedCount,
+                                   navigation: memorizedNavigation});
     const nextPageMemorized = getNextPage(memorizedNavigation, getMemorized);
     const prevPageMemorized = getPrevPage(memorizedNavigation, getMemorized);
 
     // queued
-    const getQueued = getCards(setQueuedCards, queuedCount, queuedNavigation);
+    const getQueued = getCards({cardsSetter: setQueuedCards,
+                                count: queuedCount,
+                                navigation: queuedNavigation});
     const nextPageQueued = getNextPage(queuedNavigation, getQueued);
     const prevPageQueued = getPrevPage(queuedNavigation, getQueued);
 
     // cram
-    const getCram = getCards(setCramQueue, cramQueueCount,
-                             cramQueueNavigation);
+    const getCram = getCards({cardsSetter: setCramQueue,
+                              count: cramQueueCount,
+                              navigation: cramQueueNavigation});
     const nextPageCram = getNextPage(cramQueueNavigation, getCram);
     const prevPageCram = getPrevPage(cramQueueNavigation, getCram);
 
     // outstanding (scheduled)
-    const getOutstanding = getCards(setOutstandingCards, outstandingCount,
-                                    outstandingNavigation);
+    // let outstandingFn = 
+
+    const getOutstanding = getCards({cardsSetter: setOutstandingCards,
+                                     count: outstandingCount,
+                                     navigation: outstandingNavigation,
+                                     setIsLoading: setOutstandingLoading});
+
     const nextPageOutstanding = getNextPage(outstandingNavigation,
                                             getOutstanding);
     const prevPageOutstanding = getPrevPage(outstandingNavigation,
@@ -128,57 +150,79 @@ export function CardsProvider({ children }) {
         outstandingCards, setOutstandingCards);
 
     // all cards
-    const getAllCards = getCards(setAllCards, allCardsCount,
-                                 allCardsNavigation, "overall_total");
+    const getAllCards = getCards({cardsSetter: setAllCards,
+                                  count: allCardsCount,
+                                  navigation: allCardsNavigation,
+                                  countParam: "overall_total"});
     const nextPageAllCards = getNextPage(allCardsNavigation, getAllCards);
     const prevPageAllCards = getPrevPage(allCardsNavigation, getAllCards);
 
-    const allCardsMoreSetter = cards => {
-        const newCards = allCards.concat(cards);
-        setAllCards(newCards);
+    const getMoreCardsSetter = (cardsList, cardsSetter) => cards => {
+        const newCards = cardsList.concat(cards);
+        cardsSetter(newCards);
     };
 
-    const allCardsLoadMore = getCards(allCardsMoreSetter, allCardsCount,
-                                      allCardsNavigation, "overall_total");
-
-    const allCardsOnLoadMore = async () => {
-        if (!Boolean(allCardsNavigation.current.next)) {
+    const getCardsOnLoadMore = (nextPage, loadMore) => async () => {
+        if (!Boolean(nextPage)) {
             return;
         }
-        allCardsLoadMore(allCardsNavigation.current.next);
+        loadMore(nextPage);        
     };
+
+    const allCardsMoreSetter = getMoreCardsSetter(allCards, setAllCards);
+    const allCardsLoadMore = getCards({cardsSetter: allCardsMoreSetter,
+                                       count: allCardsCount,
+                                       navigation: allCardsNavigation,
+                                       countParam: "overall_total"});
+    const allCardsOnLoadMore = getCardsOnLoadMore(
+        allCardsNavigation.current.next, allCardsLoadMore);
+    const outstandingMoreSetter = getMoreCardsSetter(
+        outstandingCards, setOutstandingCards);
+    const outstandingLoadMore = getCards(
+        {cardsSetter: outstandingMoreSetter,
+         count: outstandingCount,
+         navigation: outstandingNavigation,
+         setIsLoading: setOutstandingLoading});
+    const outstandingOnLoadMore = getCardsOnLoadMore(
+        outstandingNavigation.current.next, outstandingLoadMore);
+
+    const allCardsUrl = () => `/users/${user.id}/cards/`;
+    const memorizedUrl = () => `/users/${user.id}/cards/memorized/`;
+    const queuedUrl = () => `/users/${user.id}/cards/queued/`;
+    const outstandingUrl = () =>  `/users/${user.id}/cards/outstanding/`;
+    const cramQueueUrl = () => `/users/${user.id}/cards/cram-queue/`;
 
     useEffect(() => {
         if (!api.isAuthenticated() || user === undefined) {
             return;
         }
-        const allCardsUrl = `/users/${user.id}/cards/`;
-        const memorizedUrl = `/users/${user.id}/cards/memorized/`;
-        const queuedUrl = `/users/${user.id}/cards/queued/`;
-        const outstandingUrl = `/users/${user.id}/cards/outstanding/`;
 
-        getAllCards(allCardsUrl);
-        getMemorized(memorizedUrl);
-        getQueued(queuedUrl);
-        getOutstanding(outstandingUrl);
+        getAllCards(allCardsUrl());
+        getMemorized(memorizedUrl());
+        getQueued(queuedUrl());
+        getOutstanding(outstandingUrl());
     }, [user, api, selectedCategories.length]);
 
     useEffect(() => {
         // cram shall be loaded separately since its independent
         // from categories
-        if (user === undefined) {
+        if (!api.isAuthenticated() || user === undefined) {
             return;
         }
-        getCram(`/users/${user.id}/cards/cram-queue/`);
+        getCram(cramQueueUrl());
     }, [user, api]);
 
+    // undefined fields need to be implemented
     const memorized = {
         currentPage: memorizedCards,
         count: memorizedCount.current,
         isFirst: Boolean(!memorizedNavigation.current.prev),
         isLast: Boolean(!memorizedNavigation.current.next),
+        isLoading: undefined,
         nextPage: nextPageMemorized,
-        prevPage: prevPageMemorized
+        prevPage: prevPageMemorized,
+        loadMore: undefined,
+        goToFirst: undefined
     };
 
     const queued = {
@@ -186,8 +230,11 @@ export function CardsProvider({ children }) {
         count: queuedCount.current,
         isFirst: Boolean(!queuedNavigation.current.prev),
         isLast: Boolean(!queuedNavigation.current.next),
+        isLoading: undefined,
         nextPage: nextPageQueued,
-        prevPage: prevPageQueued
+        prevPage: prevPageQueued,
+        loadMore: undefined,
+        goToFirst: undefined
     };
 
     const cram = {
@@ -195,8 +242,11 @@ export function CardsProvider({ children }) {
         count: cramQueueCount.current,
         isFirst: Boolean(!cramQueueNavigation.current.prev),
         isLast: Boolean(!cramQueueNavigation.current.next),
+        isLoading: undefined,
         nextPage: nextPageCram,
-        prevPage: prevPageCram
+        prevPage: prevPageCram,
+        loadMore: undefined,
+        goToFirst: undefined
     };
 
     const outstanding = {
@@ -204,16 +254,11 @@ export function CardsProvider({ children }) {
         count: outstandingCount.current,
         isFirst: Boolean(!outstandingNavigation.current.prev),
         isLast: Boolean(!outstandingNavigation.current.next),
+        isLoading: isOutstandingLoading,
         nextPage: nextPageOutstanding,
-        prevPage: prevPageOutstanding
-    };
-
-    const allCardsGoToFirst = () => {
-        if (user === undefined) {
-            return;
-        }
-        const url = `/users/${user.id}/cards/`;
-        getAllCards(url);
+        prevPage: prevPageOutstanding,
+        loadMore: outstandingOnLoadMore,
+        goToFirst: getGoToFirst(getOutstanding, outstandingUrl)
     };
 
     const all = {
@@ -221,10 +266,11 @@ export function CardsProvider({ children }) {
         count: allCardsCount.current,
         isFirst: Boolean(!allCardsNavigation.current.prev),
         isLast: Boolean(!allCardsNavigation.current.next),
+        isLoading: undefined,
         nextPage: nextPageAllCards,
         prevPage: prevPageAllCards,
         loadMore: allCardsOnLoadMore,
-        goToFirst: allCardsGoToFirst
+        goToFirst: getGoToFirst(getAllCards, allCardsUrl)
     };
 
     const removeFromQueued = getRemoveFromList(queuedCards, setQueuedCards);
@@ -253,7 +299,6 @@ export function CardsProvider({ children }) {
             const updatedCard = await api.patch(url, {data: {grade: grade}});
             const newCard = {...updatedCard, type: "memorized"};
 
-            // if success -> remove card from the queue list
             if (updatedCard?.id === undefined) {
                 // this should be handled within the ApiClient
                 console.error("Failed to memorize card ", card.id);
@@ -281,18 +326,18 @@ export function CardsProvider({ children }) {
         },
 
         grade: async function(card, grade = 4) {
-            if (user === undefined) {
+            if (user === undefined || card?.id === undefined) {
                 return;
             }
             const url = `/users/${user.id}/cards/memorized/${card.id}`;
             const updatedCard = await api.patch(url, {data: {grade: grade}});
+            removeFromOutstanding(card);
 
             if (updatedCard?.id === undefined) {
                 console.error(`Failed to grade card ${card.id}: `
                               + `${updatedCard?.detail}`);
                 return;
             }
-            removeFromOutstanding(card);
 
             if (grade < 4) {
                 const newList = [...cramQueue, updatedCard];

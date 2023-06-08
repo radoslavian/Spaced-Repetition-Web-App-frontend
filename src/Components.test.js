@@ -203,7 +203,6 @@ describe("<CardsReviewer/>", () => {
     const TestingComponent = getComponentWithProviders(CardsReviewer);
 
     beforeEach(async () => {
-        // gradeCard.mockClear();  // What is this for here?
         await act(() => render(<TestingComponent/>));
     });
 
@@ -231,7 +230,6 @@ describe("<CardsReviewer/>", () => {
 
         const showAnswer = screen.getByText("Show answer");
         await act(() => fireEvent.click(showAnswer));
-        const answer = screen.getByText("Example Card answer.");
         const idealGrade = await screen.findByTestId("grade-button-ideal");
         await act(() => fireEvent.click(idealGrade));
         const showAnswerNext = screen.getByText("Show answer");
@@ -242,6 +240,24 @@ describe("<CardsReviewer/>", () => {
         const nextCard = screen.getByText(nextCardText);
         expect(nextCard).toBeInTheDocument();
     });
+/*
+    test("if component loads another page", async () => {
+        // review both cards
+        // after that, cards from another page should appear
+        for (let i = 0; i < 2; i++) {
+            const showAnswer = screen.getByText("Show answer");
+            await act(() => fireEvent.click(showAnswer));
+            const idealGrade = await screen.findByTestId("grade-button-ideal");
+            await act(() => fireEvent.click(idealGrade));
+        }
+        const cardText = "<p>Between plant it.</p>";
+        const cardFromNextPage = screen.findByText(cardText);
+        await waitFor(() => {
+            expect(cardFromNextPage).toBeInTheDocument();
+        });
+        screen.debug();
+    });
+*/
 });
 
 describe("<CardsReviewer/> - grading", () => {

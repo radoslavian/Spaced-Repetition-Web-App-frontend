@@ -5,7 +5,6 @@ import axios, { axiosMatch, categoriesCalls, addToCramQueue,
                 downloadCards, gradeCard } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
-import { timeOut } from "./utils/helpers";
 import { CategoriesProvider, useCategories } from "./contexts/CategoriesProvider";
 import { CardsProvider, useCards } from "./contexts/CardsProvider.js";
 import CategorySelector from "./components/CategorySelector.js";
@@ -102,10 +101,8 @@ describe("<CategoriesProvider/>", () => {
         const called = useRef(false);
 
         if (!called.current) {
-            // fix it
             (async () => {
                 await api.authenticate("/auth/token/login/", credentials);
-                await timeOut(10);
                 setSelectedCategories(
                     ["6d18daff-94d1-489b-97ce-969d1c2912a6"]);
                 if (categories != []) {
@@ -251,7 +248,7 @@ test("if setting categories causes update to <CardsProvider/>", async () => {
 function getNavigationTestingComponent(cardsGroup) {
     return () => {
         const { currentPage, prevPage, nextPage, loadMore, goToFirst,
-                isFirst, isLast } = cardsGroup;
+                isFirst, isLast, isLoading } = cardsGroup;
 
         return (
             <>
@@ -285,6 +282,9 @@ function getNavigationTestingComponent(cardsGroup) {
                 { currentPage.map(card => (
                     <p key={card.id} data-testid={card.id}></p>
                 )) }
+              </div>
+              <div data-testid="is-loading">
+                { Boolean(isLoading) ? "true" : "false" }
               </div>
             </>
         );
@@ -461,6 +461,34 @@ describe("<CardsProvider/> - outstanding (scheduled) - navigation", () => {
         <ComponentWithProviders/>
     )));
 
+    test("load more", async () => {
+        const loadMore = await screen.findByTestId("load-more");
+        fireEvent.click(loadMore);
+        const cardMiddle = await screen.findByTestId(
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");  // middle page
+        const cardNext = await screen.findByTestId(
+            "c6168ba7-6eac-4e1c-806b-3ce111bcdec3");  // next page
+
+        // assert cards from the first and 2nd page
+        expect(cardMiddle).toBeInTheDocument();
+        expect(cardNext).toBeInTheDocument();
+    });
+
+    test("goToFirst - reseting and returning to the first page", async () => {
+        const loadMore = await screen.findByTestId("load-more");
+        const goToFirst = await screen.findByTestId("go-to-first");
+        await act(() => fireEvent.click(loadMore));
+        await act(() => fireEvent.click(goToFirst));
+
+        await expect(async () => {
+            await waitFor(
+                () => expect(screen.getByTestId(
+                    "c6168ba7-6eac-4e1c-806b-3ce111bcdec3"))
+                    .toBeInTheDocument()
+            );
+        }).rejects.toEqual(expect.anything());        
+    });
+
     test("rendering next page", async () => {
         const clickNext = await screen.findByTestId("click_nextPage");
         fireEvent.click(clickNext);
@@ -475,6 +503,17 @@ describe("<CardsProvider/> - outstanding (scheduled) - navigation", () => {
         const card = await screen.findByTestId(
             "91d1ef25-b1c8-4c49-8b00-215f90088232");
         expect(card).toBeInTheDocument();
+    });
+
+    test("isLoading indicator", async () => {
+        const loadMore = await screen.findByTestId("load-more");
+        const isLoadingIndicator = await screen.findByTestId("is-loading");
+        expect(isLoadingIndicator).toHaveTextContent("false");
+        await act(() => {
+            fireEvent.click(loadMore);
+            waitFor(() => expect(isLoadingIndicator)
+                    .toHaveTextContent("true"));
+        });
     });
 });
 
@@ -556,8 +595,8 @@ describe("<CardsProvider/> - all cards - navigation", () => {
     test("goToFirst - reseting and returning to the first page", async () => {
         const loadMore = await screen.findByTestId("load-more");
         const goToFirst = await screen.findByTestId("go-to-first");
-        fireEvent.click(loadMore);
-        fireEvent.click(goToFirst);
+        await act(() => fireEvent.click(loadMore));
+        await act(() => fireEvent.click(goToFirst));
 
         // StackOverflow recipe:
         // https://stackoverflow.com/questions/68400489/how-to-wait-to-assert

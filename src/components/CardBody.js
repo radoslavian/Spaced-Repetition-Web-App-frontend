@@ -1,7 +1,7 @@
 import parse from "html-react-parser";
 
 export default function CardBody({ card, showAnswer = false }) {
-    const body = card?.body || "";
+    const body = card?.body || "<p>Empty</p>";
     const options = showAnswer ? {
         replace: domNode => {
             if (domNode.attribs && domNode.attribs.class === "card-answer") {
