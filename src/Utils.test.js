@@ -7,6 +7,12 @@ describe("APIClient", () => {
 
     afterAll(jest.clearAllMocks);
 
+    beforeAll(() => {
+        const credentials = {user: "user1",
+                             password: "passwd"};
+        apiClient.authenticate("/auth/token/login/", credentials);
+    });
+
     test("calling route using an absolute URL", async () => {
         const allowedUrl = "http://localhost:8000/test/url";
         const response = await apiClient.request(allowedUrl, "get");

@@ -29,18 +29,48 @@ describe("CategorySelector tests.", () => {
     });
 });
 
+import { useState, useEffect } from "react";
+import { timeOut } from "./utils/helpers";
 
 describe("<CardCategoryBrowser/>", () => {
-    const ComponentWithProviders = getComponentWithProviders(
-        CardCategoryBrowser);
+    const TestingComponent = () => {
+        const api = useApi();
+        const credentials = {user: "user_1",
+                             password: "passwd"};
+        const [authenticated, setAuthenticated] = useState(undefined);
+        // api.authenticate("/auth/token/login/", credentials);
 
-    beforeEach(async () => {
-        await act(async () => render(
-            <ComponentWithProviders/>
-        ));
-    });
+        useEffect(() => {
+            (async () => {
+                await api.authenticate("/auth/token/login/", credentials);
+                if (api.isAuthenticated()) {
+                    setAuthenticated(true);
+                }
+            })();
+        }, []);
+
+        // looks like the component is not re-rendered after authentication
+
+        return (
+            api.isAuthenticated() ? 
+                <CardCategoryBrowser/>
+            : <p>Unauthenticated</p>
+        );
+    };
+    const ComponentWithProviders = getComponentWithProviders(
+        TestingComponent);
+
+    const renderComponent = async () => await act(() => render(
+        <ComponentWithProviders/>));
+
+    beforeEach(async () => await renderComponent());
 
     test("if component downloads cards from the server", async () => {
+        // Something's wrong with CardCategoryBrowser or - more likely
+        // - with CategoriesProvider: does not work if
+        // <ComponentWithProviders/> is created only once
+        
+        await renderComponent();
         await waitFor(() => expect(downloadCards).toHaveBeenCalledTimes(2));
     });
 
@@ -60,7 +90,6 @@ describe("<CardCategoryBrowser/>", () => {
         expect(cardNext).toBeInTheDocument();
         expect(cardNext_1).toBeInTheDocument();
     });
-
 
     test("if component sends selected categories to the server",
          () => {
@@ -240,27 +269,28 @@ describe("<CardsReviewer/>", () => {
         const nextCard = screen.getByText(nextCardText);
         expect(nextCard).toBeInTheDocument();
     });
-/*
+
     test("if component loads another page", async () => {
-        // review both cards
-        // after that, cards from another page should appear
-        for (let i = 0; i < 2; i++) {
-            const showAnswer = screen.getByText("Show answer");
-            await act(() => fireEvent.click(showAnswer));
-            const idealGrade = await screen.findByTestId("grade-button-ideal");
-            await act(() => fireEvent.click(idealGrade));
-        }
-        const cardText = "<p>Between plant it.</p>";
-        const cardFromNextPage = screen.findByText(cardText);
-        await waitFor(() => {
-            expect(cardFromNextPage).toBeInTheDocument();
-        });
-        screen.debug();
+        // review both cards from the mock api
+        axiosMatch.get.mockClear();
+         for (let i = 0; i < 2; i++) {
+             const showAnswer = screen.getByText("Show answer");
+             await act(() => fireEvent.click(showAnswer));
+             const buttonTestId = "grade-button-ideal";
+             const idealGrade = await screen.findByTestId(buttonTestId);
+             await act(() => fireEvent.click(idealGrade));
+         }
+        // url called by goToFirst
+        const expectedUrl = 'http://localhost:8000/api/users/626e4d32-a52f-'
+              + '4c15-8f78-aacf3b69a9b2/cards/outstanding/';
+        expect(axiosMatch.get).toHaveBeenCalledTimes(1);
+        expect(axiosMatch.get).toHaveBeenCalledWith(
+            expect.objectContaining({"url": expectedUrl}));
     });
-*/
+
 });
 
-describe("<CardsReviewer/> - grading", () => {
+describe("<CardsReviewer/> - grading outstanding cards", () => {
     const TestingComponent = getComponentWithProviders(CardsReviewer);
 
     beforeEach(async () => {
@@ -292,7 +322,7 @@ describe("<CardsReviewer/> - grading", () => {
         );
     });
 
-    // remaining grade tests
+    // Remaining grade tests
 
     test("grading - the 'null' grade", async () => {
         const gradeNull = screen.getByTestId("grade-button-null");
@@ -347,6 +377,28 @@ describe("<CardsReviewer/> - grading", () => {
             expect.objectContaining(
                 {data: {"grade": expectedGrade}})
         );
+    });
+});
+
+describe("<CardsReviewer/> - memorizing queued cards", () => {
+    const TestComponent = () => {
+        const api = useApi();
+        const credentials = {user: "CardsReviewer_user",
+                             password: "passwd"};
+        api.authenticate("/auth/token/login/", credentials);
+
+        return (<CardsReviewer/>);
+    };
+
+    const ComponentWithProviders = getComponentWithProviders(
+        TestComponent);
+
+    test("transition from outstanding to queued cards", async () => {
+        await act(() => render(<ComponentWithProviders/>));
+        const queuedCardId = "5f143904-c9d1-4e5b-ac00-01258d09965a";
+        // cards from queued list should appear
+        const queuedCard = await screen.findByText(queuedCardId);
+        expect(queuedCard).toBeInTheDocument();
     });
 });
 

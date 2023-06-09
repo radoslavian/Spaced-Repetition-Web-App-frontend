@@ -1,13 +1,12 @@
 import './App.css';
 import { useEffect } from "react";
-import CardCategoryBrowser from "./components/CardCategoryBrowser";
-import CardsReviewer from "./components/CardsReviewer";
 import useToken from "./hooks/useToken";
 import { useApi } from "./contexts/ApiProvider";
 import { UserProvider } from './contexts/UserProvider';
 import { CategoriesProvider } from "./contexts/CategoriesProvider";
 import { CardsProvider } from "./contexts/CardsProvider";
 import { getAuthToken } from "./utils/helpers.js";
+import MainGrid from "./components/MainGrid";
 
 function App() {
     const api = useApi();
@@ -30,25 +29,22 @@ function App() {
     }, []);
 
     return (
-          api.isAuthenticated() ?
-          <div className="App">
-            <UserProvider>
-                <UserProvider>
-                  <CategoriesProvider>
-                    <CardsProvider>
-                      {/* <CardCategoryBrowser/> */}
-                      <CardsReviewer/>
-                    </CardsProvider>
-                  </CategoriesProvider>
-                </UserProvider>
+        api.isAuthenticated() ?
+            <div className="App">
+              <UserProvider>
+                <CategoriesProvider>
+                  <CardsProvider>
+                    <MainGrid/>
+                  </CardsProvider>
+                </CategoriesProvider>
               </UserProvider>
-          </div>
-        :
-        <p>
-          Api - is authenticated:
-          { api.isAuthenticated().toString() }
-        </p>
-  );
+            </div>
+            :
+            <p>
+              Api - is authenticated:
+              { api.isAuthenticated().toString() }
+            </p>
+    );
 }
 
 export default App;

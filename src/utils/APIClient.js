@@ -17,7 +17,7 @@ export default class ApiClient {
 
     isAuthenticated() {
 	const token = getAuthToken();
-        return token !== null;
+        return Boolean(token);
     }
 
     validateRequest(url) {

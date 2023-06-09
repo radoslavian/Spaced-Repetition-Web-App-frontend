@@ -2,6 +2,10 @@ export const authToken = {
     auth_token: "7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f"
 };
 
+export const authToken_1 = {
+    auth_token: "1f3371582a52d0ef17877c61d1c82cdf9b7d8f4f"
+};
+
 export const userData = {
     email: "user@userdomain.com.su",
     id: "626e4d32-a52f-4c15-8f78-aacf3b69a9b2",
@@ -282,6 +286,13 @@ export const queuedCardsThirdPage = {
         }
     ]
 };
+
+export const outstandingEmpty = {
+    "count": 0,
+    "next": null,
+    "previous": null,
+    "results": []
+}
 
 export const outstandingPrevPage = {
     "count": 3,

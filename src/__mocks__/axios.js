@@ -1,10 +1,10 @@
 import {
-    authToken, userData, userCategories, memorizedCardsSecondPage,
+    authToken, authToken_1, userData, userCategories, memorizedCardsSecondPage,
     memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
     allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
-    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess
+    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, outstandingEmpty
 } from "./mockData";
 
 const addToCramRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
@@ -37,8 +37,18 @@ export const categoriesCalls = jest.fn();
 export const gradeCard = jest.fn();
 
 export const axiosMatch = {
-    post: jest.fn(() => Promise.resolve({ data: authToken })),
+    post: jest.fn().mockImplementation(config => {
+	if (config.data.user === "CardsReviewer_user") {
+	    return Promise.resolve({ data: authToken_1 });
+	} else {
+	    return Promise.resolve({ data: authToken });
+	}
+    }),
+
     get: jest.fn().mockImplementation(config => {
+	if (config.headers?.Authorization === undefined) {
+	    return Promise.reject({ data: "unauthorized" });
+	}
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
         }
@@ -62,7 +72,19 @@ export const axiosMatch = {
             return Promise.resolve({ data: outstandingNextPage });
         }
         else if (outstandingCardsMainPageRoute.test(config.url)) {
-            return Promise.resolve({ data: outstandingMiddlePage });
+	    switch(config.headers.Authorization) {
+	    case "Token 1f3371582a52d0ef17877c61d1c82cdf9b7d8f4f":
+		// data returned for testing transition between reviewing
+		// scheduled cards and memorizing new ones
+		return Promise.resolve({ data: outstandingEmpty });
+		break
+	    case "Token 7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f":
+		return Promise.resolve({ data: outstandingMiddlePage });
+		break;
+	    default:
+		throw new Error(
+		    "No pattern matched in outstandingCardsMainPageRoute");
+	    }
         }
         else if (cramQueueMiddleRoute.test(config.url)) {
             return Promise.resolve({ data: cramQueueSecondPage });
