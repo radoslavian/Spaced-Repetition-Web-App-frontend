@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useApi } from "./ApiProvider";
+import { getAuthToken } from "../utils/helpers.js";
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
     const [user, setUser] = useState();
     const api = useApi();
+    const token = getAuthToken();
 
     useEffect(() => {
         const getUserData = async () => {
@@ -17,7 +19,7 @@ export function UserProvider({ children }) {
             }
         };
         getUserData();
-    }, [api]);
+    }, [api, token]);
 
     return (
         <UserContext.Provider value={{ user }}>

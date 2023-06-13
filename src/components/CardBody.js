@@ -14,7 +14,8 @@ export default function CardBody({ card, showAnswer = false }) {
     } : {};
 
     return (
-        <div className="card-body">
+        <div className="card-body"
+             data-testid={card?.id}>
           { parse(body, options) }
         </div>
     );

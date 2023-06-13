@@ -1,21 +1,23 @@
 import { render, act, waitFor, screen, within,
          fireEvent, waitForElementToBeRemoved } from "@testing-library/react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import axios, { axiosMatch, categoriesCalls, addToCramQueue,
                 downloadCards, gradeCard } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
-import { CategoriesProvider, useCategories } from "./contexts/CategoriesProvider";
+import { CategoriesProvider,
+         useCategories } from "./contexts/CategoriesProvider";
 import { CardsProvider, useCards } from "./contexts/CardsProvider.js";
 import CategorySelector from "./components/CategorySelector.js";
 import { memorizedCardsSecondPage, memorizedCard,
          queuedCardsMiddlePage } from "./__mocks__/mockData";
-import { getComponentWithProviders } from "./utils/testHelpers";
+import { getComponentWithProviders,
+         LogInComponent } from "./utils/testHelpers";
 
 describe("<ApiProvider/>", () => {
     function FakeComponent() {
         const api = useApi();
-        const credentials = {user: "user1",
+        const credentials = {user: "user_1",
                              password: "passwd"};
         api.authenticate("/auth/token/login/", credentials);
         return (<></>);
@@ -34,7 +36,7 @@ describe("<ApiProvider/>", () => {
         expect(axiosMatch.post).toHaveBeenCalledTimes(1);
         expect(axiosMatch.post).toHaveBeenCalledWith(
             {"data":
-             {"password": "passwd", "user": "user1"},
+             {"password": "passwd", "user": "user_1"},
              "headers": {"Content-Type": "application/json"},
              "method": "post",
              "url": "http://localhost:8000/api/auth/token/login/"});
@@ -43,11 +45,8 @@ describe("<ApiProvider/>", () => {
 
 describe("<UserProvider/>", () => {
     const TestingComponent = () => {
-        const api = useApi();
-        const credentials = {user: "user1",
-                             password: "passwd"};
-        api.authenticate("/auth/token/login/", credentials);
         const { user } = useUser();
+
         return (
             <div>
               <p>{ user?.email }</p>
@@ -57,25 +56,24 @@ describe("<UserProvider/>", () => {
         );
     };
 
-    beforeEach(async () => {
-        await act(async () => render(
-            <ApiProvider>
-              <UserProvider>
-                <TestingComponent/>
-              </UserProvider>
-            </ApiProvider>
-        ));
-    });
+    beforeEach(async () => await act(() => render(
+        <ApiProvider>
+          <LogInComponent credentials={{user: "user_1",
+                                        password: "passwd"}}>
+              <TestingComponent/>
+            </LogInComponent>
+        </ApiProvider>
+    )));
 
     afterAll(jest.clearAllMocks);
 
-    test("if the component returned user email from the provider", () => {
+    test("if the component returned user email", async () => {
         const userData = {
             email: "user@userdomain.com.su",
             id: "626e4d32-a52f-4c15-8f78-aacf3b69a9b2",
             username: "django_root"
         };
-        const userEmail = screen.getByText("user@userdomain.com.su");
+        const userEmail = await screen.findByText("user@userdomain.com.su");
         expect(userEmail).toBeInTheDocument();
     });
 
@@ -801,7 +799,7 @@ describe("<CardsProvider/> - cram: navigation", () => {
 describe("<CardsProvider/> - cram queue", () => {
     const CramTestingComponent = () => {
         const cards = useCards();
-        const { cram } = cards.functions;
+        const { cram, removeFromCram } = cards.functions;
         const memorized = cards.memorized;
         const cramQueue = cards.cram;
 
@@ -818,8 +816,12 @@ describe("<CardsProvider/> - cram queue", () => {
                 { cramQueue.currentPage.map(
                     card => <span key={card.id}
                                   data-testid={card.id}
+                                  onClick={() => removeFromCram(card)}
                             />)}
               </div>
+              <span data-testid="cram-count">
+                {cramQueue.count}
+              </span>
             </>
         );
     };
@@ -843,6 +845,14 @@ describe("<CardsProvider/> - cram queue", () => {
         expect(axiosMatch.put).toHaveBeenCalledWith(
             expect.objectContaining(
                 {data: {"card_pk": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa"}}));
+    });
+
+    test("removing card from the cram", async () => {
+        await act(() => render(<CramComponentWithProviders/>));
+        const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
+        const crammedCard = await screen.findByTestId(crammedCardId);
+        fireEvent.click(crammedCard);
+        await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
     });
 });
 

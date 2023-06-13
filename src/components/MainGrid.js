@@ -1,15 +1,15 @@
 import { Col, Row } from "antd";
 import CardCategoryBrowser from "./CardCategoryBrowser";
-import CardsReviewer from "./CardsReviewer";
+import CardsSelector from "./CardsSelector";
 
 export default function MainGrid() {
     return (
         <Row>
           <Col>
-            <CardCategoryBrowser/>
+              <CardCategoryBrowser/>
           </Col>
           <Col>
-            <CardsReviewer/>
+            <CardsSelector/>
           </Col>
         </Row>
     );

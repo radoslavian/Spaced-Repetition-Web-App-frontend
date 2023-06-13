@@ -12,7 +12,7 @@ export default function CardCategoryBrowser() {
     const { loadMore } = allCards;
 
     const onCheck = checkedKeysValues =>
-        setSelectedCategories(checkedKeysValues);
+          setSelectedCategories(checkedKeysValues);
 
     return (
         <>
@@ -21,9 +21,17 @@ export default function CardCategoryBrowser() {
             selectedCategories={selectedCategories}
             onCheck={onCheck}
           />
-          <CardBrowser loadMore={loadMore}
-                       cards={allCards.currentPage}
-                       functions={functions}/>
+          <div id="scrollable-card-list-browser"
+               style={{
+                   height: 400,
+                   overflow: 'auto',
+                   padding: '0 16px',
+                   border: '1px solid rgba(140, 140, 140, 0.35)',
+               }}>
+            <CardBrowser loadMore={loadMore}
+                         cards={allCards.currentPage}
+                         functions={functions}/>
+          </div>
         </>
     );
 }

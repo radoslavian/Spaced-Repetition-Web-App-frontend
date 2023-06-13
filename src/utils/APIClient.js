@@ -12,6 +12,7 @@ export default class ApiClient {
         const localToken = await this.post(endpoint, {data: credentials});
         if (localToken !== undefined) {
             saveToken(localToken);
+            this.token = localToken;
         }
     }
 
@@ -82,6 +83,10 @@ export default class ApiClient {
 
     async patch(url, options) {
         return this.request(url, "patch", options);
+    }
+
+    async delete(url, options) {
+        return this.request(url, "delete", options);
     }
 }
 

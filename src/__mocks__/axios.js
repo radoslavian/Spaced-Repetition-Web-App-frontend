@@ -40,8 +40,11 @@ export const axiosMatch = {
     post: jest.fn().mockImplementation(config => {
 	if (config.data.user === "CardsReviewer_user") {
 	    return Promise.resolve({ data: authToken_1 });
-	} else {
+	} else if (config.data.user === "user_1") {
 	    return Promise.resolve({ data: authToken });
+	} else {
+	    return Promise.reject(
+                { data: "wrong authentication credentials" });
 	}
     }),
 
@@ -73,13 +76,13 @@ export const axiosMatch = {
         }
         else if (outstandingCardsMainPageRoute.test(config.url)) {
 	    switch(config.headers.Authorization) {
-	    case "Token 1f3371582a52d0ef17877c61d1c82cdf9b7d8f4f":
+            case `Token ${authToken.auth_token}`:
+		return Promise.resolve({ data: outstandingMiddlePage });
+		break;
+	    case `Token ${authToken_1.auth_token}`:
 		// data returned for testing transition between reviewing
 		// scheduled cards and memorizing new ones
 		return Promise.resolve({ data: outstandingEmpty });
-		break
-	    case "Token 7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f":
-		return Promise.resolve({ data: outstandingMiddlePage });
 		break;
 	    default:
 		throw new Error(
@@ -148,6 +151,10 @@ export const axiosMatch = {
             return 1;
         }
     }),
+    delete: jest.fn().mockImplementation(config => {
+        // currently only response for APIClient's delete method
+        return Promise.resolve({ data: { status: 204 } });
+    }),
     patch: jest.fn().mockImplementation(config => {
 	if (memorizeRoute.test(config.url)) {
 	    return Promise.resolve({ data: memorizedCard });
@@ -186,6 +193,8 @@ function axios(config) {
     case "patch":
 	return axiosMatch.patch(config);
 	break;
+    case "delete":
+        return axiosMatch.delete(config);
     }
 }
 

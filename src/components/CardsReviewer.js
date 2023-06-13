@@ -1,52 +1,58 @@
 import CardBody from "./CardBody";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
-import { useCards } from "../contexts/CardsProvider";
 import AnswerRater from "./AnswerRater";
 
-export default function CardsReviewer() {
-    const cards = useCards();
-    const { outstanding } = cards;
-    const { grade } = cards.functions;
+export default function CardsReviewer({cards, gradingFn, stopReviews = f => f}) {
     const [showAnswer, setShowAnswer] = useState(false);
 
     useEffect(() => {
-        if (outstanding.isLast === false
-            && outstanding.currentPage.length === 0
-            && !outstanding.isLoading) {
-                outstanding.goToFirst();
+        if (cards.isLast === false
+            && cards.currentPage.length === 0
+            && !cards.isLoading) {
+            cards.goToFirst();
         }
-    }, [outstanding.currentPage.length]);
+    }, [cards.currentPage.length]);
     
-    const card = outstanding.currentPage[0];
+    const card = cards.currentPage[0];
     const flipAnswer = () => setShowAnswer(!showAnswer);
     const gradeNFlipCard = async (gradedCard, cardGrade) => {
-        await grade(gradedCard, cardGrade);
+        await gradingFn(gradedCard, cardGrade);
         flipAnswer();
     };
+    const StopButton = () => (<Button data-testid="stop-reviews-trigger"
+                                      onClick={stopReviews}>
+                                Stop
+                              </Button>);
     const bottomBar = (
         card === undefined ?
             <p>No more cards</p>
+            :
+            showAnswer ?
+            <>
+              <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
+              <StopButton/>
+            </>
         :
-        showAnswer ?
-            <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
-        :
-        <Button type="primary"
+        <>
+          <Button type="primary"
                   id="show-answer-button"
                   data-testid="show-answer-button"
                   onClick={flipAnswer}>
             Show&nbsp;answer
-        </Button>
+          </Button>
+          <StopButton/>
+        </>
     );
 
     return (
-        outstanding.isLoading ?
+        cards.isLoading ?
             <p>Loading</p>
-        :
-        <>
-          <CardBody card={card} showAnswer={showAnswer} />
-          { bottomBar }
-        </>
+            :
+            <>
+              <CardBody card={card} showAnswer={showAnswer} />
+              { bottomBar }
+            </>
     );
 }
 

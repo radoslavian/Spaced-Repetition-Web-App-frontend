@@ -148,6 +148,7 @@ export function CardsProvider({ children }) {
                                             getOutstanding);
     const removeFromOutstanding = getRemoveFromList(
         outstandingCards, setOutstandingCards);
+    const removeFromCramQueue = getRemoveFromList(cramQueue, setCramQueue);
 
     // all cards
     const getAllCards = getCards({cardsSetter: setAllCards,
@@ -218,7 +219,7 @@ export function CardsProvider({ children }) {
         count: memorizedCount.current,
         isFirst: Boolean(!memorizedNavigation.current.prev),
         isLast: Boolean(!memorizedNavigation.current.next),
-        isLoading: undefined,
+        isLoading: false,
         nextPage: nextPageMemorized,
         prevPage: prevPageMemorized,
         loadMore: undefined,
@@ -230,7 +231,7 @@ export function CardsProvider({ children }) {
         count: queuedCount.current,
         isFirst: Boolean(!queuedNavigation.current.prev),
         isLast: Boolean(!queuedNavigation.current.next),
-        isLoading: undefined,
+        isLoading: false,
         nextPage: nextPageQueued,
         prevPage: prevPageQueued,
         loadMore: undefined,
@@ -242,7 +243,7 @@ export function CardsProvider({ children }) {
         count: cramQueueCount.current,
         isFirst: Boolean(!cramQueueNavigation.current.prev),
         isLast: Boolean(!cramQueueNavigation.current.next),
-        isLoading: undefined,
+        isLoading: false,
         nextPage: nextPageCram,
         prevPage: prevPageCram,
         loadMore: undefined,
@@ -345,6 +346,16 @@ export function CardsProvider({ children }) {
                 cramQueueCount.current++;               
             }
             outstandingCount.current--;
+        },
+
+        removeFromCram: async function(card) {
+            if (user === undefined) {
+                return;
+            }
+            const url = `/users/${user.id}/cards/cram-queue/${card.id}`;
+            const response = await api.delete(url);
+            removeFromCramQueue(card);
+            cramQueueCount.current--;
         },
 
         forget: async function() {},

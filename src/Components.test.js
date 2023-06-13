@@ -3,7 +3,7 @@ import { render, screen, act, fireEvent,
 import { within } from "@testing-library/dom";
 import CategorySelector from "./components/CategorySelector.js";
 import { UserProvider, useUser } from "./contexts/UserProvider";
-import { CardsProvider, useCards } from "./contexts/CardsProvider";
+import { useCards } from "./contexts/CardsProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { CategoriesProvider,
          useCategories } from "./contexts/CategoriesProvider";
@@ -12,6 +12,7 @@ import CardBody from "./components/CardBody";
 import { userCategories2 as userCategories } from "./__mocks__/mockData";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
 import CardsReviewer from "./components/CardsReviewer";
+import CardsSelector from "./components/CardsSelector";
 import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 
@@ -229,7 +230,15 @@ describe("<CardBody/>", () => {
 });
 
 describe("<CardsReviewer/>", () => {
-    const TestingComponent = getComponentWithProviders(CardsReviewer);
+    const Component = () => {
+        const cards = useCards();
+        const { outstanding } = cards;
+        const { grade } = cards.functions;
+
+        return (<CardsReviewer cards={outstanding} gradingFn={grade}/>);
+    };
+
+    const TestingComponent = getComponentWithProviders(Component);
 
     beforeEach(async () => {
         await act(() => render(<TestingComponent/>));
@@ -290,23 +299,25 @@ describe("<CardsReviewer/>", () => {
 
 });
 
-describe("<CardsReviewer/> - grading outstanding cards", () => {
-    const TestingComponent = getComponentWithProviders(CardsReviewer);
+describe("<CardsSelector/> - grading outstanding cards", () => {
+    const TestingComponent = getComponentWithProviders(CardsSelector);
 
     beforeEach(async () => {
         gradeCard.mockClear();
         await act(() => render(<TestingComponent/>));
-        const showAnswer = screen.getByText("Show answer");
+        const learnAllTrigger = await screen.findByTestId("learn-all-trigger");
+        await fireEvent.click(learnAllTrigger);
+        const showAnswer = await screen.findByText("Show answer");
         fireEvent.click(showAnswer);
     });
 
-    test("if <CardsReviewer/> displays first card from the queue", () => {
+    test("if <CardsReviewer/> displays first card from the queue", async () => {
         const lookUpText = "Example card question.";
-        const component = screen.getByText(lookUpText);
+        const component = await screen.findByText(lookUpText);
         expect(component).toBeInTheDocument();
     });
 
-    test("grading - url & pass grade", async () => {
+    test("grading - url & the 'pass' grade", async () => {
         const gradePass = screen.getByTestId("grade-button-pass");
         await act(() => fireEvent.click(gradePass));
         const expectedGrade = 3;
@@ -380,25 +391,62 @@ describe("<CardsReviewer/> - grading outstanding cards", () => {
     });
 });
 
-describe("<CardsReviewer/> - memorizing queued cards", () => {
-    const TestComponent = () => {
-        const api = useApi();
-        const credentials = {user: "CardsReviewer_user",
-                             password: "passwd"};
-        api.authenticate("/auth/token/login/", credentials);
+import { LogInComponent } from "./utils/testHelpers";
 
-        return (<CardsReviewer/>);
+describe("<CardsSelector/> - reviewing crammed and learning newcards", () => {
+    beforeEach(async () => {
+        await act(() => render(
+            <ApiProvider>
+              <LogInComponent credentials={{
+                  user: "CardsReviewer_user",
+                  // user: "user_1",
+                  password: "passwd"
+              }}>
+                <CardsSelector/>
+              </LogInComponent>
+            </ApiProvider>
+        ));
+    });
+
+    const triggerReviews = async (trigger) => {
+        const learnAllTrigger = await screen.findByTestId(trigger);
+        await fireEvent.click(learnAllTrigger);
+        const showAnswer = await screen.findByText("Show answer");
+        fireEvent.click(showAnswer);
     };
 
-    const ComponentWithProviders = getComponentWithProviders(
-        TestComponent);
+    test("if initial page contains triggers", () => {
+        const learnAllTrigger = screen.getByTestId("learn-all-trigger");
+        const learnNewTrigger = screen.getByTestId("learn-new-trigger");
+        expect(learnAllTrigger).toBeInTheDocument();
+        expect(learnNewTrigger).toBeInTheDocument();
+    });
 
-    test("transition from outstanding to queued cards", async () => {
-        await act(() => render(<ComponentWithProviders/>));
-        const queuedCardId = "5f143904-c9d1-4e5b-ac00-01258d09965a";
+    test("transition from outstanding to crammed cards", async () => {
+        await triggerReviews("learn-all-trigger");
+        const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
         // cards from queued list should appear
-        const queuedCard = await screen.findByText(queuedCardId);
+        const crammedCard = await screen.findByTestId(crammedCardId);
+        expect(crammedCard).toBeInTheDocument();
+    });
+
+    test("selecting to learn new cards", async () => {
+        await triggerReviews("learn-new-trigger");
+        const queuedCardId = "5f143904-c9d1-4e5b-ac00-01258d09965a";
+        const queuedCard = await screen.findByTestId(queuedCardId);
         expect(queuedCard).toBeInTheDocument();
+    });
+
+    test("stopping reviews and return to the greeting page", async () => {
+        await triggerReviews("learn-new-trigger");
+        const stopTrigger = await screen.findByTestId("stop-reviews-trigger");
+        fireEvent.click(stopTrigger);
+        const learnAllTrigger = await screen.findByTestId(
+            "learn-all-trigger");
+        expect(learnAllTrigger).toBeInTheDocument();
+    });
+
+    test("remove card from cram after grading it > 3", () => {
     });
 });
 

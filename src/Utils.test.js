@@ -1,6 +1,8 @@
 import { waitFor } from "@testing-library/react";
 import APIClient from "./utils/APIClient";
-import { removeNewlines, cardTextForList, reduceWhiteSpaces } from "./utils/helpers";
+import { removeNewlines, cardTextForList,
+         reduceWhiteSpaces } from "./utils/helpers";
+import{ axiosMatch } from "axios";
 
 describe("APIClient", () => {
     const apiClient = new APIClient();
@@ -8,7 +10,7 @@ describe("APIClient", () => {
     afterAll(jest.clearAllMocks);
 
     beforeAll(() => {
-        const credentials = {user: "user1",
+        const credentials = {user: "user_1",
                              password: "passwd"};
         apiClient.authenticate("/auth/token/login/", credentials);
     });
@@ -25,6 +27,16 @@ describe("APIClient", () => {
         await expect(() => apiClient.request(unallowedUrl,"get"))
             .rejects
             .toThrow("Attempt to make request with an unknowon origin: ");
+    });
+
+    test("delete method", async () => {
+        const url = "/cards/memorized/7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa";
+        const response = await apiClient.delete(url);
+        expect(response.status).toEqual(204);
+        expect(axiosMatch.delete).toHaveBeenCalledTimes(1);
+        expect(axiosMatch.delete).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {url: `http://localhost:8000/api${url}`}));
     });
 });
 
