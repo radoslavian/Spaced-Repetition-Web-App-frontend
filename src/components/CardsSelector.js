@@ -1,34 +1,57 @@
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CardsSelector() {
     const cards = useCards();
     const { outstanding, cram, queued } = cards;
     const [learnNew, setLearnNew] = useState(false);
     const [isStopped, setStopped] = useState(true);
-    const { grade, memorize, removeFromCram } = cards.functions;
-
-    const minRemoveFromCramGrade = 4;
-
-    const removeFromCramQueue = (card, grade) => {
-        if (grade >= minRemoveFromCramGrade) {
-            removeFromCram(card);
-        }
-    };
+    const { grade, memorize, reviewCrammed } = cards.functions;
 
     const crammedCards = {
+        title: "Crammed cards",
         cardsList: cram,
-        gradingFn: removeFromCramQueue
+        gradingFn: reviewCrammed
     };
     const outstandingCards = {
+        title: "Outstanding cards",
         cardsList: outstanding,
         gradingFn: grade
     };
     const queuedCards = {
+        title: "Queued cards",
         cardsList: queued,
         gradingFn: memorize
     };
+    console.log(cram);
+
+    const getChecker = obj => (obj.cardsList.isLast
+                               && obj.cardsList.currentPage.length === 0);
+    const outstandingChecker = getChecker(outstandingCards);
+    const cramChecker = getChecker(crammedCards);
+    const queuedChecker = getChecker(queuedCards);
+    console.log("entering useEffect ",
+            outstandingCards.cardsList.isLast);
+    useEffect(() => {
+        console.log("entering useEffect ",
+                   outstandingCards.cardsList.isLast);
+        if (outstandingChecker) {
+            console.log("CardsSelector: goToFirst");
+            outstandingCards.cardsList.goToFirst();
+        }
+    }, [outstanding.length]);
+
+    useEffect(() => {
+        console.log("entering useEffect: crammed-isLast ",
+                    crammedCards.cardsList.isLast);
+        console.log("entering useEffect: crammed-isLoading ",
+                    crammedCards.cardsList.isLoading);
+        if (cramChecker) {
+            console.log("CardsSelector: goToFirst");
+            crammedCards.cardsList.goToFirst();
+        }
+    }, [crammedCards.length]);
 
     const selectCardQueue = () => {
         if(learnNew) {
@@ -42,7 +65,7 @@ export default function CardsSelector() {
         // here: ask to learn new and setLearnNew(true)
         return null;
     };
-    const currentlyViewedCards = selectCardQueue();
+    const currentlyViewedQueue = selectCardQueue();
     
     return (
         isStopped ?
@@ -68,9 +91,10 @@ export default function CardsSelector() {
               </p>
             </>
         :
-        currentlyViewedCards ?
-        <CardsReviewer cards={currentlyViewedCards.cardsList}
-                       gradingFn={currentlyViewedCards.gradingFn}
+        currentlyViewedQueue ?
+        <CardsReviewer cards={currentlyViewedQueue.cardsList}
+                       gradingFn={currentlyViewedQueue.gradingFn}
+                       title={currentlyViewedQueue.title}
                        stopReviews={() => setStopped(true)}/>
         :
         <p data-testid="please-wait-component">Please wait...</p>

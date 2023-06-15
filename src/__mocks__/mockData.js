@@ -915,6 +915,32 @@ export const cramQueueSecondPage = {
             "easiness_factor": 2.5,
             "comment": null
         },
+        {
+            "id": "1a5c7caf-fe7d-4b14-a022-91d9b52a36a0",
+            "body": "Second card on cram queue",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
     ]
 };
 

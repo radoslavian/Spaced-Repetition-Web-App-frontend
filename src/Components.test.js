@@ -16,6 +16,7 @@ import CardsReviewer from "./components/CardsReviewer";
 import CardsSelector from "./components/CardsSelector";
 import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
+import { LogInComponent } from "./utils/testHelpers";
 
 describe("CategorySelector tests.", () => {
     beforeAll(() => render(
@@ -392,7 +393,34 @@ describe("<CardsSelector/> - grading outstanding cards", () => {
     });
 });
 
-import { LogInComponent } from "./utils/testHelpers";
+describe("<CardsSelector/> - loading more pages (outstanding)", () => {
+    test("if component loads another page", async () => {
+        await act(() => render(<ApiProvider>
+                                 <LogInComponent credentials={{
+                                     user: "user_1",
+                                     password: "passwd"
+                                 }}>
+                                   <CardsSelector/>
+                                 </LogInComponent>
+                               </ApiProvider>)
+                 );
+        const learnAllTrigger = await screen.findByTestId("learn-all-trigger");
+        fireEvent.click(learnAllTrigger);
+        axiosMatch.get.mockClear();
+        for (let i = 0; i < 2; i++) {
+            const showAnswer = await screen.findByText("Show answer");
+            await act(() => fireEvent.click(showAnswer));
+            const gradeIdeal = await screen.findByTestId("grade-button-ideal");
+            await act(() => fireEvent.click(gradeIdeal));
+        }
+        screen.debug();
+        // fake-api won't acknowledge card review!
+        expect(axiosMatch.get).toHaveBeenCalledTimes(1);
+        expect(axiosMatch.get).toHaveBeenCalledWith(
+            expect.objectContaining({"url": expectedUrl}));
+        screen.debug();
+    });
+});
 
 describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
     const CardsSelectorCramList = () => {
@@ -446,7 +474,6 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         renderScreen();
         await triggerReviews("learn-all-trigger");
         const cardsSelector = await screen.findByTestId("cards-selector");
-        // cards from queued list should appear
         const crammedCard = await within(cardsSelector)
               .findByTestId(crammedCardId);
         expect(crammedCard).toBeInTheDocument();
@@ -504,17 +531,22 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
     });
 
-    it("stays on the list after grading it < 4", async () => {
+    it("shouldn't get removed only from client-side cram list", async () => {
         renderScreen();
+        axiosMatch.delete.mockClear();
         triggerReviews("learn-all-trigger");
-        const cramList = screen.getByTestId("cram-list");
-        const crammedCard = await within(cramList).findByTestId(crammedCardId);
-        const passGrade = await screen.findByTestId("grade-button-pass");
-        fireEvent.click(passGrade);
-        
-        await expect(async () => {
-            await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
-        }).rejects.toEqual(expect.anything());
+        const cardsSelector = screen.getByTestId("cards-selector");
+        const crammedCard = await within(cardsSelector).findByTestId(crammedCardId);
+        const failGrade = await screen.findByTestId("grade-button-fail");
+        fireEvent.click(failGrade);
+        // another card from cram queue should appear
+        const secondCardId = "1a5c7caf-fe7d-4b14-a022-91d9b52a36a0";
+        const secondCard = await within(cardsSelector).findByTestId(secondCardId);
+        expect(secondCard).toBeInTheDocument();
+        expect(axiosMatch.delete).toHaveBeenCalledTimes(0);
+    });
+
+    test("if cram downloads another set of cards from the server", () => {
     });
 });
 

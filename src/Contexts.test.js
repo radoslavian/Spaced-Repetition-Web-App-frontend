@@ -484,7 +484,7 @@ describe("<CardsProvider/> - outstanding (scheduled) - navigation", () => {
                     "c6168ba7-6eac-4e1c-806b-3ce111bcdec3"))
                     .toBeInTheDocument()
             );
-        }).rejects.toEqual(expect.anything());        
+        }).rejects.toEqual(expect.anything());
     });
 
     test("rendering next page", async () => {
@@ -801,7 +801,7 @@ describe("<CardsProvider/> - cram: navigation", () => {
 describe("<CardsProvider/> - cram queue", () => {
     const CramTestingComponent = () => {
         const cards = useCards();
-        const { cram, removeFromCram } = cards.functions;
+        const { cram, reviewCrammed } = cards.functions;
         const memorized = cards.memorized;
         const cramQueue = cards.cram;
 
@@ -818,7 +818,7 @@ describe("<CardsProvider/> - cram queue", () => {
                 { cramQueue.currentPage.map(
                     card => <span key={card.id}
                                   data-testid={card.id}
-                                  onClick={() => removeFromCram(card)}
+                                  onClick={() => reviewCrammed(card, 5)}
                             />)}
               </div>
               <span data-testid="cram-count">

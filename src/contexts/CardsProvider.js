@@ -348,7 +348,12 @@ export function CardsProvider({ children }) {
             outstandingCount.current--;
         },
 
-        removeFromCram: async function(card) {
+        reviewCrammed: async function(card, grade) {
+            const minRemoveFromCramGrade = 4;
+            if (grade < minRemoveFromCramGrade) {
+                removeFromCramQueue(card);
+                return;
+            } 
             if (user === undefined) {
                 return;
             }
@@ -360,7 +365,7 @@ export function CardsProvider({ children }) {
 
         forget: async function() {},
 	disable: async function() {},
-	enable: async function() {}
+	enable: async function() {},
     };
 
     return (

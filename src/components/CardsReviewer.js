@@ -3,13 +3,15 @@ import { useState, useEffect } from "react";
 import { Button } from "antd";
 import AnswerRater from "./AnswerRater";
 
-export default function CardsReviewer({cards, gradingFn, stopReviews = f => f}) {
+export default function CardsReviewer(
+    {cards, gradingFn, stopReviews = f => f, title}) {
     const [showAnswer, setShowAnswer] = useState(false);
 
     useEffect(() => {
         if (cards.isLast === false
             && cards.currentPage.length === 0
             && !cards.isLoading) {
+            console.log("going to first");
             cards.goToFirst();
         }
     }, [cards.currentPage.length]);
@@ -50,6 +52,7 @@ export default function CardsReviewer({cards, gradingFn, stopReviews = f => f}) 
             <p>Loading</p>
             :
             <>
+              <p>{title}</p>
               <CardBody card={card} showAnswer={showAnswer} />
               { bottomBar }
             </>
