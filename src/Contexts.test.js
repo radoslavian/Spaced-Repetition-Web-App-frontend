@@ -691,8 +691,9 @@ describe("<CardsProvider/> - memorizing cards", () => {
             "5f143904-c9d1-4e5b-ac00-01258d09965a");
         expect(queuedCard).toBeInTheDocument();
         fireEvent.click(queuedCard);
-        await waitForElementToBeRemoved(() => within(queuedCards).queryByTestId(
-            "5f143904-c9d1-4e5b-ac00-01258d09965a"));
+        await waitForElementToBeRemoved(() => within(
+            queuedCards).queryByTestId(
+                "5f143904-c9d1-4e5b-ac00-01258d09965a"));
         const remainingQueuedCard = await screen.findByTestId(
             "4a58594b-1c84-41f5-b4f0-72dc573b6406");
         expect(remainingQueuedCard).toBeInTheDocument();
@@ -700,7 +701,8 @@ describe("<CardsProvider/> - memorizing cards", () => {
 
     test("if memorized card is swapped on the list of all cards",
          async () => {
-             // after memorizing, the card (if it is displayed on the current page
+             // after memorizing, the card (if it is displayed on
+             // the current page
              // of all cards list) should change status - from
              // "queued" to "memorized"
              render(<TestCardMemorizingWithProviders/>);

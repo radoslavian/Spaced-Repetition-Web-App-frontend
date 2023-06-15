@@ -49,6 +49,7 @@ export function CardsProvider({ children }) {
         prev: null,
         next: null
     });
+    const [isCramLoading, setCramLoading] = useState(false);
 
 
     // all cards
@@ -130,12 +131,10 @@ export function CardsProvider({ children }) {
     // cram
     const getCram = getCards({cardsSetter: setCramQueue,
                               count: cramQueueCount,
-                              navigation: cramQueueNavigation});
+                              navigation: cramQueueNavigation,
+                              setIsLoading: setCramLoading});
     const nextPageCram = getNextPage(cramQueueNavigation, getCram);
     const prevPageCram = getPrevPage(cramQueueNavigation, getCram);
-
-    // outstanding (scheduled)
-    // let outstandingFn = 
 
     const getOutstanding = getCards({cardsSetter: setOutstandingCards,
                                      count: outstandingCount,
@@ -219,11 +218,11 @@ export function CardsProvider({ children }) {
         count: memorizedCount.current,
         isFirst: Boolean(!memorizedNavigation.current.prev),
         isLast: Boolean(!memorizedNavigation.current.next),
-        isLoading: false,
+        isLoading: false,  // not implemented
         nextPage: nextPageMemorized,
         prevPage: prevPageMemorized,
-        loadMore: undefined,
-        goToFirst: undefined
+        loadMore: () => console.error("not implemented"),
+        goToFirst: () => console.error("not implemented"),
     };
 
     const queued = {
@@ -231,11 +230,11 @@ export function CardsProvider({ children }) {
         count: queuedCount.current,
         isFirst: Boolean(!queuedNavigation.current.prev),
         isLast: Boolean(!queuedNavigation.current.next),
-        isLoading: false,
+        isLoading: false,  // not implemented
         nextPage: nextPageQueued,
         prevPage: prevPageQueued,
-        loadMore: undefined,
-        goToFirst: undefined
+        loadMore: () => console.error("not implemented"),
+        goToFirst: () => console.error("not implemented")
     };
 
     const cram = {
@@ -243,11 +242,11 @@ export function CardsProvider({ children }) {
         count: cramQueueCount.current,
         isFirst: Boolean(!cramQueueNavigation.current.prev),
         isLast: Boolean(!cramQueueNavigation.current.next),
-        isLoading: false,
+        isLoading: isCramLoading,
         nextPage: nextPageCram,
         prevPage: prevPageCram,
-        loadMore: undefined,
-        goToFirst: undefined
+        loadMore: () => console.error("not implemented"),
+        goToFirst: () => console.error("not implemented")
     };
 
     const outstanding = {
@@ -267,7 +266,7 @@ export function CardsProvider({ children }) {
         count: allCardsCount.current,
         isFirst: Boolean(!allCardsNavigation.current.prev),
         isLast: Boolean(!allCardsNavigation.current.next),
-        isLoading: undefined,
+        isLoading: false,
         nextPage: nextPageAllCards,
         prevPage: prevPageAllCards,
         loadMore: allCardsOnLoadMore,
@@ -315,7 +314,8 @@ export function CardsProvider({ children }) {
                 return;
             }
             const url = `/users/${user.id}/cards/cram-queue/`;
-            const updatedCard = await api.put(url, {data: {"card_pk": card.id}});
+            const updatedCard = await api.put(
+                url, {data: {"card_pk": card.id}});
             if (updatedCard?.id === undefined) {
                 console.error(`Failed to add card ${card.id} to cram queue`);
                 return;

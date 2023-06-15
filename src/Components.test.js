@@ -1,5 +1,6 @@
 import { render, screen, act, fireEvent,
          waitFor } from "@testing-library/react";
+import userEvent from '@testing-library/user-event';
 import { within } from "@testing-library/dom";
 import CategorySelector from "./components/CategorySelector.js";
 import { UserProvider, useUser } from "./contexts/UserProvider";
@@ -393,44 +394,72 @@ describe("<CardsSelector/> - grading outstanding cards", () => {
 
 import { LogInComponent } from "./utils/testHelpers";
 
-describe("<CardsSelector/> - reviewing crammed and learning newcards", () => {
-    beforeEach(async () => {
-        await act(() => render(
-            <ApiProvider>
-              <LogInComponent credentials={{
-                  user: "CardsReviewer_user",
-                  // user: "user_1",
-                  password: "passwd"
-              }}>
+describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
+    const CardsSelectorCramList = () => {
+        const { cram } = useCards();
+        return (
+            <>
+              <div data-testid="cram-list">
+                {cram.currentPage.map(
+                    card => <span key={card.id}
+                                  data-testid={card.id}>
+                              { card.body }
+                            </span>)}
+              </div>
+              <div data-testid="cards-selector">
                 <CardsSelector/>
-              </LogInComponent>
-            </ApiProvider>
-        ));
-    });
+              </div>
+            </>
+        );
+    };
+
+    const renderScreen = () => render(
+        <ApiProvider>
+          <LogInComponent credentials={{
+              user: "CardsReviewer_user",
+              // user: "user_1",
+              password: "passwd"
+          }}>
+            <CardsSelectorCramList/>
+          </LogInComponent>
+        </ApiProvider>
+    );
 
     const triggerReviews = async (trigger) => {
         const learnAllTrigger = await screen.findByTestId(trigger);
-        await fireEvent.click(learnAllTrigger);
+        await userEvent.click(learnAllTrigger);
         const showAnswer = await screen.findByText("Show answer");
-        fireEvent.click(showAnswer);
+        await userEvent.click(showAnswer);
     };
 
+    const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
+
     test("if initial page contains triggers", () => {
+        renderScreen();
         const learnAllTrigger = screen.getByTestId("learn-all-trigger");
         const learnNewTrigger = screen.getByTestId("learn-new-trigger");
-        expect(learnAllTrigger).toBeInTheDocument();
-        expect(learnNewTrigger).toBeInTheDocument();
+        waitFor(() => expect(learnAllTrigger).toBeInTheDocument());
+        waitFor(() => expect(learnNewTrigger).toBeInTheDocument());
     });
 
     test("transition from outstanding to crammed cards", async () => {
+        renderScreen();
         await triggerReviews("learn-all-trigger");
-        const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
+        const cardsSelector = await screen.findByTestId("cards-selector");
         // cards from queued list should appear
-        const crammedCard = await screen.findByTestId(crammedCardId);
+        const crammedCard = await within(cardsSelector)
+              .findByTestId(crammedCardId);
         expect(crammedCard).toBeInTheDocument();
     });
 
+/*
+    test("transition from crammed cards to memorizing new", async () => {
+        throw new Error("Write it");
+    });
+*/
+
     test("selecting to learn new cards", async () => {
+        renderScreen();
         await triggerReviews("learn-new-trigger");
         const queuedCardId = "5f143904-c9d1-4e5b-ac00-01258d09965a";
         const queuedCard = await screen.findByTestId(queuedCardId);
@@ -438,6 +467,7 @@ describe("<CardsSelector/> - reviewing crammed and learning newcards", () => {
     });
 
     test("stopping reviews and return to the greeting page", async () => {
+        renderScreen();
         await triggerReviews("learn-new-trigger");
         const stopTrigger = await screen.findByTestId("stop-reviews-trigger");
         fireEvent.click(stopTrigger);
@@ -446,7 +476,45 @@ describe("<CardsSelector/> - reviewing crammed and learning newcards", () => {
         expect(learnAllTrigger).toBeInTheDocument();
     });
 
-    test("remove card from cram after grading it > 3", () => {
+    test("endpoint called for crammed card graded", async () => {
+        renderScreen();
+        axiosMatch.delete.mockClear();
+        triggerReviews("learn-all-trigger");
+        const gradeIdeal = await screen.findByTestId("grade-button-ideal");
+        fireEvent.click(gradeIdeal);
+        const expectedCall = {
+            "method": "delete",
+            "url": "http://localhost:8000/api/users/626e4d32-a52f-4c15-"
+                + "8f78-aacf3b69a9b2/cards/cram-queue/7cf7ed26-bfd3-45z8-a9f"
+                + "c-a284a86a6bfa"
+        };
+        expect(axiosMatch.delete).toHaveBeenCalledTimes(1);
+        expect(axiosMatch.delete).toHaveBeenCalledWith(
+            expect.objectContaining(expectedCall));
+    });
+
+    it("gets removed from the cram list after grading it > 3", async () => {
+        renderScreen();
+        triggerReviews("learn-all-trigger");
+        const cramList = screen.getByTestId("cram-list");
+        const crammedCard = await within(cramList).findByTestId(crammedCardId);
+        const goodGrade = await screen.findByTestId("grade-button-good");
+        fireEvent.click(goodGrade);
+
+        await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
+    });
+
+    it("stays on the list after grading it < 4", async () => {
+        renderScreen();
+        triggerReviews("learn-all-trigger");
+        const cramList = screen.getByTestId("cram-list");
+        const crammedCard = await within(cramList).findByTestId(crammedCardId);
+        const passGrade = await screen.findByTestId("grade-button-pass");
+        fireEvent.click(passGrade);
+        
+        await expect(async () => {
+            await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
+        }).rejects.toEqual(expect.anything());
     });
 });
 

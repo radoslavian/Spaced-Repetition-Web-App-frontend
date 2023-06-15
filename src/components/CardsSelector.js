@@ -7,14 +7,35 @@ export default function CardsSelector() {
     const { outstanding, cram, queued } = cards;
     const [learnNew, setLearnNew] = useState(false);
     const [isStopped, setStopped] = useState(true);
-    const { grade, memorize } = cards.functions;
+    const { grade, memorize, removeFromCram } = cards.functions;
+
+    const minRemoveFromCramGrade = 4;
+
+    const removeFromCramQueue = (card, grade) => {
+        if (grade >= minRemoveFromCramGrade) {
+            removeFromCram(card);
+        }
+    };
+
+    const crammedCards = {
+        cardsList: cram,
+        gradingFn: removeFromCramQueue
+    };
+    const outstandingCards = {
+        cardsList: outstanding,
+        gradingFn: grade
+    };
+    const queuedCards = {
+        cardsList: queued,
+        gradingFn: memorize
+    };
 
     const selectCardQueue = () => {
         if(learnNew) {
-            return queued;
+            return queuedCards;
         }
-        for (let cardQueue of [outstanding, cram]) {
-            if (cardQueue.currentPage.length !== 0) {
+        for (let cardQueue of [outstandingCards, crammedCards]) {
+            if (cardQueue.cardsList.currentPage.length !== 0) {
                 return cardQueue;
             }
         }
@@ -47,8 +68,11 @@ export default function CardsSelector() {
               </p>
             </>
         :
-        <CardsReviewer cards={currentlyViewedCards}
-                       gradingFn={grade}
+        currentlyViewedCards ?
+        <CardsReviewer cards={currentlyViewedCards.cardsList}
+                       gradingFn={currentlyViewedCards.gradingFn}
                        stopReviews={() => setStopped(true)}/>
+        :
+        <p data-testid="please-wait-component">Please wait...</p>
     );
 }
