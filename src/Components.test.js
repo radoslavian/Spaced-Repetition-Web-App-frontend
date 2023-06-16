@@ -462,12 +462,6 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         expect(crammedCard).toBeInTheDocument();
     });
 
-/*
-    test("transition from crammed cards to memorizing new", async () => {
-        throw new Error("Write it");
-    });
-*/
-
     test("selecting to learn new cards", async () => {
         renderScreen();
         await triggerReviews("learn-new-trigger");
@@ -486,7 +480,7 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         expect(learnAllTrigger).toBeInTheDocument();
     });
 
-    test("endpoint called for crammed card graded", async () => {
+    test("endpoint called for grading crammed card", async () => {
         renderScreen();
         axiosMatch.delete.mockClear();
         triggerReviews("learn-all-trigger");

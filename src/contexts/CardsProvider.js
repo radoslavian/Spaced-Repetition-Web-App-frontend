@@ -19,6 +19,7 @@ export function CardsProvider({ children }) {
         prev: null,
         next: null
     });
+    const [memorizedIsLoading, setMemorizedLoading] = useState(false);
 
     // queued
     const [queuedCards, setQueuedCards] = useState([]);
@@ -186,6 +187,17 @@ export function CardsProvider({ children }) {
     const outstandingOnLoadMore = getCardsOnLoadMore(
         outstandingNavigation.current.next, outstandingLoadMore);
 
+    // memorized - loading more cards
+    const memorizedMoreSetter = getMoreCardsSetter(
+        memorizedCards, setMemorizedCards);
+    const memorizedLoadMore = getCards(
+        {cardsSetter: memorizedMoreSetter,
+         count: memorizedCount,
+         navigation: memorizedNavigation,
+         setIsLoading: setMemorizedLoading});
+    const memorizedOnLoadMore = getCardsOnLoadMore(
+        memorizedNavigation.current.next, memorizedLoadMore);
+
     const allCardsUrl = () => `/users/${user.id}/cards/`;
     const memorizedUrl = () => `/users/${user.id}/cards/memorized/`;
     const queuedUrl = () => `/users/${user.id}/cards/queued/`;
@@ -221,8 +233,8 @@ export function CardsProvider({ children }) {
         isLoading: false,  // not implemented
         nextPage: nextPageMemorized,
         prevPage: prevPageMemorized,
-        loadMore: () => console.error("not implemented"),
-        goToFirst: () => console.error("not implemented"),
+        loadMore: memorizedOnLoadMore,
+        goToFirst: getGoToFirst(getMemorized, memorizedUrl)
     };
 
     const queued = {

@@ -309,6 +309,22 @@ describe("<CardsProvider/> - memorized: navigation", () => {
         expect(card).toBeInTheDocument();
     });
 
+    test("load more", async () => {
+        await act(() => render(
+            <ComponentWithProviders/>
+        ));
+        const loadMore = await screen.findByTestId("load-more");
+        fireEvent.click(loadMore);
+        const cardMiddle = await screen.findByTestId(
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");  // middle page
+        const cardNext = await screen.findByTestId(
+            "b9f2a0ec-fac1-4574-a553-26c5e8d8b5ab");  // next page
+
+        // assert cards from the first and 2nd page
+        expect(cardMiddle).toBeInTheDocument();
+        expect(cardNext).toBeInTheDocument();
+    });
+
     test("rendering previous page", async () => {
         await act(() => render(
             <ComponentWithProviders/>
@@ -318,6 +334,24 @@ describe("<CardsProvider/> - memorized: navigation", () => {
         const card = await screen.findByTestId(
             "3dc52454-4931-4583-9737-81e6a56ac127");
         expect(card).toBeInTheDocument();
+    });
+
+    test("test goToFirst - returning to first page", async () => {
+        await act(() => render(<ComponentWithProviders/>));
+        const clickNext = await screen.findByTestId("click_nextPage");
+        const cardIdFromInitialPage = "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa";
+        await act(() => fireEvent.click(clickNext));
+        await expect(async () => {
+            await waitFor(
+                () => expect(screen.getByTestId(cardIdFromInitialPage))
+                    .toBeInTheDocument()
+            );
+        }).rejects.toEqual(expect.anything());
+        const goToFirst = await screen.findByTestId("go-to-first");
+        fireEvent.click(goToFirst);
+        const cardFromInitialPage = await screen.findByTestId(
+            cardIdFromInitialPage);
+        expect(cardFromInitialPage).toBeInTheDocument();
     });
 });
 
@@ -616,11 +650,16 @@ describe("<CardsProvider/> - memorizing cards", () => {
         const grade = 2;
 
         return (
-            user !== undefined ?
-                <span onClick={ () => memorize(memorizedCard, grade) }
-                      data-testid="click-memorize-card">
-                  Click to memorize card
-                </span> : <span/>
+            <>
+              
+             {
+                 user !== undefined ?
+                     <span onClick={ () => memorize(memorizedCard, grade) }
+                           data-testid="click-memorize-card">
+                       Click to memorize card
+                     </span> : <span/>
+             }
+           </>
         );
     }
     
@@ -643,13 +682,19 @@ describe("<CardsProvider/> - memorizing cards", () => {
         expect(mockCalls.data.grade).toEqual(expectedGrade);
     });
 
-    function TestCardMemorizing() {
+    function MemorizedCardsTestComponent() {
+        // Component for testing memorized cards and functions
+
         const cards = useCards();
         const { memorize } = cards.functions;
+        const { memorized } = cards;
+        
         const grade = 2;
 
         return (
             <>
+              <div data-testid="memorized-cards-list">
+              </div>
               <div data-testid="queued-cards">
                 { cards.queued.currentPage.map(
                     card => <span
@@ -681,11 +726,11 @@ describe("<CardsProvider/> - memorizing cards", () => {
         );
     }
 
-    const TestCardMemorizingWithProviders = getComponentWithProviders(
-        TestCardMemorizing);
+    const MemorizedCardsWithProviders = getComponentWithProviders(
+        MemorizedCardsTestComponent);
 
     test("if memorized card is removed from queued cards list", async () => {
-        render(<TestCardMemorizingWithProviders/>);
+        render(<MemorizedCardsWithProviders/>);
         const queuedCards = screen.getByTestId("queued-cards");
         const queuedCard = await within(queuedCards).findByTestId(
             "5f143904-c9d1-4e5b-ac00-01258d09965a");
@@ -705,7 +750,7 @@ describe("<CardsProvider/> - memorizing cards", () => {
              // the current page
              // of all cards list) should change status - from
              // "queued" to "memorized"
-             render(<TestCardMemorizingWithProviders/>);
+             render(<MemorizedCardsWithProviders/>);
              const allCards = screen.getByTestId("all-cards");
              const card = await within(allCards)
                    .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
@@ -715,8 +760,9 @@ describe("<CardsProvider/> - memorizing cards", () => {
              expect(card).toHaveTextContent("memorized");
          });
 
-    test("if memorized card appeared on the list of memorized cards", async () => {
-        render(<TestCardMemorizingWithProviders/>);
+    test("if memorized card appeared on the list of memorized cards",
+         async () => {
+        render(<MemorizedCardsWithProviders/>);
         const allCards = screen.getByTestId("all-cards");
         const card = await within(allCards)
               .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
