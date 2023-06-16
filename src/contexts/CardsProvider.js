@@ -230,7 +230,7 @@ export function CardsProvider({ children }) {
         count: memorizedCount.current,
         isFirst: Boolean(!memorizedNavigation.current.prev),
         isLast: Boolean(!memorizedNavigation.current.next),
-        isLoading: false,  // not implemented
+        isLoading: memorizedIsLoading,
         nextPage: nextPageMemorized,
         prevPage: prevPageMemorized,
         loadMore: memorizedOnLoadMore,

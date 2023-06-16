@@ -309,6 +309,20 @@ describe("<CardsProvider/> - memorized: navigation", () => {
         expect(card).toBeInTheDocument();
     });
 
+    test("isLoading indicator", async () => {
+        await act(() => render(
+            <ComponentWithProviders/>
+        ));
+        const loadMore = await screen.findByTestId("load-more");
+        const isLoadingIndicator = await screen.findByTestId("is-loading");
+        expect(isLoadingIndicator).toHaveTextContent("false");
+        await act(() => {
+            fireEvent.click(loadMore);
+            waitFor(() => expect(isLoadingIndicator)
+                    .toHaveTextContent("true"));
+        });
+    });
+
     test("load more", async () => {
         await act(() => render(
             <ComponentWithProviders/>
