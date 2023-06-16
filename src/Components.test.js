@@ -280,25 +280,6 @@ describe("<CardsReviewer/>", () => {
         const nextCard = screen.getByText(nextCardText);
         expect(nextCard).toBeInTheDocument();
     });
-
-    test("if component loads another page", async () => {
-        // review both cards from the mock api
-        axiosMatch.get.mockClear();
-         for (let i = 0; i < 2; i++) {
-             const showAnswer = screen.getByText("Show answer");
-             await act(() => fireEvent.click(showAnswer));
-             const buttonTestId = "grade-button-ideal";
-             const idealGrade = await screen.findByTestId(buttonTestId);
-             await act(() => fireEvent.click(idealGrade));
-         }
-        // url called by goToFirst
-        const expectedUrl = 'http://localhost:8000/api/users/626e4d32-a52f-'
-              + '4c15-8f78-aacf3b69a9b2/cards/outstanding/';
-        expect(axiosMatch.get).toHaveBeenCalledTimes(1);
-        expect(axiosMatch.get).toHaveBeenCalledWith(
-            expect.objectContaining({"url": expectedUrl}));
-    });
-
 });
 
 describe("<CardsSelector/> - grading outstanding cards", () => {
@@ -401,10 +382,13 @@ describe("<CardsSelector/> - loading more pages (outstanding)", () => {
                                      password: "passwd"
                                  }}>
                                    <CardsSelector/>
-                                 </LogInComponent>
+                                 </
+                               LogInComponent>
                                </ApiProvider>)
                  );
         const learnAllTrigger = await screen.findByTestId("learn-all-trigger");
+        const expectedUrl = "http://localhost:8000/api/users/626e4d32-a52f"
+              + "-4c15-8f78-aacf3b69a9b2/cards/outstanding/";
         fireEvent.click(learnAllTrigger);
         axiosMatch.get.mockClear();
         for (let i = 0; i < 2; i++) {
@@ -413,7 +397,6 @@ describe("<CardsSelector/> - loading more pages (outstanding)", () => {
             const gradeIdeal = await screen.findByTestId("grade-button-ideal");
             await act(() => fireEvent.click(gradeIdeal));
         }
-        screen.debug();
         // fake-api won't acknowledge card review!
         expect(axiosMatch.get).toHaveBeenCalledTimes(1);
         expect(axiosMatch.get).toHaveBeenCalledWith(

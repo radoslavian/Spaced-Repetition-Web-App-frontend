@@ -246,7 +246,7 @@ export function CardsProvider({ children }) {
         nextPage: nextPageCram,
         prevPage: prevPageCram,
         loadMore: () => console.error("not implemented"),
-        goToFirst: () => console.error("not implemented")
+        goToFirst: getGoToFirst(getCram, cramQueueUrl)
     };
 
     const outstanding = {

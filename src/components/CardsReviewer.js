@@ -6,16 +6,15 @@ import AnswerRater from "./AnswerRater";
 export default function CardsReviewer(
     {cards, gradingFn, stopReviews = f => f, title}) {
     const [showAnswer, setShowAnswer] = useState(false);
-
+/*
     useEffect(() => {
         if (cards.isLast === false
             && cards.currentPage.length === 0
             && !cards.isLoading) {
-            console.log("going to first");
             cards.goToFirst();
         }
     }, [cards.currentPage.length]);
-    
+*/    
     const card = cards.currentPage[0];
     const flipAnswer = () => setShowAnswer(!showAnswer);
     const gradeNFlipCard = async (gradedCard, cardGrade) => {
