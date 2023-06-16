@@ -603,11 +603,18 @@ describe("<CardsProvider/> - all cards - navigation", () => {
     const ComponentWithProviders = getComponentWithProviders(
         QueuedTestingComponent);
 
-    beforeEach(async () => await act(() => render(
-        <ComponentWithProviders/>
-    )));
+    test("isLoading indicator", async () => {
+        await act(() => render(<ComponentWithProviders/>));
+        const loadMore = await screen.findByTestId("load-more");
+        const isLoadingIndicator = await screen.findByTestId("is-loading");
+        expect(isLoadingIndicator).toHaveTextContent("false");
+        fireEvent.click(loadMore);
+        await waitFor(() => expect(isLoadingIndicator)
+                      .toHaveTextContent("true"));
+    });
 
     test("rendering next page", async () => {
+        await act(() => render(<ComponentWithProviders/>));
         const clickNext = await screen.findByTestId("click_nextPage");
         fireEvent.click(clickNext);
         const card = await screen.findByTestId(
@@ -616,6 +623,7 @@ describe("<CardsProvider/> - all cards - navigation", () => {
     });
 
     test("rendering previous page", async () => {
+        await act(() => render(<ComponentWithProviders/>));
         const clickPrev = await screen.findByTestId("click_prevPage");
         fireEvent.click(clickPrev);
         const card = await screen.findByTestId(
@@ -626,6 +634,7 @@ describe("<CardsProvider/> - all cards - navigation", () => {
     test("load more", async () => {
         // currentPage, after hitting loadMore, shows items from the first
         // and second page
+        await act(() => render(<ComponentWithProviders/>));
         const loadMore = await screen.findByTestId("load-more");
         fireEvent.click(loadMore);
         const cardMiddle = await screen.findByTestId(
@@ -639,6 +648,7 @@ describe("<CardsProvider/> - all cards - navigation", () => {
     });
 
     test("goToFirst - reseting and returning to the first page", async () => {
+        await act(() => render(<ComponentWithProviders/>));
         const loadMore = await screen.findByTestId("load-more");
         const goToFirst = await screen.findByTestId("go-to-first");
         await act(() => fireEvent.click(loadMore));

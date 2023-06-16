@@ -61,6 +61,7 @@ export function CardsProvider({ children }) {
         prev: null,
         next: null
     });
+    const [allCardsIsLoading, setAllCardsLoading] = useState(false);
 
     // later this should come from a separate module used by both
     // front-end app and back-end app
@@ -154,7 +155,8 @@ export function CardsProvider({ children }) {
     const getAllCards = getCards({cardsSetter: setAllCards,
                                   count: allCardsCount,
                                   navigation: allCardsNavigation,
-                                  countParam: "overall_total"});
+                                  countParam: "overall_total",
+                                  setIsLoading: setAllCardsLoading});
     const nextPageAllCards = getNextPage(allCardsNavigation, getAllCards);
     const prevPageAllCards = getPrevPage(allCardsNavigation, getAllCards);
 
@@ -174,7 +176,8 @@ export function CardsProvider({ children }) {
     const allCardsLoadMore = getCards({cardsSetter: allCardsMoreSetter,
                                        count: allCardsCount,
                                        navigation: allCardsNavigation,
-                                       countParam: "overall_total"});
+                                       countParam: "overall_total",
+                                       setIsLoading: setAllCardsLoading});
     const allCardsOnLoadMore = getCardsOnLoadMore(
         allCardsNavigation.current.next, allCardsLoadMore);
     const outstandingMoreSetter = getMoreCardsSetter(
@@ -278,7 +281,7 @@ export function CardsProvider({ children }) {
         count: allCardsCount.current,
         isFirst: Boolean(!allCardsNavigation.current.prev),
         isLast: Boolean(!allCardsNavigation.current.next),
-        isLoading: false,
+        isLoading: allCardsIsLoading,
         nextPage: nextPageAllCards,
         prevPage: prevPageAllCards,
         loadMore: allCardsOnLoadMore,
