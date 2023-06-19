@@ -28,10 +28,11 @@ export default function CardsSelector() {
 
     const getChecker = obj => () => {
         // debug
+/*
         console.log(`Obj: isLast: ${obj.cardsList.isLast},
 currentPage.length: ${obj.cardsList.currentPage.length},
 isLoading: ${obj.cardsList.isLoading}`);
-
+*/
         return (obj.cardsList.isLast === false
                 && obj.cardsList.currentPage.length === 0
                 && !obj.cardsList.isLoading);
@@ -53,7 +54,6 @@ isLoading: ${obj.cardsList.isLoading}`);
     };
 
     useEffect(() => {
-        console.log("set viewed");
         if (outstandingChecker()) {
             console.log("CardsSelector - outstanding: goToFirst");
             outstandingCards.cardsList.goToFirst();
@@ -94,6 +94,10 @@ isLoading: ${obj.cardsList.isLoading}`);
                        title={currentlyViewedQueue.title}
                        stopReviews={() => setStopped(true)}/>
         :
-        <p data-testid="please-wait-component">Please wait...</p>
+        <p data-testid="please-wait-component"
+           onClick={() => setStopped(true)}>
+          No more items on this list...<br/>
+          Click to return to the main page.
+        </p>
     );
 }

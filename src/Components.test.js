@@ -401,7 +401,6 @@ describe("<CardsSelector/> - loading more pages (outstanding)", () => {
         expect(axiosMatch.get).toHaveBeenCalledTimes(1);
         expect(axiosMatch.get).toHaveBeenCalledWith(
             expect.objectContaining({"url": expectedUrl}));
-        screen.debug();
     });
 });
 
@@ -501,14 +500,15 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         renderScreen();
         triggerReviews("learn-all-trigger");
         const cramList = screen.getByTestId("cram-list");
-        const crammedCard = await within(cramList).findByTestId(crammedCardId);
+        const crammedCard = await within(cramList)
+              .findByTestId(crammedCardId);
         const goodGrade = await screen.findByTestId("grade-button-good");
         fireEvent.click(goodGrade);
 
         await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
     });
 
-    it("shouldn't get removed only from client-side cram list", async () => {
+    it("should get removed only from client-side cram list", async () => {
         renderScreen();
         axiosMatch.delete.mockClear();
         triggerReviews("learn-all-trigger");
@@ -524,6 +524,18 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
     });
 
     test("if cram downloads another set of cards from the server", () => {
+        // TODO: add throw if left for another time
+    });
+
+    it("adds memorized card to cram after grading it < 4", async () => {
+        renderScreen();
+        await triggerReviews("learn-new-trigger");
+        const failGrade = await screen.findByTestId("grade-button-fail");
+        const cramList = await screen.findByTestId("cram-list");
+        fireEvent.click(failGrade);
+        const cardAddedToCram = await within(cramList)
+              .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
+        expect(cardAddedToCram).toBeInTheDocument();
     });
 });
 

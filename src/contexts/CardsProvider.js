@@ -29,6 +29,7 @@ export function CardsProvider({ children }) {
         prev: null,
         next: null
     });
+    const [queuedIsLoading, setQueuedLoading] = useState(false);
 
     // outstanding
     // TODO: all those attributes should be put in an object
@@ -101,7 +102,7 @@ export function CardsProvider({ children }) {
           };
 
     const getRemoveFromList = (cardList, listSetter) => card => {
-        // maybe it should check if a card is on the list in the first place?
+        // should it check if a card is on the list in the first place?
         const newList = cardList.filter(
             (cardFromList, i) => cardFromList.id !== card.id);
         listSetter(newList);
@@ -201,6 +202,17 @@ export function CardsProvider({ children }) {
     const memorizedOnLoadMore = getCardsOnLoadMore(
         memorizedNavigation.current.next, memorizedLoadMore);
 
+    // queued - loading more cards
+    const queuedMoreSetter = getMoreCardsSetter(
+        queuedCards, setQueuedCards);
+    const queuedLoadMore = getCards(
+        {cardsSetter: queuedMoreSetter,
+         count: queuedCount,
+         navigation: queuedNavigation,
+         setIsLoading: setQueuedLoading});
+    const queuedOnLoadMore = getCardsOnLoadMore(
+        queuedNavigation.current.next, queuedLoadMore);
+
     const allCardsUrl = () => `/users/${user.id}/cards/`;
     const memorizedUrl = () => `/users/${user.id}/cards/memorized/`;
     const queuedUrl = () => `/users/${user.id}/cards/queued/`;
@@ -248,8 +260,8 @@ export function CardsProvider({ children }) {
         isLoading: false,  // not implemented
         nextPage: nextPageQueued,
         prevPage: prevPageQueued,
-        loadMore: () => console.error("not implemented"),
-        goToFirst: () => console.error("not implemented")
+        loadMore: queuedOnLoadMore,
+        goToFirst: getGoToFirst(getQueued, queuedUrl)
     };
 
     const cram = {
@@ -299,12 +311,16 @@ export function CardsProvider({ children }) {
     };
 
     // rudimentary functionality -> expand according to wsra-226
-    const addToMemorized = card => setMemorizedCards(
-        [...memorizedCards, card]);
+    const getAddTo = (setList, list) => card => setList([...list, card]);
+
+    const addToMemorized = getAddTo(setMemorizedCards, memorizedCards);
+    const addToCram = getAddTo(setCramQueue, cramQueue);
 
     const swapInAllCards = getCardSwapper(allCards, setAllCards);
 
     const functions = {
+        // card memorization also means adding it to cram
+        // if grade is < than 4
         memorize: async function(card, grade = 4) {
             if (user === undefined || !api.isAuthenticated()) {
                 console.error("Unauthenticated");
@@ -318,6 +334,9 @@ export function CardsProvider({ children }) {
                 // this should be handled within the ApiClient
                 console.error("Failed to memorize card ", card.id);
                 return;
+            }
+            if (grade < 4 || Boolean(newCard?.cram_link)) {
+                addToCram(newCard);
             }
             removeFromQueued(card);
             swapInAllCards(newCard);

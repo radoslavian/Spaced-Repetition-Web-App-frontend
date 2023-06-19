@@ -464,6 +464,36 @@ describe("<CardsProvider/> - queued: navigation", () => {
         const isLastValue = await screen.findByTestId("isLast");
         await waitFor(() => expect(isLastValue).toHaveTextContent("true"));
     });
+
+    test("goToFirst - returning to the first page", async () => {
+        const clickNext = await screen.findByTestId("click_nextPage");
+        const cardIdFromInitialPage = "4a58594b-1c84-41f5-b4f0-72dc573b6406";
+        await act(() => fireEvent.click(clickNext));
+        await expect(async () => {
+            await waitFor(
+                () => expect(screen.getByTestId(cardIdFromInitialPage))
+                    .toBeInTheDocument()
+            );
+        }).rejects.toEqual(expect.anything());
+        const goToFirst = await screen.findByTestId("go-to-first");
+        fireEvent.click(goToFirst);
+        const cardFromInitialPage = await screen.findByTestId(
+            cardIdFromInitialPage);
+        expect(cardFromInitialPage).toBeInTheDocument();
+    });
+
+    test("load more", async () => {
+        const loadMore = await screen.findByTestId("load-more");
+        fireEvent.click(loadMore);
+        const cardMiddle = await screen.findByTestId(
+            "4a58594b-1c84-41f5-b4f0-72dc573b6406");  // middle page
+        const cardNext = await screen.findByTestId(
+            "5cd3446f-0b68-4224-8bb8-f04fe4ed83cb");  // next page
+
+        // assert cards from the first and 2nd page
+        expect(cardMiddle).toBeInTheDocument();
+        expect(cardNext).toBeInTheDocument();
+    });
 });
 
 describe("<CardsProvider/> - outstanding (scheduled) - general", () => {
@@ -717,8 +747,6 @@ describe("<CardsProvider/> - memorizing cards", () => {
 
         return (
             <>
-              <div data-testid="memorized-cards-list">
-              </div>
               <div data-testid="queued-cards">
                 { cards.queued.currentPage.map(
                     card => <span
@@ -742,8 +770,8 @@ describe("<CardsProvider/> - memorizing cards", () => {
                     card => <span
                               key={card.id}
                               data-testid={card.id}>
-              {card.type}
-            </span>
+                              {card.type}
+                            </span>
                 ) }
               </div>
             </>
@@ -786,18 +814,41 @@ describe("<CardsProvider/> - memorizing cards", () => {
 
     test("if memorized card appeared on the list of memorized cards",
          async () => {
-        render(<MemorizedCardsWithProviders/>);
-        const allCards = screen.getByTestId("all-cards");
-        const card = await within(allCards)
-              .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
-        // memorize card
-        await act(() => fireEvent.click(card));
-        const memorizedCards = screen.getByTestId("memorized-cards");
-        const memorizedCard = await within(memorizedCards)
-              .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
-        // assert card is in the list of memorized cards
-        expect(memorizedCard).toBeInTheDocument();
-    });
+             render(<MemorizedCardsWithProviders/>);
+             const allCards = screen.getByTestId("all-cards");
+             const card = await within(allCards)
+                   .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
+             // memorize card
+             await act(() => fireEvent.click(card));
+             const memorizedCards = screen.getByTestId("memorized-cards");
+             const memorizedCard = await within(memorizedCards)
+                   .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
+             expect(memorizedCard).toBeInTheDocument();
+         });
+
+    test("if cards from other lists are not present in memorizedCards",
+         async () => {
+             render(<MemorizedCardsWithProviders/>);
+             const allCards = screen.getByTestId("all-cards");
+             const memorizedCards = screen.getByTestId("memorized-cards");
+             const cardFromCramId = "1a5c7caf-fe7d-4b14-a022-91d9b52a36a0";
+             const cardFromQueuedId = "4a58594b-1c84-41f5-b4f0-72dc573b6406";
+             const cardFromCram = await within(memorizedCards)
+                   .queryByTestId(cardFromCramId);
+             const cardFromQueue = await within(memorizedCards)
+                   .queryByTestId(cardFromQueuedId);
+             // memorize card
+             const card = await within(allCards)
+                   .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
+             await act(() => fireEvent.click(card));
+             await expect(async () => {
+                 await waitFor(
+                     () => {
+                         expect(cardFromCram).toBeInTheDocument();
+                         expect(cardFromQueue).toBeInTheDocument();
+                     });
+             }).rejects.toEqual(expect.anything());
+         });
 });
 
 import { cramQueueSecondPage } from "./__mocks__/mockData";

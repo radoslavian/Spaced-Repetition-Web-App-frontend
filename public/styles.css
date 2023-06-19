@@ -6,3 +6,9 @@
     /* should have the same attributes as card-answer
      * but without display: none */
 }
+
+.card-body {
+    width: auto;
+    height: 50%;
+    border: 1px solid aqua;
+}
