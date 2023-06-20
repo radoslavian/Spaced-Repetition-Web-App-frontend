@@ -433,6 +433,17 @@ describe("<CardsProvider/> - queued: navigation", () => {
         expect(card).toBeInTheDocument();
     });
 
+    test("isLoading indicator", async () => {
+        const loadMore = await screen.findByTestId("load-more");
+        const isLoadingIndicator = await screen.findByTestId("is-loading");
+        expect(isLoadingIndicator).toHaveTextContent("false");
+        await act(() => {
+            fireEvent.click(loadMore);
+            waitFor(() => expect(isLoadingIndicator)
+                    .toHaveTextContent("true"));
+        });
+    });
+
     test("rendering previous page", async () => {
         const clickPrev = await screen.findByTestId("click_prevPage");
         fireEvent.click(clickPrev);
@@ -907,15 +918,48 @@ describe("<CardsProvider/> - cram: navigation", () => {
         expect(card).toBeInTheDocument();
     });
 
-    test("rendering previous page", async () => {
+    test("load more", async () => {
         await act(() => render(
             <ComponentWithProviders/>
         ));
+        const loadMore = await screen.findByTestId("load-more");
+        fireEvent.click(loadMore);
+        const cardMiddle = await screen.findByTestId(
+            "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa");  // middle page
+        const cardNext = await screen.findByTestId(
+            "c9f2a0ec-fac1-4573-a553-26c5e8d8b5ab");  // next page
+
+        // assert cards from the first and 2nd page
+        expect(cardMiddle).toBeInTheDocument();
+        expect(cardNext).toBeInTheDocument();
+    });
+
+    test("rendering previous page", async () => {
+        await act(() => render(<ComponentWithProviders/>));
         const clickPrev = await screen.findByTestId("click_prevPage");
         fireEvent.click(clickPrev);
         const card = await screen.findByTestId(
             "3dc52454-4131-4583-9737-81j6a56ac127");
         expect(card).toBeInTheDocument();
+    });
+
+    test("goToFirst - reseting and returning to the first page", async () => {
+        await act(() => render(<ComponentWithProviders/>));
+        const loadMore = await screen.findByTestId("load-more");
+        const goToFirst = await screen.findByTestId("go-to-first");
+        await act(() => fireEvent.click(loadMore));
+        await act(() => fireEvent.click(goToFirst));
+
+        // StackOverflow recipe:
+        // https://stackoverflow.com/questions/68400489/how-to-wait-to-assert
+        // -an-element-never-appears-in-the-document
+        await expect(async () => {
+            await waitFor(
+                () => expect(screen.getByTestId(
+                    "c9f2a0ec-fac1-4573-a553-26c5e8d8b5ab"))
+                    .toBeInTheDocument()
+            );
+        }).rejects.toEqual(expect.anything());        
     });
 });
 

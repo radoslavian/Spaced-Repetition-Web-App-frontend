@@ -213,6 +213,17 @@ export function CardsProvider({ children }) {
     const queuedOnLoadMore = getCardsOnLoadMore(
         queuedNavigation.current.next, queuedLoadMore);
 
+    // cram - loading more cards
+    const cramMoreSetter = getMoreCardsSetter(
+        cramQueue, setCramQueue);
+    const cramLoadMore = getCards(
+        {cardsSetter: cramMoreSetter,
+         count: cramQueueCount,
+         navigation: cramQueueNavigation,
+         setIsLoading: setCramLoading});
+    const cramOnLoadMore = getCardsOnLoadMore(
+        cramQueueNavigation.current.next, cramLoadMore);
+
     const allCardsUrl = () => `/users/${user.id}/cards/`;
     const memorizedUrl = () => `/users/${user.id}/cards/memorized/`;
     const queuedUrl = () => `/users/${user.id}/cards/queued/`;
@@ -257,7 +268,7 @@ export function CardsProvider({ children }) {
         count: queuedCount.current,
         isFirst: Boolean(!queuedNavigation.current.prev),
         isLast: Boolean(!queuedNavigation.current.next),
-        isLoading: false,  // not implemented
+        isLoading: queuedIsLoading,
         nextPage: nextPageQueued,
         prevPage: prevPageQueued,
         loadMore: queuedOnLoadMore,
@@ -272,7 +283,7 @@ export function CardsProvider({ children }) {
         isLoading: isCramLoading,
         nextPage: nextPageCram,
         prevPage: prevPageCram,
-        loadMore: () => console.error("not implemented"),
+        loadMore: cramOnLoadMore,
         goToFirst: getGoToFirst(getCram, cramQueueUrl)
     };
 
