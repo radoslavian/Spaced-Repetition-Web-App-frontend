@@ -1,5 +1,6 @@
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
+import LearningProgress from "./LearningProgress";
 import { useState, useEffect } from "react";
 
 export default function CardsSelector() {
@@ -89,10 +90,15 @@ isLoading: ${obj.cardsList.isLoading}`);
             </>
         :
         currentlyViewedQueue !== null ?
-        <CardsReviewer cards={currentlyViewedQueue.cardsList}
-                       gradingFn={currentlyViewedQueue.gradingFn}
-                       title={currentlyViewedQueue.title}
-                       stopReviews={() => setStopped(true)}/>
+            <>
+              <CardsReviewer cards={currentlyViewedQueue.cardsList}
+                             gradingFn={currentlyViewedQueue.gradingFn}
+                             title={currentlyViewedQueue.title}
+                             stopReviews={() => setStopped(true)}/>
+              <LearningProgress scheduled={outstanding.count}
+                                cramQueue={cram.count}
+                                queued={queued.count}/>
+        </>
         :
         <p data-testid="please-wait-component"
            onClick={() => setStopped(true)}>

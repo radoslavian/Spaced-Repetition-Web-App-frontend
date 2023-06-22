@@ -226,7 +226,7 @@ describe("<CardsProvider/> - memorized (general)", () => {
     });
 });
 
-test("if setting categories causes update to <CardsProvider/>", async () => {
+test("if setting categories updates <CardsProvider/>", async () => {
     const CategoriesComponent = () => {
         const { categories, selectedCategories,
                 setSelectedCategories } = useCategories();
@@ -710,7 +710,8 @@ describe("<CardsProvider/> - all cards - navigation", () => {
 
 describe("<CardsProvider/> - memorizing cards", () => {
     function FunctionsTestingComponent() {
-        const { memorize } = useCards().functions;
+        const cards = useCards();
+        const { memorize } = cards.functions;
         const { user } = useUser();
         const grade = 2;
 
@@ -752,7 +753,7 @@ describe("<CardsProvider/> - memorizing cards", () => {
 
         const cards = useCards();
         const { memorize } = cards.functions;
-        const { memorized } = cards;
+        const { memorized, queued } = cards;
         
         const grade = 2;
 
@@ -785,6 +786,12 @@ describe("<CardsProvider/> - memorizing cards", () => {
                             </span>
                 ) }
               </div>
+              <span data-testid="queued-cards-count">
+                { queued.count }
+              </span>
+              <span data-testid="memorized-cards-count">
+                { memorized.count }
+              </span>
             </>
         );
     }
@@ -793,18 +800,42 @@ describe("<CardsProvider/> - memorizing cards", () => {
         MemorizedCardsTestComponent);
 
     test("if memorized card is removed from queued cards list", async () => {
-        render(<MemorizedCardsWithProviders/>);
+        await act(() => render(<MemorizedCardsWithProviders/>));
         const queuedCards = screen.getByTestId("queued-cards");
         const queuedCard = await within(queuedCards).findByTestId(
             "5f143904-c9d1-4e5b-ac00-01258d09965a");
         expect(queuedCard).toBeInTheDocument();
         fireEvent.click(queuedCard);
+
         await waitForElementToBeRemoved(() => within(
             queuedCards).queryByTestId(
                 "5f143904-c9d1-4e5b-ac00-01258d09965a"));
         const remainingQueuedCard = await screen.findByTestId(
             "4a58594b-1c84-41f5-b4f0-72dc573b6406");
         expect(remainingQueuedCard).toBeInTheDocument();
+    });
+
+    test("if queued.count decreases by 1", async () => {
+        render(<MemorizedCardsWithProviders/>);
+        const queuedCount = await screen.findByTestId("queued-cards-count");
+        const queuedCards = screen.getByTestId("queued-cards");
+        const queuedCard = await within(queuedCards).findByTestId(
+            "5f143904-c9d1-4e5b-ac00-01258d09965a");
+        fireEvent.click(queuedCard);
+
+        await waitFor(() => expect(queuedCount).toHaveTextContent(59));
+    });
+
+    test("if memorized.count increases by 1", async () => {
+        render(<MemorizedCardsWithProviders/>);
+        const memorizedCount = await screen.findByTestId(
+            "memorized-cards-count");
+        const queuedCards = screen.getByTestId("queued-cards");
+        const queuedCard = await within(queuedCards).findByTestId(
+            "5f143904-c9d1-4e5b-ac00-01258d09965a");
+        fireEvent.click(queuedCard);
+
+        await waitFor(() => expect(memorizedCount).toHaveTextContent(63));
     });
 
     test("if memorized card is swapped on the list of all cards",

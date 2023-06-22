@@ -352,6 +352,10 @@ export function CardsProvider({ children }) {
             removeFromQueued(card);
             swapInAllCards(newCard);
             addToMemorized(newCard);
+
+            // updates to card counters
+            queuedCount.current--;
+            memorizedCount.current++;
         },
 
 	cram: async function(card) {

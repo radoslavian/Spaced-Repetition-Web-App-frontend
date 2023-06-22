@@ -282,7 +282,7 @@ describe("<CardsReviewer/>", () => {
     });
 });
 
-describe("<CardsSelector/> - grading outstanding cards", () => {
+describe("<CardsSelector/> - general & grading scheduled cards", () => {
     const TestingComponent = getComponentWithProviders(CardsSelector);
 
     beforeEach(async () => {
@@ -292,6 +292,19 @@ describe("<CardsSelector/> - grading outstanding cards", () => {
         await fireEvent.click(learnAllTrigger);
         const showAnswer = await screen.findByText("Show answer");
         fireEvent.click(showAnswer);
+    });
+
+    it("displays cards summaries using <LearningProgress/>", async () => {
+        const componentById = "#learning-progress-indicator";
+        // expected data from mockData.js - cramQueueSecondPage,
+        // outstandingMiddlePage, queuedCardsMiddlePage
+        const expectedContent = "Scheduled: 3 Cram: 62 Queued: 60";
+        const learningProgress = await screen.findByText(expectedContent);
+        expect(learningProgress).toBeInTheDocument();
+    });
+
+    test("if number of scheduled changes when reviewing", () => {
+        // TODO + similar tests for cdram and queued
     });
 
     test("if <CardsReviewer/> displays first card from the queue", async () => {
@@ -386,7 +399,8 @@ describe("<CardsSelector/> - loading more pages (outstanding)", () => {
                                LogInComponent>
                                </ApiProvider>)
                  );
-        const learnAllTrigger = await screen.findByTestId("learn-all-trigger");
+        const learnAllTrigger = await screen.findByTestId(
+            "learn-all-trigger");
         const expectedUrl = "http://localhost:8000/api/users/626e4d32-a52f"
               + "-4c15-8f78-aacf3b69a9b2/cards/outstanding/";
         fireEvent.click(learnAllTrigger);
@@ -537,5 +551,18 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
               .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
         expect(cardAddedToCram).toBeInTheDocument();
     });
+});
+
+import LearningProgress from "./components/LearningProgress";
+
+test("<LearningProgress/> - displaying progress", () => {
+    const result = render(<LearningProgress scheduled={20}
+                                            cramQueue={10}
+                                            queued={90}/>);
+
+    const componentById = "#learning-progress-indicator";
+    const learningProgress = result.container.querySelector(componentById);
+    expect(learningProgress).toHaveTextContent(
+        "Scheduled: 20 Cram: 10 Queued: 90");
 });
 
