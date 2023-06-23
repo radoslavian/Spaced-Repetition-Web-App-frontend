@@ -61,6 +61,9 @@ isLoading: ${obj.cardsList.isLoading}`);
         } else if (cramChecker()) {
             console.log("CardsSelector - cram: goToFirst");
             crammedCards.cardsList.goToFirst();
+        } else if (queuedChecker()) {
+            console.log("CardsSelector - queued: goToFirst");
+            queuedCards.cardsList.goToFirst();
         }
         setViewedQueue(selectCardQueue());
     }, [outstanding, cram, queued, learnNew]);

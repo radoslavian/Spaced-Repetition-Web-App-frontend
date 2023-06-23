@@ -387,8 +387,10 @@ describe("<CardsSelector/> - general & grading scheduled cards", () => {
     });
 });
 
-describe("<CardsSelector/> - loading more pages (outstanding)", () => {
-    test("if component loads another page", async () => {
+describe("<CardsSelector/> - loading more pages", () => {
+    test("if component loads another page (outstanding)", async () => {
+        // act() isn't necessary if following tests
+        // await/waitFor etc. for app updates
         await act(() => render(<ApiProvider>
                                  <LogInComponent credentials={{
                                      user: "user_1",
@@ -405,13 +407,46 @@ describe("<CardsSelector/> - loading more pages (outstanding)", () => {
               + "-4c15-8f78-aacf3b69a9b2/cards/outstanding/";
         fireEvent.click(learnAllTrigger);
         axiosMatch.get.mockClear();
+
         for (let i = 0; i < 2; i++) {
             const showAnswer = await screen.findByText("Show answer");
             await act(() => fireEvent.click(showAnswer));
-            const gradeIdeal = await screen.findByTestId("grade-button-ideal");
+            const gradeIdeal = await screen.findByTestId(
+                "grade-button-ideal");
             await act(() => fireEvent.click(gradeIdeal));
         }
         // fake-api won't acknowledge card review!
+        expect(axiosMatch.get).toHaveBeenCalledTimes(1);
+        expect(axiosMatch.get).toHaveBeenCalledWith(
+            expect.objectContaining({"url": expectedUrl}));
+    });
+
+    test("if component loads another page (new cards)", async () => {
+        await act(() => render(
+            <ApiProvider>
+              <LogInComponent credentials={{
+                  user: "user_1",
+                  password: "passwd"
+              }}>
+                <CardsSelector/>
+              </
+                LogInComponent>
+            </ApiProvider>
+        ));
+        const learnNewTrigger = await screen.findByTestId(
+            "learn-new-trigger");
+        const expectedUrl = "http://localhost:8000/api/users/626e4d32-a52f"
+              + "-4c15-8f78-aacf3b69a9b2/cards/queued/";
+        fireEvent.click(learnNewTrigger);
+        axiosMatch.get.mockClear();
+
+        for (let i = 0; i < 2; i++) {
+            const showAnswer = await screen.findByText("Show answer");
+            await act(() => fireEvent.click(showAnswer));
+            const gradeIdeal = await screen.findByTestId(
+                "grade-button-ideal");
+            await act(() => fireEvent.click(gradeIdeal));
+        }
         expect(axiosMatch.get).toHaveBeenCalledTimes(1);
         expect(axiosMatch.get).toHaveBeenCalledWith(
             expect.objectContaining({"url": expectedUrl}));
