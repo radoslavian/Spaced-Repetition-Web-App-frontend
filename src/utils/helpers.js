@@ -1,7 +1,7 @@
 export function cardTextForList(text) {
     // strips text of html tags and shortens it, removes white spaces
     // from start and end of the text
-    const textLen = 50;
+    const textLen = 30;
     const outputText = textCleaner(text);
 
     if (outputText.length < textLen) {
@@ -12,9 +12,9 @@ export function cardTextForList(text) {
 
 const textCleaner = composeAll(
     stripOfHtmlTags,
-    text => text.trim(),
     removeNewlines,
-    reduceWhiteSpaces);
+    reduceWhiteSpaces,
+    text => text.trim());
 
 
 // compose() and composeALl() - composing functions for a single input
@@ -68,5 +68,14 @@ export function timeOut(ms) {
 export async function sleep(fn, timeout) {
     await timeOut(timeout);
     return fn();
+}
+
+export function extractCategoryKeys(categories) {
+    const categoryKeys = [];
+    for (let category of categories) {
+	categoryKeys.push(category["key"]);
+	categoryKeys.push(...extractCategoryKeys(category["children"]));
+    }
+    return categoryKeys;
 }
 

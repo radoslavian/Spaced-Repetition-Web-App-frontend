@@ -23,10 +23,12 @@ describe("CategorySelector tests.", () => {
         <CategorySelector
           categories={userCategories.categories}
           selectedCategories={userCategories.selected_categories}
-        />
-    ));
+        />));
 
-    test("if a given text got rendered into a page", () => {
+    test("if a given text got rendered into a page", async () => {
+        /*const browseAllCardsButton = await screen.findByText(
+            "Browse all cards");
+        fireEvent.click(browseAllCardsButton);*/
         const categoryName = screen.getByText("Household devices");
         expect(categoryName).toBeInTheDocument();
     });
@@ -66,7 +68,12 @@ describe("<CardCategoryBrowser/>", () => {
     const renderComponent = async () => await act(() => render(
         <ComponentWithProviders/>));
 
-    beforeEach(async () => await renderComponent());
+    beforeEach(async () => {
+        await renderComponent();
+        const browseAllCardsButton = await screen.findByText(
+            "Browse all cards");
+        fireEvent.click(browseAllCardsButton);
+    });
 
     test("if component downloads cards from the server", async () => {
         // Something's wrong with CardCategoryBrowser or - more likely
@@ -147,7 +154,7 @@ describe("<CardBrowser>", () => {
 
     test("if long description gets shortened", async () => {
         const listItemWithLongText = await screen.findByText(
-            "Fake card one Very long title Lorem ipsum dolor si...");
+            "Fake card one Very long title ...");
         expect(listItemWithLongText).toBeVisible();
     });
 

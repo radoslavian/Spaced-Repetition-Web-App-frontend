@@ -1,6 +1,7 @@
 import parse from "html-react-parser";
+import { Card, Space } from 'antd';
 
-export default function CardBody({ card, showAnswer = false }) {
+export default function CardBody({ card, title, showAnswer = false }) {
     const body = card?.body || "<p>Empty</p>";
     const options = showAnswer ? {
         replace: domNode => {
@@ -14,10 +15,14 @@ export default function CardBody({ card, showAnswer = false }) {
     } : {};
 
     return (
-        <div className="card-body"
-             data-testid={card?.id}>
-          { parse(body, options) }
-        </div>
+        <Card title={title}
+              size="large"
+              type="inner"
+              data-testid={card?.id}>
+          <div id="card-body">
+            { parse(body, options) }
+          </div>
+        </Card>
     );
 }
 

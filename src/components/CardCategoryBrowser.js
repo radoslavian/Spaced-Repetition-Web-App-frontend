@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { Button } from "antd";
 import CategorySelector from "./CategorySelector";
 import { useCards } from "../contexts/CardsProvider";
 import CardBrowser from "./CardBrowser";
+import CardsBrowserModal from "./CardsBrowserModal";
 import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardCategoryBrowser() {
@@ -10,6 +12,10 @@ export default function CardCategoryBrowser() {
     const allCards = useCards().all;
     const functions = useCards().functions;
     const { loadMore } = allCards;
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     const onCheck = checkedKeysValues =>
           setSelectedCategories(checkedKeysValues);
@@ -21,17 +27,32 @@ export default function CardCategoryBrowser() {
             selectedCategories={selectedCategories}
             onCheck={onCheck}
           />
-          <div id="scrollable-card-list-browser"
-               style={{
-                   height: 400,
-                   overflow: 'auto',
-                   padding: '0 16px',
-                   border: '1px solid rgba(140, 140, 140, 0.35)',
-               }}>
-            <CardBrowser loadMore={loadMore}
-                         cards={allCards.currentPage}
-                         functions={functions}/>
-          </div>
+          <Button type="primary"
+                  onClick={showModal}>
+            Browse all cards
+          </Button>
+          <CardsBrowserModal title="All cards"
+                             isOpen={isModalOpen}
+                             onClose={e => {
+                                 e.stopPropagation();
+                                 closeModal();
+                             }}
+                             closeModal={closeModal}>
+            <div id="scrollable-card-list-browser"
+                 style={{
+                     // found in StackOverflow question:
+                     // "How to limit the height of the modal?"
+                     "max-height": "calc(100vh - 225px)",
+                     overflow: "auto",
+                     padding: '0 16px',
+                 }}
+            >
+              <CardBrowser loadMore={loadMore}
+                           cards={allCards.currentPage}
+                           functions={functions}/>
+            </div>
+          </CardsBrowserModal>
         </>
     );
 }
+

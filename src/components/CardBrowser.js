@@ -1,10 +1,20 @@
+import { PushpinOutlined, HourglassOutlined } from "@ant-design/icons";
 import { List, Button } from "antd";
 import { cardTextForList } from "../utils/helpers";
 
+const queuedStamp = <>
+                      <HourglassOutlined
+                        title="queued - not yet memorized" />
+                      &nbsp;
+                    </>;
+const memorizedStamp = <>
+                         <PushpinOutlined
+                           title="memorized"/>
+                         &nbsp;
+                       </>;
+const disabledStamp = "[dis]";
+
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
-    const queuedStamp = "[queue]";
-    const memorizedStamp = "[mem]";
-    const disabledStamp = "[dis]";
     const { memorize, forget, cram, disable, enable } = functions;
 
     const renderCard = card => {
@@ -75,7 +85,10 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
             dataSource={cards}
             renderItem={renderCard}
           />
-          <Button onClick={loadMore}>load more</Button>
+          <Button type="link"
+            onClick={loadMore}>
+            load more
+          </Button>
         </>
     );
 }

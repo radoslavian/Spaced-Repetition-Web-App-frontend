@@ -7,8 +7,12 @@
      * but without display: none */
 }
 
-.card-body {
-    width: auto;
-    height: 50%;
-    border: 1px solid aqua;
+#card-body {
+    height: calc(100vh - 220px);
+    border: 1px solid black;
+    /* overflow: auto; */
+}
+
+#learning-progress-indicator {
+    background: lightgrey;
 }

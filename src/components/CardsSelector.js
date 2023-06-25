@@ -1,7 +1,9 @@
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
+import SelectLearningList from "./SelectLearningList";
 import { useState, useEffect } from "react";
+import { Button, Row, Col } from "antd";
 
 export default function CardsSelector() {
     const cards = useCards();
@@ -29,11 +31,11 @@ export default function CardsSelector() {
 
     const getChecker = obj => () => {
         // debug
-/*
-        console.log(`Obj: isLast: ${obj.cardsList.isLast},
-currentPage.length: ${obj.cardsList.currentPage.length},
-isLoading: ${obj.cardsList.isLoading}`);
-*/
+        /*
+          console.log(`Obj: isLast: ${obj.cardsList.isLast},
+          currentPage.length: ${obj.cardsList.currentPage.length},
+          isLoading: ${obj.cardsList.isLoading}`);
+        */
         return (obj.cardsList.isLast === false
                 && obj.cardsList.currentPage.length === 0
                 && !obj.cardsList.isLoading);
@@ -70,27 +72,31 @@ isLoading: ${obj.cardsList.isLoading}`);
 
     return (
         isStopped ?
-            <>
-              <p data-testid="learn-all-trigger"
-                 onClick={() => {
-                     if(learnNew) {
-                         setLearnNew(false);
-                     }
-                     setStopped(false);
-                 }}>
+            <SelectLearningList>
+              <Button type="default"
+                      size="large"
+                      data-testid="learn-all-trigger"
+                      onClick={() => {
+                          if(learnNew) {
+                              setLearnNew(false);
+                          }
+                          setStopped(false);
+                      }}>
                 Learn scheduled
-              </p>
+              </Button>
               {/* shall be disabled if the 'queued' is empty */}
-              <p data-testid="learn-new-trigger"
-                 onClick={() => {
-                     if(!learnNew) {
-                         setLearnNew(true);
-                     }
-                     setStopped(false);
-                 }}>
+              <Button type="dashed"
+                      size="large"
+                      data-testid="learn-new-trigger"
+                      onClick={() => {
+                          if(!learnNew) {
+                              setLearnNew(true);
+                          }
+                          setStopped(false);
+                      }}>
                 Learn new cards
-              </p>
-            </>
+              </Button>
+            </SelectLearningList>
         :
         currentlyViewedQueue !== null ?
             <>
@@ -101,7 +107,7 @@ isLoading: ${obj.cardsList.isLoading}`);
               <LearningProgress scheduled={outstanding.count}
                                 cramQueue={cram.count}
                                 queued={queued.count}/>
-        </>
+            </>
         :
         <p data-testid="please-wait-component"
            onClick={() => setStopped(true)}>

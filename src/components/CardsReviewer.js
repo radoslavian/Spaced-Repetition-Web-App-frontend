@@ -1,4 +1,5 @@
 import CardBody from "./CardBody";
+import {Row, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import AnswerRater from "./AnswerRater";
@@ -6,15 +7,6 @@ import AnswerRater from "./AnswerRater";
 export default function CardsReviewer(
     {cards, gradingFn, stopReviews = f => f, title}) {
     const [showAnswer, setShowAnswer] = useState(false);
-/*
-    useEffect(() => {
-        if (cards.isLast === false
-            && cards.currentPage.length === 0
-            && !cards.isLoading) {
-            cards.goToFirst();
-        }
-    }, [cards.currentPage.length]);
-*/    
     const card = cards.currentPage[0];
     const flipAnswer = () => setShowAnswer(!showAnswer);
     const gradeNFlipCard = async (gradedCard, cardGrade) => {
@@ -22,6 +14,8 @@ export default function CardsReviewer(
         flipAnswer();
     };
     const StopButton = () => (<Button data-testid="stop-reviews-trigger"
+                                      block danger ghost
+                                      type="primary"
                                       onClick={stopReviews}>
                                 Stop
                               </Button>);
@@ -30,31 +24,41 @@ export default function CardsReviewer(
             <p>No more cards</p>
             :
             showAnswer ?
-            <>
-              <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
-              <StopButton/>
-            </>
+            <Row gutter={1}>
+              <Col span={20}>
+                <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
+              </Col>
+              <Col span={4}>
+                <StopButton/>
+              </Col>
+            </Row>
         :
-        <>
-          <Button type="primary"
-                  id="show-answer-button"
-                  data-testid="show-answer-button"
-                  onClick={flipAnswer}>
-            Show&nbsp;answer
-          </Button>
-          <StopButton/>
-        </>
+        <Row gutter={1}>
+          <Col span={20}>
+            <Button type="primary"
+                    block
+                    id="show-answer-button"
+                    data-testid="show-answer-button"
+                    onClick={flipAnswer}>
+              Show&nbsp;answer
+            </Button>
+          </Col>
+          <Col span={4}>
+            <StopButton/>
+          </Col>
+        </Row>
     );
 
     return (
         cards.isLoading ?
             <p>Loading</p>
             :
-            <>
-              <p>{title}</p>
-              <CardBody card={card} showAnswer={showAnswer} />
+            <div style={{textAlign: "left"}}>
+              <CardBody card={card}
+                        title={title}
+                        showAnswer={showAnswer} />
               { bottomBar }
-            </>
+            </div>
     );
 }
 
