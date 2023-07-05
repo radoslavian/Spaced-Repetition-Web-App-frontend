@@ -643,16 +643,29 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         expect(noMoreCardsMessage).toBeInTheDocument();
     });
 
-    test("'Learn scheduled' button is disabled/no cards left", async () => {
-        renderScreen(userCredentials);
-        const learnScheduledButton = await screen.findByTestId(
-            "learn-all-trigger");
-        screen.debug();
-        expect(learnScheduledButton).toBeDisabled();
-    });
-
     test("if cram downloads another set of cards from the server", () => {
         // TODO: add throw if left for another time
+    });
+
+    test("if button for scheduled cards show number of reviews", async () => {
+        renderScreen(userCredentials);
+        const expectedText = "Learn scheduled - 3 left";
+        const received = await screen.findByText(expectedText);
+        expect(received).toBeInTheDocument();
+    });
+
+    test("if button for crammed cards show number of reviews", async () => {
+        renderScreen(userCredentials);
+        const expectedText = "Learn from cram - 62 left";
+        const received = await screen.findByText(expectedText);
+        expect(received).toBeInTheDocument();
+    });
+
+    test("if button for queued cards show number of reviews", async () => {
+        renderScreen(userCredentials);
+        const expectedText = "Learn new cards - 60 left";
+        const received = await screen.findByText(expectedText);
+        expect(received).toBeInTheDocument();
     });
 });
 

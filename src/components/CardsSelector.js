@@ -1,9 +1,10 @@
+import { Space } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
-import SelectLearningList from "./SelectLearningList";
+import MainDisplay from "./MainDisplay";
 import { useState, useEffect } from "react";
-import { Button, Row, Col } from "antd";
+import { Button, Row, Col } from "antd"; 
 
 function getChecker(obj) {
     return () => {
@@ -91,27 +92,30 @@ export default function CardsSelector() {
     return (
         isStopped ?
             // initial page
-            <SelectLearningList>
-              <Button type="default"
-                      size="large"
+        <MainDisplay title="Select cards group to learn:">
+          <Space direction="vertical"
+                 size="large">
+            <Button type="default"
+                    size="large"
         // learn-outstanding-trigger
-                      data-testid="learn-all-trigger"
-                      onClick={reviewScheduled}>
-                Learn scheduled
-              </Button>
-              <Button type="default"
-                      size="large"
-                      data-testid="learn-crammed-trigger"
-                      onClick={reviewCram}>
-                Learn&nbsp;from&nbsp;cram
-              </Button>
-              <Button type="dashed"
-                      size="large"
-                      data-testid="learn-new-trigger"
-                      onClick={learnQueued}>
-                Learn new cards
-              </Button>
-            </SelectLearningList>
+                    data-testid="learn-all-trigger"
+                    onClick={reviewScheduled}>
+              Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}&nbsp;left
+            </Button>
+            <Button type="default"
+                    size="large"
+                    data-testid="learn-crammed-trigger"
+                    onClick={reviewCram}>
+              Learn&nbsp;from&nbsp;cram&nbsp;-&nbsp;{cram.count}&nbsp;left
+            </Button>
+            <Button type="dashed"
+                    size="large"
+                    data-testid="learn-new-trigger"
+                    onClick={learnQueued}>
+              Learn&nbsp;new&nbsp;cards&nbsp;-&nbsp;{queued.count}&nbsp;left
+            </Button>
+          </Space>
+        </MainDisplay>
         : (currentlyViewedQueue === null ||
            (currentlyViewedQueue.cardsList.count === 0
             && !currentlyViewedQueue.cardsList.isLoading)) ?
