@@ -18,6 +18,11 @@ import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
 
+async function showAnswer() {
+    const showAnswer = await screen.findByText("Show answer");
+    fireEvent.click(showAnswer);
+}
+
 describe("CategorySelector tests.", () => {
     beforeAll(() => render(
         <CategorySelector
@@ -158,13 +163,13 @@ describe("<CardBrowser>", () => {
         expect(listItemWithLongText).toBeVisible();
     });
 
-    test("if queued card is marked with '[queued]' stamp", () => {
-        const queuedCard = screen.getByText("[queue]");
+    test("if queued card has 'queued...' title", () => {
+        const queuedCard = screen.getByTitle("queued - not yet memorized");
         expect(queuedCard).toBeVisible();
     });
 
-    test("if memorized card is marked with '[mem]' stamp", () => {
-        const memorizedCard = screen.getByText("[mem]");
+    test("if memorized card has 'memorized' title", () => {
+        const memorizedCard = screen.getByTitle("memorized");
         expect(memorizedCard).toBeVisible();
     });
 
@@ -295,30 +300,25 @@ describe("<CardsSelector/> - general & grading scheduled cards", () => {
     beforeEach(async () => {
         gradeCard.mockClear();
         await act(() => render(<TestingComponent/>));
-        const learnAllTrigger = await screen.findByTestId("learn-all-trigger");
-        await fireEvent.click(learnAllTrigger);
-        const showAnswer = await screen.findByText("Show answer");
-        fireEvent.click(showAnswer);
+        const learnAllTrigger = await screen.getByTestId("learn-all-trigger");
+        fireEvent.click(learnAllTrigger);
+        await showAnswer();
     });
 
     it("displays cards summaries using <LearningProgress/>", async () => {
-        const componentById = "#learning-progress-indicator";
         // expected data from mockData.js - cramQueueSecondPage,
         // outstandingMiddlePage, queuedCardsMiddlePage
-        const expectedContent = "Scheduled: 3 Cram: 62 Queued: 60";
-        const learningProgress = await screen.findByText(expectedContent);
-        expect(learningProgress).toBeInTheDocument();
+        const componentTestId = "learning-progress-indicator";
+        const expectedContent = "Scheduled3Cram62Queued60";
+        const learningProgress = await screen.findByTestId(componentTestId);
+        expect(learningProgress).toHaveTextContent(expectedContent);
     });
 
     test("if number of scheduled changes when reviewing", () => {
         // TODO + similar tests for cdram and queued
     });
 
-    test("if <CardsReviewer/> displays first card from the queue", async () => {
-        const lookUpText = "Example card question.";
-        const component = await screen.findByText(lookUpText);
-        expect(component).toBeInTheDocument();
-    });
+    // there are already tests for new cards
 
     test("grading - url & the 'pass' grade", async () => {
         const gradePass = screen.getByTestId("grade-button-pass");
@@ -479,26 +479,59 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         );
     };
 
-    const renderScreen = () => render(
-        <ApiProvider>
-          <LogInComponent credentials={{
-              user: "CardsReviewer_user",
-              // user: "user_1",
-              password: "passwd"
-          }}>
-            <CardsSelectorCramList/>
-          </LogInComponent>
-        </ApiProvider>
-    );
+    const defaultCredentials = {
+        user: "CardsReviewer_user",
+        password: "passwd"
+    };
+
+    const userCredentials = {
+        user: "user_1",
+        password: "passwd"
+    };
+
+    const renderScreen = function(credentials = defaultCredentials) {
+        render(
+            <ApiProvider>
+              <LogInComponent credentials={credentials}>
+                <CardsSelectorCramList/>
+              </LogInComponent>
+            </ApiProvider>
+        );
+    };
 
     const triggerReviews = async (trigger) => {
-        const learnAllTrigger = await screen.findByTestId(trigger);
-        await userEvent.click(learnAllTrigger);
+        const learnTrigger = await screen.findByTestId(trigger);
+        await userEvent.click(learnTrigger);
         const showAnswer = await screen.findByText("Show answer");
         await userEvent.click(showAnswer);
     };
 
     const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
+
+    it("triggers reviews of outstanding cards", async () => {
+        renderScreen(userCredentials);
+        const learnOutstandingTrigger = await screen.findByTestId(
+            "learn-all-trigger");
+        await fireEvent.click(learnOutstandingTrigger);
+        await showAnswer();
+
+        const lookUpText = "Example card question.";
+        const component = await screen.findByText(lookUpText);
+        expect(component).toBeInTheDocument();
+    });
+
+    it("triggers reviews of crammed card", async () => {
+        await act(() => renderScreen(userCredentials));
+        const learnCrammedTrigger = await screen.findByTestId(
+            "learn-crammed-trigger");
+        await fireEvent.click(learnCrammedTrigger);
+        await showAnswer();
+
+        const lookUpText = "Example question on a grammar card."
+        + " Example anwer.";
+        const component = await screen.findByTestId("card-body");
+        expect(component).toHaveTextContent(lookUpText);
+    });
 
     test("if initial page contains triggers", () => {
         renderScreen();
@@ -508,17 +541,8 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         waitFor(() => expect(learnNewTrigger).toBeInTheDocument());
     });
 
-    test("transition from outstanding to crammed cards", async () => {
-        renderScreen();
-        await triggerReviews("learn-all-trigger");
-        const cardsSelector = await screen.findByTestId("cards-selector");
-        const crammedCard = await within(cardsSelector)
-              .findByTestId(crammedCardId);
-        expect(crammedCard).toBeInTheDocument();
-    });
-
     test("selecting to learn new cards", async () => {
-        renderScreen();
+        renderScreen(userCredentials);
         await triggerReviews("learn-new-trigger");
         const queuedCardId = "5f143904-c9d1-4e5b-ac00-01258d09965a";
         const queuedCard = await screen.findByTestId(queuedCardId);
@@ -526,19 +550,20 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
     });
 
     test("stopping reviews and return to the greeting page", async () => {
-        renderScreen();
+        renderScreen(userCredentials);
         await triggerReviews("learn-new-trigger");
-        const stopTrigger = await screen.findByTestId("stop-reviews-trigger");
+        const stopTrigger = await screen.findByTestId(
+            "stop-reviews-trigger");
         fireEvent.click(stopTrigger);
         const learnAllTrigger = await screen.findByTestId(
             "learn-all-trigger");
         expect(learnAllTrigger).toBeInTheDocument();
     });
 
-    test("endpoint called for grading crammed card", async () => {
-        renderScreen();
+    test("calling endpoint for grading crammed card", async () => {
         axiosMatch.delete.mockClear();
-        triggerReviews("learn-all-trigger");
+        renderScreen(userCredentials);  // ... was not wrapped in act(...).
+        triggerReviews("learn-crammed-trigger");
         const gradeIdeal = await screen.findByTestId("grade-button-ideal");
         fireEvent.click(gradeIdeal);
         const expectedCall = {
@@ -553,8 +578,9 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
     });
 
     it("gets removed from the cram list after grading it > 3", async () => {
-        renderScreen();
-        triggerReviews("learn-all-trigger");
+    // ... not configured to support act(...)...
+        renderScreen(userCredentials);
+        triggerReviews("learn-crammed-trigger");
         const cramList = screen.getByTestId("cram-list");
         const crammedCard = await within(cramList)
               .findByTestId(crammedCardId);
@@ -565,9 +591,9 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
     });
 
     it("should get removed only from client-side cram list", async () => {
-        renderScreen();
+        renderScreen(userCredentials);
         axiosMatch.delete.mockClear();
-        triggerReviews("learn-all-trigger");
+        triggerReviews("learn-crammed-trigger");
         const cardsSelector = screen.getByTestId("cards-selector");
         const crammedCard = await within(cardsSelector).findByTestId(crammedCardId);
         const failGrade = await screen.findByTestId("grade-button-fail");
@@ -579,19 +605,54 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         expect(axiosMatch.delete).toHaveBeenCalledTimes(0);
     });
 
-    test("if cram downloads another set of cards from the server", () => {
-        // TODO: add throw if left for another time
-    });
-
     it("adds memorized card to cram after grading it < 4", async () => {
-        renderScreen();
-        await triggerReviews("learn-new-trigger");
+        renderScreen(userCredentials);
+        triggerReviews("learn-new-trigger");
         const failGrade = await screen.findByTestId("grade-button-fail");
         const cramList = await screen.findByTestId("cram-list");
         fireEvent.click(failGrade);
         const cardAddedToCram = await within(cramList)
               .findByTestId("5f143904-c9d1-4e5b-ac00-01258d09965a");
         expect(cardAddedToCram).toBeInTheDocument();
+    });
+
+    const getNoMoreCardsMessage = async groupName => {
+        renderScreen();
+        const cardGroup = await screen.findByTestId(groupName);
+        fireEvent.click(cardGroup);
+        const noMoreCardsMessage = await screen.findByTestId(
+            "no-more-cards-for-review");
+        return noMoreCardsMessage;
+    };
+
+    it("displays 'no more cards for review' (after scheduled)", async () => {
+        const noMoreCardsMessage = await getNoMoreCardsMessage(
+            "learn-all-trigger");
+        expect(noMoreCardsMessage).toBeInTheDocument();
+    });
+
+    it("displays 'no more cards for review' (after cram)", async () => {
+        const noMoreCardsMessage = await getNoMoreCardsMessage(
+            "learn-crammed-trigger");
+        expect(noMoreCardsMessage).toBeInTheDocument();
+    });
+
+    it("displays 'no more cards for review' (after new cards)", async () => {
+        const noMoreCardsMessage = await getNoMoreCardsMessage(
+            "learn-new-trigger");
+        expect(noMoreCardsMessage).toBeInTheDocument();
+    });
+
+    test("'Learn scheduled' button is disabled/no cards left", async () => {
+        renderScreen(userCredentials);
+        const learnScheduledButton = await screen.findByTestId(
+            "learn-all-trigger");
+        screen.debug();
+        expect(learnScheduledButton).toBeDisabled();
+    });
+
+    test("if cram downloads another set of cards from the server", () => {
+        // TODO: add throw if left for another time
     });
 });
 
@@ -602,9 +663,8 @@ test("<LearningProgress/> - displaying progress", () => {
                                             cramQueue={10}
                                             queued={90}/>);
 
-    const componentById = "#learning-progress-indicator";
-    const learningProgress = result.container.querySelector(componentById);
+    const learningProgress = screen.getByTestId("learning-progress-indicator");
     expect(learningProgress).toHaveTextContent(
-        "Scheduled: 20 Cram: 10 Queued: 90");
-});
+        "Scheduled20Cram10Queued90");
 
+});

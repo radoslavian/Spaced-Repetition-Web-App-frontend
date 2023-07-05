@@ -4,7 +4,7 @@ import {
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
     allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
-    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, outstandingEmpty
+    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList
 } from "./mockData";
 
 const addToCramRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
@@ -75,21 +75,21 @@ export const axiosMatch = {
         }
         else if (outstandingCardsMainPageRoute.test(config.url)) {
 	    switch(config.headers.Authorization) {
-            case `Token ${authToken.auth_token}`:
-		return Promise.resolve({ data: outstandingMiddlePage });
-		break;
 	    case `Token ${authToken_1.auth_token}`:
-		// data returned for testing transition between reviewing
-		// scheduled cards and memorizing new ones
-		return Promise.resolve({ data: outstandingEmpty });
-		break;
+		return Promise.resolve({ data: emptyCardsList });
 	    default:
+                return Promise.resolve({ data: outstandingMiddlePage });
 		throw new Error(
 		    "No pattern matched in outstandingCardsMainPageRoute");
 	    }
         }
         else if (cramQueueMiddleRoute.test(config.url)) {
-            return Promise.resolve({ data: cramQueueSecondPage });
+	    switch(config.headers.Authorization) {
+            case `Token ${authToken_1.auth_token}`:
+                return Promise.resolve({ data: emptyCardsList });
+	    default:
+                return Promise.resolve({ data: cramQueueSecondPage });
+	    }
         }
         else if (cramQueueNextRoute.test(config.url)) {
             return Promise.resolve({ data: cramQueueThirdPage });
@@ -101,7 +101,15 @@ export const axiosMatch = {
             return Promise.resolve({ data: queuedCardsFirstPage });
         }
         else if (queuedCardsMainPageRoute.test(config.url)) {
-            return Promise.resolve({ data: queuedCardsMiddlePage });
+            switch(config.headers.Authorization) {
+            case `Token ${authToken.auth_token}`:
+                return Promise.resolve({ data: queuedCardsMiddlePage });
+	    case `Token ${authToken_1.auth_token}`:
+		return Promise.resolve({ data: emptyCardsList });
+	    default:
+		throw new Error(
+		    "No pattern matched in queuedCardsMainPageRoute");
+	    }
         }
         else if (queuedCardsThirdPageRoute.test(config.url)) {
             return Promise.resolve({ data: queuedCardsThirdPage });

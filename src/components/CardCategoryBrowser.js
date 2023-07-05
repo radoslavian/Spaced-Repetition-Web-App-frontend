@@ -42,7 +42,7 @@ export default function CardCategoryBrowser() {
                  style={{
                      // found in StackOverflow question:
                      // "How to limit the height of the modal?"
-                     "max-height": "calc(100vh - 225px)",
+                     maxHeight: "calc(100vh - 225px)",
                      overflow: "auto",
                      padding: '0 16px',
                  }}

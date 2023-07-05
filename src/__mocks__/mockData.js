@@ -287,7 +287,7 @@ export const queuedCardsThirdPage = {
     ]
 };
 
-export const outstandingEmpty = {
+export const emptyCardsList = {
     "count": 0,
     "next": null,
     "previous": null,

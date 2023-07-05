@@ -21,7 +21,7 @@ export default function CardsReviewer(
                               </Button>);
     const bottomBar = (
         card === undefined ?
-            <p>No more cards</p>
+            <StopButton/>
             :
             showAnswer ?
             <Row gutter={1}>
