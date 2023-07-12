@@ -1,12 +1,8 @@
+/*
 .card-answer {
     display: none;
 }
-
-.card-answer-shown {
-    /* should have the same attributes as card-answer
-     * but without display: none */
-}
-
+*/
 #card-body {
     height: calc(100vh - 220px);
     border: 1px solid black;

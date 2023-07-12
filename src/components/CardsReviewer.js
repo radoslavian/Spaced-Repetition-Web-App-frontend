@@ -3,6 +3,7 @@ import {Row, Col } from "antd";
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import AnswerRater from "./AnswerRater";
+import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardsReviewer(
     {cards, gradingFn, stopReviews = f => f, title}) {
@@ -13,6 +14,14 @@ export default function CardsReviewer(
         await gradingFn(gradedCard, cardGrade);
         flipAnswer();
     };
+    const { selectedCategories } = useCategories();
+
+    useEffect(() => {
+        if(showAnswer) {
+            setShowAnswer(false);
+        }
+    }, [selectedCategories]);
+
     const StopButton = () => (<Button data-testid="stop-reviews-trigger"
                                       block danger ghost
                                       type="primary"

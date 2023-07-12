@@ -1,7 +1,8 @@
 import { waitFor } from "@testing-library/react";
 import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList,
-         reduceWhiteSpaces, extractCategoryKeys } from "./utils/helpers";
+         reduceWhiteSpaces, extractCategoryKeys,
+         removeElementsByClass } from "./utils/helpers";
 import{ axiosMatch } from "axios";
 
 describe("APIClient", () => {
@@ -144,3 +145,19 @@ test("extractKeys() - category keys extractor", () => {
     expect(expectedOutput).toEqual(computedOutput);
 });
 
+test("removeElementsByClass()", () => {
+    const htmlString = `<p class="dict-entry">lacklustre [ˈ<span title="l - as in leap, hill">l</span><span title="a - as in trap">a</span><span title="kl - as in clean">kl</span><span title="ʌ - u as in butter, upset">ʌ</span><span title="st - as in stay, post">st</span><span title="ə - as in another">ə</span>]</p><div class="answer-examples">
+          <p><i>A dull and boring party is an example of something
+            that would be described as a lackluster event.</i></p>
+          <p>A half-hearted and uncaring effort is an example
+            of something that would be described as a lackluster effort.</p>`;
+    const expectedOutput = `<div class="answer-examples">
+          <p><i>A dull and boring party is an example of something
+            that would be described as a lackluster event.</i></p>
+          <p>A half-hearted and uncaring effort is an example
+            of something that would be described as a lackluster effort.</p></div>`;
+    const renderedHtml = document.createElement("div");
+    renderedHtml.innerHTML = expectedOutput;
+    const receivedOutput = removeElementsByClass(htmlString, "dict-entry");
+    expect(receivedOutput).toBe(expectedOutput);
+});

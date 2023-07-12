@@ -228,18 +228,17 @@ describe("<CardBody/>", () => {
   </div>
 </div>`
     };
-
-    test("rendering html tags", () => {
-        render(<CardBody card={card}/>);
-        const answer = screen.getByText("Example Card answer.");
+    test("displaying answer", () => {
+        render(<CardBody card={card} showAnswer={true}/>);
+        const answer = screen.queryByText("Example Card answer.");
         expect(answer).toBeInTheDocument();
         expect(answer.className).toBe("card-answer");
     });
 
-    test("displaying answer", () => {
-        render(<CardBody card={card} showAnswer={true}/>);
-        const answer = screen.getByText("Example Card answer.");
-        expect(answer.className).toBe("card-answer-shown");
+    test("answer is hidden", () => {
+        render(<CardBody card={card} showAnswer={false}/>);
+        const answer = screen.queryByText("Example Card answer.");
+        expect(answer).not.toBeInTheDocument();
     });
 });
 
@@ -248,8 +247,18 @@ describe("<CardsReviewer/>", () => {
         const cards = useCards();
         const { outstanding } = cards;
         const { grade } = cards.functions;
+        const { setSelectedCategories } = useCategories();
 
-        return (<CardsReviewer cards={outstanding} gradingFn={grade}/>);
+        return (
+            <>
+              <span data-testid="category-updater"
+                    onClick={() => setSelectedCategories(
+                        ["6d18daff-94d1-489b-97ce-969d1c2912a6"])}>
+                Update selected categories
+              </span>
+              <CardsReviewer cards={outstanding} gradingFn={grade}/>
+            </>
+        );
     };
 
     const TestingComponent = getComponentWithProviders(Component);
@@ -258,9 +267,23 @@ describe("<CardsReviewer/>", () => {
         await act(() => render(<TestingComponent/>));
     });
 
+    test("updating selected categories hides the answer", async () => {
+        // const showAnswer = await screen.findByText("Show answer");
+        const showAnswer = await screen.findByTestId("show-answer-button");
+        fireEvent.click(showAnswer);
+        const answer = await screen.findByText("Example Card answer.");
+        // Warning: An update to CategoriesProvider inside a test
+        // was not wrapped in act(...). ...
+        const categoryUpdater = await screen.findByTestId("category-updater");
+        fireEvent.click(categoryUpdater);
+        // assert answer is hidden
+        // wait for element (answer) to disappear
+        await waitFor(() => expect(answer).not.toBeInTheDocument());
+    });
+
     test("if 'Show answer' click displays buttons with marks", async () => {
         // expect - grade button was not found
-        const showAnswer = screen.getByText("Show answer");
+        const showAnswer = await screen.findByText("Show answer");
         expect(showAnswer).toBeInTheDocument();
         await act(() => fireEvent.click(showAnswer));
         const badGrade = await screen.findByTestId("grade-button-bad");
@@ -268,12 +291,21 @@ describe("<CardsReviewer/>", () => {
 
     });
 
+    test("if answer field is hidden", async () => {
+        const question = await screen.findByText("Example card question.");
+        await expect(async () => {
+            await waitFor(
+                () => expect(screen.getByText("Example Card answer."))
+                             .toBeInTheDocument()
+            );
+        }).rejects.toEqual(expect.anything());
+    });
+
     test("if 'Show answer' click shows answer field", async () => {
         const showAnswer = screen.getByText("Show answer");
         await act(() => fireEvent.click(showAnswer));
         const answer = screen.getByText("Example Card answer.");
         expect(answer).toBeInTheDocument();
-        expect(answer.className).toBe("card-answer-shown");
     });
 
     test("if review process progresses", async () => {

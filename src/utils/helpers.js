@@ -1,6 +1,23 @@
+export function removeElementsByClass(htmlString, className){
+    /* Removes elements from html string by their class name
+      and returns html string.
+      Based on:
+      + StackOverflow - Removing elements by class name
+      + StackOverflow - Strip HTML tags from text using plain JavaScript
+     */
+    const htmlObject = document.createElement("div");
+    htmlObject.innerHTML = htmlString;
+    const elements = htmlObject.getElementsByClassName(className);
+    while(elements.length > 0){
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+    return htmlObject.innerHTML;
+}
+
 export function cardTextForList(text) {
-    // strips text of html tags and shortens it, removes white spaces
-    // from start and end of the text
+    /* strips text of html tags and shortens it, removes white spaces
+      from start and end of the text
+    */
     const textLen = 30;
     const outputText = textCleaner(text);
 
@@ -17,11 +34,11 @@ const textCleaner = composeAll(
     text => text.trim());
 
 
-// compose() and composeALl() - composing functions for a single input
-// solution with StackOverflow origin:
-// "Javascript Reduce from a compose function"
-
 function compose(f, g) {
+    /* compose() and composeALl() - composing functions for a single input
+      solution with StackOverflow origin:
+      "Javascript Reduce from a compose function"
+    */
     return function(...args) {
         return f(g(...args));
     };
