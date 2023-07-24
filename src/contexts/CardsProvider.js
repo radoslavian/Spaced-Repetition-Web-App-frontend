@@ -152,12 +152,12 @@ export function CardsProvider({ children }) {
         outstandingCards, setOutstandingCards);
     const removeFromCramQueue = card => {
         const setCram = cards => {
-            const newCard = {
+            const updatedCard = {
                 ...card,
                 cram_link: null
             };
-            swapInAllCards(newCard);
-            swapInMemorized(newCard);
+            swapInAllCards(updatedCard);
+            swapInMemorized(updatedCard);
             setCramQueue(cards);
         };
         const removeFromCram = getRemoveFromList(cramQueue, setCram);
