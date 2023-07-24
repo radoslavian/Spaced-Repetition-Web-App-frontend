@@ -96,3 +96,8 @@ export function extractCategoryKeys(categories) {
     return categoryKeys;
 }
 
+export function checkIfCardIsInList(card, list) {
+    const cardsIds = list.map(card => card.id);
+    return cardsIds.includes(card.id);
+}
+

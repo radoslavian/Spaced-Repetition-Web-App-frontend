@@ -1,8 +1,9 @@
 import { waitFor } from "@testing-library/react";
 import APIClient from "./utils/APIClient";
-import { removeNewlines, cardTextForList,
+import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
          removeElementsByClass } from "./utils/helpers";
+import { queuedCardsMiddlePage } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 
 describe("APIClient", () => {
@@ -161,3 +162,22 @@ test("removeElementsByClass()", () => {
     const receivedOutput = removeElementsByClass(htmlString, "dict-entry");
     expect(receivedOutput).toBe(expectedOutput);
 });
+
+test("checkIfCardIsInList(card, list) - should return true", () => {
+    // cardId = "5f143904-c9d1-4e5b-ac00-01258d09965a"
+    const card = queuedCardsMiddlePage.results[0];
+    expect(checkIfCardIsInList(card, queuedCardsMiddlePage.results))
+        .toBeTruthy();
+});
+
+test("checkIfCardIsInList(card, list) - should return false", () => {
+    const card = {
+        "id": "cf530d38-1212-41ea-906a-c60670dbe2b8",
+        "created_on": "2023-04-06 13:10:48.900927+00:00",
+        "body": "empty card",
+        "categories": []
+    };
+    expect(checkIfCardIsInList(card, queuedCardsMiddlePage.results))
+        .toBeFalsy();
+});
+

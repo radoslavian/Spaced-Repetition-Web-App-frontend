@@ -150,7 +150,19 @@ export function CardsProvider({ children }) {
                                             getOutstanding);
     const removeFromOutstanding = getRemoveFromList(
         outstandingCards, setOutstandingCards);
-    const removeFromCramQueue = getRemoveFromList(cramQueue, setCramQueue);
+    const removeFromCramQueue = card => {
+        const setCram = cards => {
+            const newCard = {
+                ...card,
+                cram_link: null
+            };
+            swapInAllCards(newCard);
+            swapInMemorized(newCard);
+            setCramQueue(cards);
+        };
+        const removeFromCram = getRemoveFromList(cramQueue, setCram);
+        removeFromCram(card);
+    };
 
     // all cards
     const getAllCards = getCards({cardsSetter: setAllCards,
@@ -328,6 +340,7 @@ export function CardsProvider({ children }) {
     const addToCram = getAddTo(setCramQueue, cramQueue);
 
     const swapInAllCards = getCardSwapper(allCards, setAllCards);
+    const swapInMemorized = getCardSwapper(memorizedCards, setMemorizedCards);
 
     const functions = {
         // card memorization also means adding it to cram
@@ -339,27 +352,30 @@ export function CardsProvider({ children }) {
             }
             const url = `/users/${user.id}/cards/queued/${card.id}`;
             const updatedCard = await api.patch(url, {data: {grade: grade}});
-            const newCard = {...updatedCard, type: "memorized"};
 
             if (updatedCard?.id === undefined) {
                 // this should be handled within the ApiClient
                 console.error("Failed to memorize card ", card.id);
                 return;
             }
+            const newCard = {...updatedCard, type: "memorized"};
+
             if (grade < 4 || Boolean(newCard?.cram_link)) {
                 addToCram(newCard);
+                cramQueueCount.current++;
             }
             removeFromQueued(card);
             swapInAllCards(newCard);
             addToMemorized(newCard);
-
-            // updates to card counters
             queuedCount.current--;
             memorizedCount.current++;
         },
 
 	cram: async function(card) {
-            if (user === undefined) {
+            // TODO: should also check if card isn't already in cram
+            // TODO: (has the cram link) - in that case the function
+            // should exit
+            if (user === undefined || card.cram_link != null) {
                 return;
             }
             const url = `/users/${user.id}/cards/cram-queue/`;
@@ -370,9 +386,14 @@ export function CardsProvider({ children }) {
                 return;
             }
             // doesn't replace card - should check first if card isn't
-            // already in the list
-            const newList = [...cramQueue, updatedCard];
+            // already in the list:
+            // 1. check if card is in the list
+            // if so, don't add
+            const newCard = {...updatedCard, type: "memorized"};
+            const newList = [...cramQueue, newCard];
+            swapInAllCards(newCard);
             setCramQueue(newList);
+            cramQueueCount.current++;
         },
 
         grade: async function(card, grade = 4) {

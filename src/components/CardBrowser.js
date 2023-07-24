@@ -42,15 +42,19 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                    onClick={() => forget(card)}>
                   forget
                 </a>,
-                <a title="cram memorized card"
-                   onClick={() => cram(card)}>
-                  cram
-                </a>,
                 <a title="disable memorized card"
                    onClick={() => disable(card)}>
                   disable
                 </a>
             ];
+            if (card.cram_link === null) {
+                actions.push(
+                    <a title="cram memorized card"
+                       onClick={() => cram(card)}>
+                      cram
+                    </a>
+                );
+            }
         }
         else if (card.type === "disabled") {
             cardStamp = disabledStamp;

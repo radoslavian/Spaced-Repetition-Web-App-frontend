@@ -159,6 +159,32 @@ export const memorizedCardsSecondPage = {
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/memorized/?page=3",
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/memorized/?page=1",
     "results": [
+	{
+            "id": "5b457c11-b751-436c-9cfe-f3f4d173c1ba",
+            "body": "Card with cram link",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/5b457c11-b751-436c-9cfe-f3f4d173c1ba",
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
         {
             "id": "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa",
             "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample anwer.",
@@ -655,6 +681,32 @@ export const allCardsMiddle = {
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=40",
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20",
     "results": [
+	{
+            "id": "5b457c11-b751-436c-9cfe-f3f4d173c1ba",
+            "body": "Card with cram link",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/5b457c11-b751-436c-9cfe-f3f4d173c1ba",
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
         {
             "id": "f8f3ef31-1554-450f-ad7b-589bfd0e068d",
             "body": "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>Can figure quality.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Along drug how.</p>\n</div>\n\n</div>",
@@ -930,6 +982,32 @@ export const cramQueueSecondPage = {
                 }
             ],
             "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+	{
+            "id": "5b457c11-b751-436c-9cfe-f3f4d173c1ba",
+            "body": "Card with cram link",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/5b457c11-b751-436c-9cfe-f3f4d173c1ba",
             "computed_interval": 1,
             "lapses": 0,
             "reviews": 1,

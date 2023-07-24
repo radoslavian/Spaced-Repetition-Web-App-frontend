@@ -130,12 +130,19 @@ describe("<CardBrowser>", () => {
         },
         {
             type: "memorized",
-            body: "<p>Fake card two</p>",
+            body: "memorized fake card",
             id: "9e477201-5852-48c8-92fb-3520c2bef099",
+            cram_link: null,
+        },
+        {
+            type: "memorized",
+            body: "memorized and crammed fake card",
+            id: "aaaaf426-e0b2-4832-b4bc-14e6446b8a69",
+            cram_link: "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad",
         },
         {
             type: "disabled",
-            body: "<p>Fake card three</p>",
+            body: "disabled fake card",
             id: "2ccd1b58-945e-40b3-98df-da6b6fe44266",
         }
     ];
@@ -153,7 +160,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if list of cards displays", async () => {
-        const listItem = await screen.findByText("Fake card two");
+        const listItem = await screen.findByText("memorized fake card");
         expect(listItem).toBeVisible();
     });
 
@@ -169,8 +176,8 @@ describe("<CardBrowser>", () => {
     });
 
     test("if memorized card has 'memorized' title", () => {
-        const memorizedCard = screen.getByTitle("memorized");
-        expect(memorizedCard).toBeVisible();
+        const memorizedCard = screen.getAllByText("memorized fake card");
+        expect(memorizedCard[0]).toBeVisible();
     });
 
     test("if disabled card is marked with '[dis]' stamp", () => {
@@ -185,13 +192,16 @@ describe("<CardBrowser>", () => {
     });
 
     test("if memorized card can be forgotten", () => {
-        const forgetTrigger = screen.getByText("forget");
+        const memorizedCard = screen.getByText("memorized fake card");
+        const forgetTrigger = within(memorizedCard).getByText("forget");
         fireEvent.click(forgetTrigger);
         expect(forget).toHaveBeenCalledTimes(1);
     });
 
     test("if memorized card can be crammed", () => {
-        const cramTrigger = screen.getByTitle("cram memorized card");
+        const memorizedCard = screen.getByText("memorized fake card");
+        const cramTrigger = within(memorizedCard)
+              .getByTitle("cram memorized card");
         fireEvent.click(cramTrigger);
         expect(cram).toHaveBeenCalledTimes(1);
         expect(cram).toHaveBeenCalledWith(fakeCards[1]);
@@ -205,7 +215,9 @@ describe("<CardBrowser>", () => {
 
     test("if memorized card can be disabled", () => {
         disable.mockClear();  // move to afterEach
-        const disableTrigger = screen.getByTitle("disable memorized card");
+        const memorizedCard = screen.getByText("memorized fake card");
+        const disableTrigger = within(memorizedCard)
+              .getByTitle("disable memorized card");
         fireEvent.click(disableTrigger);
         expect(disable).toHaveBeenCalledTimes(1);
     });
@@ -214,6 +226,15 @@ describe("<CardBrowser>", () => {
         const enableTrigger = screen.getByTitle("re-enable disabled card");
         fireEvent.click(enableTrigger);
         expect(enable).toHaveBeenCalledTimes(1);
+    });
+
+    test("if crammed card doesn't have the 'cram' action", () => {
+        const crammedCard = screen.getByTestId(
+            "aaaaf426-e0b2-4832-b4bc-14e6446b8a69");
+        screen.debug();
+        const cramActionTitle = "cram memorized card";
+        const cramAction = within(crammedCard).queryByTitle(cramActionTitle);
+        expect(cramAction).not.toBeInTheDocument();
     });
 });
 
@@ -534,8 +555,8 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
     const triggerReviews = async (trigger) => {
         const learnTrigger = await screen.findByTestId(trigger);
         await userEvent.click(learnTrigger);
-        const showAnswer = await screen.findByText("Show answer");
-        await userEvent.click(showAnswer);
+        const showAnswer = await screen.findByTestId("show-answer-button");
+        fireEvent.click(showAnswer);
     };
 
     const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
@@ -639,7 +660,7 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
 
     it("adds memorized card to cram after grading it < 4", async () => {
         renderScreen(userCredentials);
-        triggerReviews("learn-new-trigger");
+        await triggerReviews("learn-new-trigger");
         const failGrade = await screen.findByTestId("grade-button-fail");
         const cramList = await screen.findByTestId("cram-list");
         fireEvent.click(failGrade);
