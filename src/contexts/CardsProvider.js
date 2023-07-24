@@ -6,6 +6,15 @@ import { useCategories } from "./CategoriesProvider";
 
 const CardsContext = createContext();
 
+function initNavigation() {
+    // object for navigating cards:
+    return {
+        currentPage: null,
+        prev: null,
+        next: null
+    };
+}
+
 export function CardsProvider({ children }) {
     const api = useApi();
     const { user } = useUser();
@@ -14,21 +23,13 @@ export function CardsProvider({ children }) {
     // memorized
     const [memorizedCards, setMemorizedCards] = useState([]);
     const memorizedCount = useRef(0);
-    const memorizedNavigation = useRef({
-        current: null,
-        prev: null,
-        next: null
-    });
+    const memorizedNavigation = useRef(initNavigation());
     const [memorizedIsLoading, setMemorizedLoading] = useState(false);
 
     // queued
     const [queuedCards, setQueuedCards] = useState([]);
     const queuedCount = useRef(0);
-    const queuedNavigation = useRef({
-        current: null,
-        prev: null,
-        next: null
-    });
+    const queuedNavigation = useRef(initNavigation());
     const [queuedIsLoading, setQueuedLoading] = useState(false);
 
     // outstanding
@@ -46,22 +47,14 @@ export function CardsProvider({ children }) {
     // cram queue
     const [cramQueue, setCramQueue] = useState([]);
     const cramQueueCount = useRef(0);
-    const cramQueueNavigation = useRef({
-        current: null,
-        prev: null,
-        next: null
-    });
+    const cramQueueNavigation = useRef(initNavigation());
     const [isCramLoading, setCramLoading] = useState(false);
 
 
     // all cards
     const [allCards, setAllCards] = useState([]);
     const allCardsCount = useRef(0);
-    const allCardsNavigation = useRef({
-        current: null,
-        prev: null,
-        next: null
-    });
+    const allCardsNavigation = useRef(initNavigation());
     const [allCardsIsLoading, setAllCardsLoading] = useState(false);
 
     // later this should come from a separate module used by both
