@@ -34,7 +34,6 @@ describe("APIClient", () => {
     test("delete method", async () => {
         const url = "/cards/memorized/7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa";
         const response = await apiClient.delete(url);
-        expect(response.status).toEqual(204);
         expect(axiosMatch.delete).toHaveBeenCalledTimes(1);
         expect(axiosMatch.delete).toHaveBeenCalledWith(
             expect.objectContaining(

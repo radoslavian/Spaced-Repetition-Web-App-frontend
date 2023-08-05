@@ -118,7 +118,7 @@ export default function CardsSelector() {
         </MainDisplay>
         : (currentlyViewedQueue === null ||
            (currentlyViewedQueue.cardsList.count === 0
-            && !currentlyViewedQueue.cardsList.isLoading)) ?
+            && currentlyViewedQueue.cardsList.isLoading === false)) ?
             // apparently this appears when screen flickers
         // when loading another page
         <p data-testid="no-more-cards-for-review"
@@ -128,8 +128,8 @@ export default function CardsSelector() {
         </p>
         :
         <>
-          // It's better to pass whole object (currentlyViewedQueue)
-          // rather than each field separately
+          {/* It's better to pass whole object (currentlyViewedQueue) */}
+          {/* rather than each field separately */}
           <CardsReviewer cards={currentlyViewedQueue.cardsList}
                          gradingFn={currentlyViewedQueue.gradingFn}
                          title={currentlyViewedQueue.title}

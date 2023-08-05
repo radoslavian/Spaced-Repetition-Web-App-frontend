@@ -17,7 +17,7 @@ export default function CardsReviewer(
     const { selectedCategories } = useCategories();
 
     useEffect(() => {
-        if(showAnswer) {
+        if(showAnswer === true) {
             setShowAnswer(false);
         }
     }, [selectedCategories]);
@@ -59,7 +59,7 @@ export default function CardsReviewer(
     );
 
     return (
-        cards.isLoading ?
+        cards.isLoading === true ?
             <p>Loading</p>
             :
             <div style={{textAlign: "left"}}>

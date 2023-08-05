@@ -39,3 +39,24 @@ export function LogInComponent ({children, credentials}) {
         </UserProvider>
     );
 }
+
+
+export function tomorrow() {
+    // got it from: https://www.geeksforgeeks.org/how-to-get-tomorrows-date-
+    // in-a-string-format-in-javascript/
+
+    const d = new Date();
+    
+    d.setDate(d.getDate() + 1);
+    
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1);
+    const day = String(d.getDate());
+
+    const newMonth = month.length == 1 ? 
+        month.padStart('2', '0') : month;
+    const newDay = day.length == 1 ? 
+        day.padStart('2', '0') : day;
+    
+    return `${year}-${newMonth}-${newDay}`;
+}

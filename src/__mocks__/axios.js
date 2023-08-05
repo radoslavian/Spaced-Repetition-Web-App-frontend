@@ -4,7 +4,8 @@ import {
     queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
     outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
     allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
-    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList
+    cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList,
+    queuedCard
 } from "./mockData";
 
 const addToCramRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
@@ -23,17 +24,21 @@ const allCardsMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-
 const allCardsNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=40$/;
 const allCardsNext_1_route = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20&offset=60$/;
 const allCardsPrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?limit=20$/;
-const memorizeRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-z][0-9a-f]{3}-[0-9a-f]{12}$/;
+const queuedCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/queued\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-z][0-9a-f]{3}-[0-9a-f]{12}$/;
 const cramQueueMiddleRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
 const cramQueueNextRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/\?page=3$/;
 const cramQueuePrevRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/\?page=1$/;
 const gradeSuccessRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa$/;
 const gradeFailRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/c0320d44-c157-4857-a2b8-39ce89d168f5$/;
+const forgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/5b457c11-b751-436c-9cfe-f3f4d173c1ba$/;
+const failedForgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/4a58594b-1c84-41f5-b4f0-72dc573b6406$/;
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
 export const downloadCards = jest.fn();
 export const categoriesCalls = jest.fn();
 export const gradeCard = jest.fn();
+export const forgetCard = jest.fn();
+export const getQueuedCard = jest.fn();
 
 export const axiosMatch = {
     post: jest.fn().mockImplementation(config => {
@@ -54,6 +59,10 @@ export const axiosMatch = {
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
         }
+        else if (queuedCardRoute.test(config.url)) {
+            getQueuedCard(config);
+	    return Promise.resolve({ data: queuedCard });
+	}
         else if (allCardsNext_1_route.test(config.url)) {
             return Promise.resolve({ data: allCardsNext_1 });
         }
@@ -159,11 +168,16 @@ export const axiosMatch = {
         }
     }),
     delete: jest.fn().mockImplementation(config => {
-        // currently only response for APIClient's delete method
-        return Promise.resolve({ data: { status: 204 } });
+	if (forgetCardRoute.test(config.url)) {
+	    forgetCard(config);
+	} else if (failedForgetCardRoute.test(config.url)) {
+            console.error("not found");
+            return Promise.reject({ data: undefined });
+        }
+        return Promise.resolve({ data: "" });
     }),
     patch: jest.fn().mockImplementation(config => {
-	if (memorizeRoute.test(config.url)) {
+	if (queuedCardRoute.test(config.url)) {
 	    return Promise.resolve({ data: memorizedCard });
 	}
         else if (gradeSuccessRoute.test(config.url)) {

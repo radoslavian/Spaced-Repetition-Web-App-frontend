@@ -231,7 +231,6 @@ describe("<CardBrowser>", () => {
     test("if crammed card doesn't have the 'cram' action", () => {
         const crammedCard = screen.getByTestId(
             "aaaaf426-e0b2-4832-b4bc-14e6446b8a69");
-        screen.debug();
         const cramActionTitle = "cram memorized card";
         const cramAction = within(crammedCard).queryByTitle(cramActionTitle);
         expect(cramAction).not.toBeInTheDocument();

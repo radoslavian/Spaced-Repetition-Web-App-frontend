@@ -1,3 +1,5 @@
+import { tomorrow } from "../utils/testHelpers";
+
 export const authToken = {
     auth_token: "7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f"
 };
@@ -159,6 +161,32 @@ export const memorizedCardsSecondPage = {
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/memorized/?page=3",
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/memorized/?page=1",
     "results": [
+        {
+            "id": "5949947a-92ad-4e10-94dc-51c7da11c6e8",
+            "body": "card with tomorrow's review date",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/5949947a-92ad-4e10-94dc-51c7da11c6e8",
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": tomorrow(),
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
 	{
             "id": "5b457c11-b751-436c-9cfe-f3f4d173c1ba",
             "body": "Card with cram link",
@@ -705,7 +733,8 @@ export const allCardsMiddle = {
             "review_date": "2023-05-11",
             "grade": 4,
             "easiness_factor": 2.5,
-            "comment": null
+            "comment": null,
+	    "type": "memorized"
         },
         {
             "id": "f8f3ef31-1554-450f-ad7b-589bfd0e068d",
@@ -1081,4 +1110,20 @@ export const reviewSuccess = {
     "grade": 4,
     "easiness_factor": 2.5,
     "comment": null
+};
+
+export const queuedCard = {
+    "id": "5b457c11-b751-436c-9cfe-f3f4d173c1ba",
+    "body": "Card without cram link",
+    "projected_review_data": null,
+    "categories": [
+        {
+            "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+            "title": "Grammar"
+        },
+        {
+            "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+            "title": "Vocabulary"
+        }
+    ]
 };

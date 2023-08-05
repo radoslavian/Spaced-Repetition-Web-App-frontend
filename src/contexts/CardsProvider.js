@@ -3,6 +3,7 @@ import { createContext, useContext, useState,
 import { useApi } from "./ApiProvider";
 import { useUser } from "./UserProvider";
 import { useCategories } from "./CategoriesProvider";
+import { checkIfCardIsInList } from "../utils/helpers";
 
 const CardsContext = createContext();
 
@@ -66,7 +67,9 @@ export function CardsProvider({ children }) {
     // countParam - added due to naming differences of this attribute
     // between endpoint for all cards and the remaining
     const getCards = ({cardsSetter, count, navigation,
-                       countParam = "count", setIsLoading = f => f}) =>
+                       countParam = "count",
+                       setIsLoading = f => console.log(
+                           "placeholder setIsLoading")}) =>
           async url => {
               setIsLoading(true);
               const response = await api.get(url);
@@ -113,14 +116,16 @@ export function CardsProvider({ children }) {
     // memorized
     const getMemorized = getCards({cardsSetter: setMemorizedCards,
                                    count: memorizedCount,
-                                   navigation: memorizedNavigation});
+                                   navigation: memorizedNavigation,
+                                   setIsLoading: setMemorizedLoading});
     const nextPageMemorized = getNextPage(memorizedNavigation, getMemorized);
     const prevPageMemorized = getPrevPage(memorizedNavigation, getMemorized);
 
     // queued
     const getQueued = getCards({cardsSetter: setQueuedCards,
                                 count: queuedCount,
-                                navigation: queuedNavigation});
+                                navigation: queuedNavigation,
+                                setIsLoading: setQueuedLoading});
     const nextPageQueued = getNextPage(queuedNavigation, getQueued);
     const prevPageQueued = getPrevPage(queuedNavigation, getQueued);
 
@@ -143,6 +148,8 @@ export function CardsProvider({ children }) {
                                             getOutstanding);
     const removeFromOutstanding = getRemoveFromList(
         outstandingCards, setOutstandingCards);
+    const removeFromCram = getRemoveFromList(cramQueue, setCramQueue);
+
     const removeFromCramQueue = card => {
         const setCram = cards => {
             const updatedCard = {
@@ -153,9 +160,13 @@ export function CardsProvider({ children }) {
             swapInMemorized(updatedCard);
             setCramQueue(cards);
         };
-        const removeFromCram = getRemoveFromList(cramQueue, setCram);
-        removeFromCram(card);
+
+        const localRemoveFromCram = getRemoveFromList(cramQueue, setCram);
+        localRemoveFromCram(card);
     };
+
+    const removeFromMemorized = getRemoveFromList(
+        memorizedCards, setMemorizedCards);
 
     // all cards
     const getAllCards = getCards({cardsSetter: setAllCards,
@@ -320,6 +331,8 @@ export function CardsProvider({ children }) {
     const getCardSwapper = (cardList, listSetter) => card => {
         // optimization: should check first if card with a given id
         // already is on the list
+        // but: some functions check by themselves if card is in a list:
+        // forget()
         const newList = cardList.map(
             cardFromList => cardFromList.id === card.id ?
                 card : cardFromList);
@@ -421,12 +434,59 @@ export function CardsProvider({ children }) {
                 return;
             }
             const url = `/users/${user.id}/cards/cram-queue/${card.id}`;
+
+            // 'response' is assigned a value but never used
             const response = await api.delete(url);
             removeFromCramQueue(card);
             cramQueueCount.current--;
         },
 
-        forget: async function() {},
+        forget: async function(card) {
+            if (user === undefined) {
+                return;
+            }
+            const forgetCardUrl = `/users/${user.id}/cards/`
+                  + `memorized/${card.id}`;
+            const responseDelete = await api.delete(forgetCardUrl);
+
+            if (responseDelete === "") {
+                if (checkIfCardIsInList(card, memorizedCards)) {
+                    removeFromMemorized(card);
+                }
+                if (checkIfCardIsInList(card, allCards)) {
+                    const queuedCardUrl = `/users/${user.id}`
+                          + `/cards/queued/${card.id}`;
+                    const queuedCard = await api.get(queuedCardUrl);
+                    const queuedCardWithType = {...queuedCard, type: "queued"};
+                    swapInAllCards(queuedCardWithType);
+                }
+
+                memorizedCount.current--;
+                queuedCount.current++;
+
+                if (card.cram_link != null) {
+                    cramQueueCount.current--;
+                    if (checkIfCardIsInList(card, cramQueue)) {
+                        removeFromCram(card);
+                    }
+                }
+
+                const currentDate = new Date();
+                const cardReviewDate = new Date(card.review_date);
+
+                if (cardReviewDate <= currentDate) {
+                    outstandingCount.current--;
+
+                    if (checkIfCardIsInList(card, outstandingCards)) {
+                        removeFromOutstanding(card);
+                    }
+                }
+            } else if (responseDelete === undefined) {
+                console.error(responseDelete?.detail);
+            } else {
+                console.error("Failed to forget a card.");
+            }
+        },
 	disable: async function() {},
 	enable: async function() {},
     };
