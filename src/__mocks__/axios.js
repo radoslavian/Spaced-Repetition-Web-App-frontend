@@ -8,7 +8,7 @@ import {
     queuedCard
 } from "./mockData";
 
-const addToCramRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
+const cramQueueRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
 const categoriesSelectedUrlRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/selected\/?$/;
 const memorizedCards = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/$/;
@@ -39,6 +39,7 @@ export const categoriesCalls = jest.fn();
 export const gradeCard = jest.fn();
 export const forgetCard = jest.fn();
 export const getQueuedCard = jest.fn();
+export const dropCram = jest.fn();
 
 export const axiosMatch = {
     post: jest.fn().mockImplementation(config => {
@@ -152,7 +153,7 @@ export const axiosMatch = {
         else if (categoriesSelectedUrlRoute.test(config.url)) {
             return Promise.resolve({ status: 204 });
         }
-        else if(addToCramRoute.test(config.url)) {
+        else if(cramQueueRoute.test(config.url)) {
             return Promise.resolve(
                 {
                     data: {
@@ -173,7 +174,9 @@ export const axiosMatch = {
 	} else if (failedForgetCardRoute.test(config.url)) {
             console.error("not found");
             return Promise.reject({ data: undefined });
-        }
+        } else if (cramQueueRoute.test(config.url)) {
+	    dropCram(config);
+	}
         return Promise.resolve({ data: "" });
     }),
     patch: jest.fn().mockImplementation(config => {

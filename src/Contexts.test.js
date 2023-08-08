@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { useRef, useEffect, useState } from "react";
 import axios, { axiosMatch, categoriesCalls, addToCramQueue,
                 downloadCards, gradeCard, forgetCard,
-                getQueuedCard } from "axios";
+                getQueuedCard, dropCram } from "axios";
 import { UserProvider, useUser } from "./contexts/UserProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { CategoriesProvider,
@@ -290,6 +290,51 @@ function getNavigationTestingComponent(cardsGroup) {
         );
     };
 }
+
+describe("<CardsProvider/> - dropping cram", () => {
+    const DroppingCramComponent = () => {
+        const cards = useCards();
+        const { cram } = cards;
+        const { dropCram } = cards.functions;
+
+        return (
+            <>
+              <div data-testid="cram-queue">
+                { cram.currentPage.map(card => (
+                    <span key={ card.id }
+                          data-testid={ card.id }/>
+                )) }
+              </div>
+              <span data-testid="drop-cram"
+                    onClick={ () => dropCram() }/>
+            </>
+        );
+    };
+
+    const renderComponent = () => render(
+        <ApiProvider>
+          <LogInComponent credentials={{user: "user_1",
+                                        password: "passwd"}}>
+            <DroppingCramComponent/>
+          </LogInComponent>
+        </ApiProvider>
+    );
+
+    test("dropping cram - success", async () => {
+        renderComponent();
+        const cramQueue = screen.getByTestId("cram-queue");
+        const clickToDropCram = screen.getByTestId("drop-cram");
+        const controlCardId = "1a5c7caf-fe7d-4b14-a022-91d9b52a36a0";
+        const controlCard = await within(cramQueue)
+              .findByTestId(controlCardId);
+
+        expect(controlCard).toBeInTheDocument();
+
+        fireEvent.click(clickToDropCram);
+        expect(dropCram).toHaveBeenCalled();
+        await waitFor(() => expect(cramQueue).toBeEmptyDOMElement());
+    });
+});
 
 describe("<CardsProvider/> - memorized: navigation", () => {
     afterAll(jest.clearAllMocks);

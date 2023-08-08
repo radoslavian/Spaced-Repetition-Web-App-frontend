@@ -99,6 +99,7 @@ export function CardsProvider({ children }) {
 
     const getRemoveFromList = (cardList, listSetter) => card => {
         // should it check if a card is on the list in the first place?
+        // no: presence of a card in a list is checked elsewhere
         const newList = cardList.filter(
             (cardFromList, i) => cardFromList.id !== card.id);
         listSetter(newList);
@@ -349,9 +350,9 @@ export function CardsProvider({ children }) {
     const swapInMemorized = getCardSwapper(memorizedCards, setMemorizedCards);
 
     const functions = {
-        // card memorization also means adding it to cram
-        // if grade is < than 4
         memorize: async function(card, grade = 4) {
+            // card memorization also means adding it to the cram
+            // if grade is < than 4
             if (user === undefined || !api.isAuthenticated()) {
                 console.error("Unauthenticated");
                 return;
@@ -482,12 +483,26 @@ export function CardsProvider({ children }) {
                     }
                 }
             } else if (responseDelete === undefined) {
+                // this will never happen - remove in refactoring
                 console.error(responseDelete?.detail);
             } else {
                 console.error("Failed to forget a card.");
             }
         },
-	disable: async function() {},
+
+        dropCram: async function() {
+            if (user === undefined) {
+                return;
+            }
+            const dropUrl = `/users/${user.id}/cards/cram-queue/`;
+            const result = await api.delete(dropUrl);
+
+            if(result === "") {
+                setCramQueue([]);
+            }
+        },
+
+        disable: async function() {},
 	enable: async function() {},
     };
 
