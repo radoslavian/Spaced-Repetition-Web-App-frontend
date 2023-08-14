@@ -1,8 +1,3 @@
-/*
-.card-answer {
-    display: none;
-}
-*/
 #card-body {
     height: calc(100vh - 220px);
     border: 1px solid black;
@@ -11,4 +6,8 @@
 
 #learning-progress-indicator {
     background: lightgrey;
+}
+
+.card-preview {
+    min-height: 200px;
 }

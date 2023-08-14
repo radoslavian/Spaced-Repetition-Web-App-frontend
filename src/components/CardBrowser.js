@@ -1,6 +1,6 @@
 import { PushpinOutlined, HourglassOutlined,
          EyeOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { List, Button } from "antd";
 import { Modal } from "antd";
 import parse from "html-react-parser";
@@ -21,11 +21,12 @@ const disabledStamp = "[dis]";
 
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     const { memorize, forget, cram, disable, enable } = functions;
-    const [previewedCard, setPreviewedCard] = useState(cards[0]);
+    const previewedCard = useRef(cards[0]);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
 
     const openCardPreview = () => setCardPreviewOpen(true);
     const closeCardPreview = () => setCardPreviewOpen(false);
+
     const CardPreviewModal = ({ card }) => (
         <Modal title="Card preview"
                centered
@@ -37,7 +38,7 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                      Close
                    </Button>
                ]}>
-          <div id="card-preview">
+          <div className="card-preview">
             { card ? parse(card.body) : "" }
           </div>
         </Modal>
@@ -97,7 +98,7 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
         actions.push(
             <EyeOutlined title="preview card"
                          onClick={() => {
-                             setPreviewedCard(card);
+                             previewedCard.current = card;
                              openCardPreview();
                          }}
             />
@@ -119,7 +120,7 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     return (
         <>
           <CardPreviewModal data-testid="card-preview-window"
-                            card={previewedCard}/>
+                            card={previewedCard.current}/>
           <List
             bordered
             dataSource={cards}
