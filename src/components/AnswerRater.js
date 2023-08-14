@@ -2,7 +2,7 @@ import { Button, Tooltip } from "antd";
 import { Row, Col } from "antd";
 
 function GradeButton ({type, id, dataTestId, onClick, children,
-                       tooltip /* new */}) {
+                       tooltip}) {
     const GradeBt = () => (<Button block
                                    type={type}
                                    id={id}
@@ -18,7 +18,8 @@ function GradeButton ({type, id, dataTestId, onClick, children,
                 <GradeBt/>
               </span>
             </Tooltip>
-        : <GradeBt/>
+        :
+        <GradeBt/>
     );
 };
 

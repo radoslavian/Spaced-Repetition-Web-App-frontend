@@ -281,6 +281,19 @@ describe("<CardBrowser>", () => {
                             functions={functions}/>);
     });
 
+    test("card preview", async () => {
+        const cardListItem = await screen.findByText(
+            "Fake card one Very long title ...");
+        const previewAction = within(cardListItem).getByTitle("preview card");
+        fireEvent.click(previewAction);
+        const previewWindow = await screen.findByTestId(
+            "card-preview-window");
+        const previewWindowContent = "blandit consequat vel non eros.";
+
+        expect(previewWindow).toBeInTheDocument();
+        expect(previewWindow).toHaveTextContent(previewWindowContent);
+    });
+
     test("if clicking on the 'load more' works", async () => {
         const loadMoreButton = await screen.findByText("load more");
         fireEvent.click(loadMoreButton);

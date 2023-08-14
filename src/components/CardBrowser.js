@@ -1,6 +1,11 @@
-import { PushpinOutlined, HourglassOutlined } from "@ant-design/icons";
+import { PushpinOutlined, HourglassOutlined,
+         EyeOutlined } from "@ant-design/icons";
+import { useState } from "react";
 import { List, Button } from "antd";
+import { Modal } from "antd";
+import parse from "html-react-parser";
 import { cardTextForList } from "../utils/helpers";
+import CardBody from "./CardBody";
 
 const queuedStamp = <>
                       <HourglassOutlined
@@ -16,6 +21,27 @@ const disabledStamp = "[dis]";
 
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     const { memorize, forget, cram, disable, enable } = functions;
+    const [previewedCard, setPreviewedCard] = useState(cards[0]);
+    const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
+
+    const openCardPreview = () => setCardPreviewOpen(true);
+    const closeCardPreview = () => setCardPreviewOpen(false);
+    const CardPreviewModal = ({ card }) => (
+        <Modal title="Card preview"
+               centered
+               closable={false}
+               data-testid="card-preview-window"
+               open={isCardPreviewOpen}
+               footer={[
+                   <Button onClick={closeCardPreview}>
+                     Close
+                   </Button>
+               ]}>
+          <div id="card-preview">
+            { card ? parse(card.body) : "" }
+          </div>
+        </Modal>
+    );
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -68,6 +94,14 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
         else {
             cardStamp = "[#UNK]";
         }
+        actions.push(
+            <EyeOutlined title="preview card"
+                         onClick={() => {
+                             setPreviewedCard(card);
+                             openCardPreview();
+                         }}
+            />
+        );
 
         return (
             <List.Item
@@ -84,6 +118,8 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
 
     return (
         <>
+          <CardPreviewModal data-testid="card-preview-window"
+                            card={previewedCard}/>
           <List
             bordered
             dataSource={cards}
