@@ -101,3 +101,8 @@ export function checkIfCardIsInList(card, list) {
     return cardsIds.includes(card.id);
 }
 
+export function extractDate(dateTimeString) {
+    // extracts date from string with 'T', such as:
+    // 2023-05-10T10:06:01.179692Z
+    return dateTimeString.split("T")[0];
+}

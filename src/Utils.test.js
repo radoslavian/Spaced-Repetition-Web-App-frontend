@@ -2,7 +2,7 @@ import { waitFor } from "@testing-library/react";
 import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
-         removeElementsByClass } from "./utils/helpers";
+         removeElementsByClass, extractDate } from "./utils/helpers";
 import { queuedCardsMiddlePage } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 
@@ -178,5 +178,13 @@ test("checkIfCardIsInList(card, list) - should return false", () => {
     };
     expect(checkIfCardIsInList(card, queuedCardsMiddlePage.results))
         .toBeFalsy();
+});
+
+test("extractDate()", () => {
+    const input = "2023-05-10T10:06:01.179692Z";
+    const expectedOutput = "2023-05-10";
+    const receivedOutput = extractDate(input);
+
+    expect(receivedOutput).toEqual(receivedOutput);
 });
 

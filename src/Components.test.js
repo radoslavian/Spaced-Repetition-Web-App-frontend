@@ -11,6 +11,7 @@ import { CategoriesProvider,
 import AnswerRater from "./components/AnswerRater";
 import CardBrowser from "./components/CardBrowser";
 import CardBody from "./components/CardBody";
+import CardDetails from "./components/CardDetails";
 import { userCategories2 as userCategories } from "./__mocks__/mockData";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
 import CardsReviewer from "./components/CardsReviewer";
@@ -18,12 +19,40 @@ import CardsSelector from "./components/CardsSelector";
 import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
-import {reviewSuccess, queuedCard } from "./__mocks__/mockData";
+import { reviewSuccess, queuedCard } from "./__mocks__/mockData";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
     fireEvent.click(showAnswer);
 }
+
+describe("<CardDetails/>", () => {
+    // component displays: lapses, computed interval, reviews etc.
+
+    test("displaying details of memorized card", () => {
+        render(<CardDetails card={reviewSuccess}/>);
+        const details = screen.getByTestId("card-details");
+
+        expect(details).toHaveTextContent("Computed interval:1");
+        expect(details).toHaveTextContent("Lapses:0");
+        expect(details).toHaveTextContent("Reviews:1");
+        expect(details).toHaveTextContent("Total reviews:1");
+        expect(details).toHaveTextContent("Last reviewed:2023-05-15");
+        expect(details).toHaveTextContent("Introduced on:2023-05-10");
+        expect(details).not.toHaveTextContent(
+            "Introduced on:2023-05-10T10:06:01.179692Z");
+        expect(details).toHaveTextContent("Review date:2023-05-11");
+        expect(details).toHaveTextContent("Grade:4");
+        expect(details).toHaveTextContent("Easiness:2.5");
+    });
+
+    it("renders notification for empty card", () => {
+        render(<CardDetails card={queuedCard}/>);
+        const details = screen.getByTestId("empty-card");
+        expect(details).toBeInTheDocument();
+        expect(details).toHaveTextContent("Card data:Queued card");
+    });
+});
 
 describe("<AnswerRater/> - tips with approximate next review", () => {
     // grade buttons should display tooltips for card providing
