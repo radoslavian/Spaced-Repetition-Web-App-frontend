@@ -8,6 +8,7 @@ import { useCards } from "./contexts/CardsProvider";
 import { ApiProvider, useApi } from "./contexts/ApiProvider";
 import { CategoriesProvider,
          useCategories } from "./contexts/CategoriesProvider";
+import AnswerRater from "./components/AnswerRater";
 import CardBrowser from "./components/CardBrowser";
 import CardBody from "./components/CardBody";
 import { userCategories2 as userCategories } from "./__mocks__/mockData";
@@ -17,11 +18,138 @@ import CardsSelector from "./components/CardsSelector";
 import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
+import {reviewSuccess, queuedCard } from "./__mocks__/mockData";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
     fireEvent.click(showAnswer);
 }
+
+describe("<AnswerRater/> - tips with approximate next review", () => {
+    // grade buttons should display tooltips for card providing
+    // projected review data
+
+    const renderWithProjectedReviews = () => render(
+        <AnswerRater card={reviewSuccess}
+                     gradingFn={f => f}/>
+    );
+
+    const renderWithoutProjecterReviews = () => render(
+        <AnswerRater card={queuedCard}
+                     gradingFn={f => f}/>
+    );
+
+    const triggerGradeButton = gradeButtonTestId => {
+        const gradeButton = screen.getByTestId(gradeButtonTestId);
+        fireEvent.mouseOver(gradeButton);
+
+        return gradeButton;
+    };
+
+    describe("displays projected next review tooltip", () => {
+        beforeEach(renderWithProjectedReviews);
+
+        test("null grade", async () => {
+            triggerGradeButton("grade-button-null");
+            const tooltip = await screen.findByText(
+                "Approximate next review: 2023-05-17");
+
+            expect(tooltip).toBeInTheDocument();
+        });
+
+        test("bad grade", async () => {
+            triggerGradeButton("grade-button-bad");
+            const tooltip = await screen.findByText(
+                "Approximate next review: 2023-05-18");
+
+            expect(tooltip).toBeInTheDocument();
+        });
+
+        test("fail grade", async () => {
+            triggerGradeButton("grade-button-fail");
+            const tooltip = await screen.findByText(
+                "Approximate next review: 2023-05-19");
+
+            expect(tooltip).toBeInTheDocument();
+        });
+
+        test("pass grade", async () => {
+            triggerGradeButton("grade-button-pass");
+            const tooltip = await screen.findByText(
+                "Approximate next review: 2023-05-20");
+
+            expect(tooltip).toBeInTheDocument();
+        });
+
+        test("good grade", async () => {
+            triggerGradeButton("grade-button-good");
+            const tooltip = await screen.findByText(
+                "Approximate next review: 2023-05-21");
+
+            expect(tooltip).toBeInTheDocument();
+        });
+
+        test("ideal grade", async () => {
+            triggerGradeButton("grade-button-ideal");
+            const tooltip = await screen.findByText(
+                "Approximate next review: 2023-05-22");
+
+            expect(tooltip).toBeInTheDocument();
+        });
+    });
+
+    describe("doesn't display tooltip with review data", () => {
+        beforeEach(renderWithoutProjecterReviews);
+
+        test("null grade", async () => {
+            triggerGradeButton("grade-button-null");
+            const tipTestId = "tooltip-grade-button-null";
+
+            await waitFor(() => expect(
+                screen.queryAllByTestId(tipTestId).length).toBe(0));
+        });
+
+        test("bad grade", async () => {
+            triggerGradeButton("grade-button-bad");
+            const tipTestId = "tooltip-grade-button-bad";
+
+            await waitFor(() => expect(
+                screen.queryAllByTestId(tipTestId).length).toBe(0));
+        });
+
+        test("fail grade", async () => {
+            triggerGradeButton("grade-button-fail");
+            const tipTestId = "tooltip-grade-button-fail";
+
+            await waitFor(() => expect(
+                screen.queryAllByTestId(tipTestId).length).toBe(0));
+        });
+
+        test("pass grade", async () => {
+            triggerGradeButton("grade-button-pass");
+            const tipTestId = "tooltip-grade-button-pass";
+
+            await waitFor(() => expect(
+                screen.queryAllByTestId(tipTestId).length).toBe(0));
+        });
+
+        test("good grade", async () => {
+            triggerGradeButton("grade-button-good");
+            const tipTestId = "tooltip-grade-button-good";
+
+            await waitFor(() => expect(
+                screen.queryAllByTestId(tipTestId).length).toBe(0));
+        });
+
+        test("ideal grade", async () => {
+            triggerGradeButton("grade-button-ideal");
+            const tipTestId = "tooltip-grade-button-ideal";
+
+            await waitFor(() => expect(
+                screen.queryAllByTestId(tipTestId).length).toBe(0));
+        });
+    });
+});
 
 describe("CategorySelector tests.", () => {
     beforeAll(() => render(
