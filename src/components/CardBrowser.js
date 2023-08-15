@@ -20,7 +20,7 @@ const memorizedStamp = <>
 const disabledStamp = "[dis]";
 
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
-    const { memorize, forget, cram, disable, enable } = functions;
+    const { memorize, forget, cram, enable } = functions;
     const previewedCard = useRef(cards[0]);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
 
@@ -56,10 +56,6 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                    onClick={() => memorize(card)}>
                   memorize
                 </a>,
-                <a title="disable queued card"
-                   onClick={() => disable(card)}>
-                  disable
-                </a>
             ];
         }
         else if (card.type === "memorized") {
@@ -69,10 +65,6 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                    onClick={() => forget(card)}>
                   forget
                 </a>,
-                <a title="disable memorized card"
-                   onClick={() => disable(card)}>
-                  disable
-                </a>
             ];
             if (card.cram_link === null) {
                 actions.push(

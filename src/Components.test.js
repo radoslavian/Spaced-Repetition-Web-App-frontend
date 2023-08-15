@@ -419,21 +419,6 @@ describe("<CardBrowser>", () => {
         expect(cram).toHaveBeenCalledWith(fakeCards[1]);
     });
 
-    test("if queued card can be disabled", () => {
-        const disableTrigger = screen.getByTitle("disable queued card");
-        fireEvent.click(disableTrigger);
-        expect(disable).toHaveBeenCalledTimes(1);
-    });
-
-    test("if memorized card can be disabled", () => {
-        disable.mockClear();  // move to afterEach
-        const memorizedCard = screen.getByText("memorized fake card");
-        const disableTrigger = within(memorizedCard)
-              .getByTitle("disable memorized card");
-        fireEvent.click(disableTrigger);
-        expect(disable).toHaveBeenCalledTimes(1);
-    });
-
     test("if disabled card can be re-enabled", () => {
         const enableTrigger = screen.getByTitle("re-enable disabled card");
         fireEvent.click(enableTrigger);
