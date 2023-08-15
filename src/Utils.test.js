@@ -2,7 +2,8 @@ import { waitFor } from "@testing-library/react";
 import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
-         removeElementsByClass, extractDate } from "./utils/helpers";
+         removeElementsByClass, extractDate,
+         tagContentClearer } from "./utils/helpers";
 import { queuedCardsMiddlePage } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 
@@ -66,6 +67,22 @@ describe("cardTextForList()", () => {
         const testText = "<!-- fallback card template -->\n<!-- used when the Card instance does not supply template for rendering -->\n<!-- base template for cards-->\n<div class=\"container\" id=\"card-body\">\n    \n<div class=\"question\">\n    <p>House <i>moment</i> Nunc nunc diam, cursus sit amet ligula eget, accumsan aliquet eros.</p>\n</div>\n<hr />\n<div class=\"answer\">\n    <p>Sound high <b>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed gravida semper mauris, sit amet vehicula velit scelerisque eget.</b> short.</p>\n</div>\n\n</div>";
         const expectedOutput = "House moment Nunc nunc diam, c...";
         const receivedOutput = cardTextForList(testText);
+
+        expect(receivedOutput).toEqual(expectedOutput);
+    });
+
+    it("removes content from unwanted tags", () => {
+        // should remove contents of <style></style> and
+        // <script></script> first
+        const testText = '<style>ul.toc li.heading, .back-top, a.demo, '
+              + '.home-intro-sub{background:#232323; color:#fff</style>'
+              + '<script></script><script>!function(t,e){var i=function('
+              + 't,e){if(e.body){var n=e.createElement("div");</script>'
+              + 'House moment Nunc nunc diam sit vehicula velit scelerisque'
+              + '<!-- fallback card template -->\n<!-- used when the Card';
+        const expectedOutput = "House moment Nunc nunc diam si...";
+        const receivedOutput = cardTextForList(testText);
+
         expect(receivedOutput).toEqual(expectedOutput);
     });
 });
@@ -186,5 +203,19 @@ test("extractDate()", () => {
     const receivedOutput = extractDate(input);
 
     expect(receivedOutput).toEqual(receivedOutput);
+});
+
+test("tagContentClearer", () => {
+    const input = "We will learn to <b>remove all child elements or "
+          + "content</b> of a div element using JavaScript. However, whatever"
+          + "method we learn to clear the div element's content will "
+          + "work with any HTML element.";
+    const expectedOutput = "We will learn to <b></b> of a div element using"
+          + " JavaScript. However, whatever"
+          + "method we learn to clear the div element's content will "
+          + "work with any HTML element.";
+    const receivedOutput = tagContentClearer(input, "b");
+
+    expect(expectedOutput).toEqual(receivedOutput);
 });
 

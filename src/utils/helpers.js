@@ -28,6 +28,8 @@ export function cardTextForList(text) {
 };
 
 const textCleaner = composeAll(
+    text => tagContentClearer(text, "script"),
+    text => tagContentClearer(text, "style"),
     stripOfHtmlTags,
     removeNewlines,
     reduceWhiteSpaces,
@@ -106,3 +108,18 @@ export function extractDate(dateTimeString) {
     // 2023-05-10T10:06:01.179692Z
     return dateTimeString.split("T")[0];
 }
+
+export function tagContentClearer(input, tag) {
+    // removes contents of a particular tag pair
+
+    const parentDiv = document.createElement("div");
+    parentDiv.innerHTML = input;
+    const tags = parentDiv.getElementsByTagName(tag);
+
+    for(let htmlTag of tags) {
+        htmlTag.replaceChildren();
+    }
+
+    return parentDiv.innerHTML;
+}
+
