@@ -6,7 +6,8 @@ import AnswerRater from "./AnswerRater";
 import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardsReviewer(
-    {cards, gradingFn, stopReviews = f => f, title}) {
+    {cards, gradingFn, setCurrentCard = f => f,
+     stopReviews = f => f, title}) {
     const [showAnswer, setShowAnswer] = useState(false);
     const card = cards.currentPage[0];
     const flipAnswer = () => setShowAnswer(!showAnswer);
@@ -65,6 +66,7 @@ export default function CardsReviewer(
             <div style={{textAlign: "left"}}>
               <CardBody card={card}
                         title={title}
+                        setCurrentCard={setCurrentCard}
                         showAnswer={showAnswer} />
               { bottomBar }
             </div>

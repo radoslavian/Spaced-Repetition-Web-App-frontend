@@ -26,7 +26,8 @@ const cardsLists = {
     queued: "queued"
 };
 
-export default function CardsSelector() {
+// setCurrentCard falls to the placeholder too often
+export default function CardsSelector({setCurrentCard = f => f}) {
     const cards = useCards();
     const { outstanding, cram, queued } = cards;
     const [selectedCardsList, setSelectedCardsList] = useState(
@@ -34,6 +35,11 @@ export default function CardsSelector() {
     const [isStopped, setStopped] = useState(true);
     const [currentlyViewedQueue, setViewedQueue] = useState(null);
     const { grade, memorize, reviewCrammed } = cards.functions;
+
+    const emptyQueue = () => (
+        currentlyViewedQueue === null ||
+            (currentlyViewedQueue.cardsList.count === 0
+             && currentlyViewedQueue.cardsList.isLoading === false));
 
     const crammedCards = {
         title: "Crammed cards",
@@ -54,6 +60,10 @@ export default function CardsSelector() {
     const outstandingChecker = getChecker(outstandingCards);
     const cramChecker = getChecker(crammedCards);
     const queuedChecker = getChecker(queuedCards);
+    const stopReviews = () => {
+        setStopped(true);
+        setCurrentCard(undefined);
+    };
 
     const selectCardQueue = () => {
         if(selectedCardsList === cardsLists.scheduled) {
@@ -65,6 +75,16 @@ export default function CardsSelector() {
         }
         return null;
     };
+
+    // Flashing screen with another card - this is caused by
+    // setting another tab from the queue as currently displayed
+    // before moving on to the correct queue. When I solve this
+    // problem, I may be able to remove this fragment (useEffect).
+    useEffect(() => {
+        if(emptyQueue()) {
+            setCurrentCard(undefined);
+        }
+    }, [currentlyViewedQueue]);
 
     useEffect(() => {
         if (outstandingChecker()) {
@@ -84,6 +104,7 @@ export default function CardsSelector() {
         setSelectedCardsList(cardsList);
         setStopped(false);
     };
+
     // button callbacks
     const reviewScheduled = getReviewCallback(cardsLists.scheduled);
     const learnQueued = getReviewCallback(cardsLists.queued);
@@ -116,13 +137,11 @@ export default function CardsSelector() {
             </Button>
           </Space>
         </MainDisplay>
-        : (currentlyViewedQueue === null ||
-           (currentlyViewedQueue.cardsList.count === 0
-            && currentlyViewedQueue.cardsList.isLoading === false)) ?
+        : emptyQueue() ?
             // apparently this appears when screen flickers
         // when loading another page
         <p data-testid="no-more-cards-for-review"
-           onClick={() => setStopped(true)}>
+           onClick={stopReviews}>
           No more items on this list...<br/>
           Click to return to the main page.
         </p>
@@ -131,9 +150,10 @@ export default function CardsSelector() {
           {/* It's better to pass whole object (currentlyViewedQueue) */}
           {/* rather than each field separately */}
           <CardsReviewer cards={currentlyViewedQueue.cardsList}
+                         setCurrentCard={setCurrentCard}
                          gradingFn={currentlyViewedQueue.gradingFn}
                          title={currentlyViewedQueue.title}
-                         stopReviews={() => setStopped(true)}/>
+                         stopReviews={stopReviews}/>
           <LearningProgress scheduled={outstanding.count}
                             cramQueue={cram.count}
                             queued={queued.count}/>

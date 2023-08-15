@@ -20,6 +20,7 @@ import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
 import { reviewSuccess, queuedCard } from "./__mocks__/mockData";
+import MainGrid from "./components/MainGrid";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
@@ -27,30 +28,71 @@ async function showAnswer() {
 }
 
 describe("<CardDetails/>", () => {
-    // component displays: lapses, computed interval, reviews etc.
+    // component displays: lapses, computed interval, number of reviews etc.
+
+    const renderApp = () => render(
+        <ApiProvider>
+          <LogInComponent credentials={{
+              user: "user_1",
+              password: "passwd"
+          }}>
+            <MainGrid/>
+          </LogInComponent>
+        </ApiProvider>
+    );
+
+    test("displaying scheduled card data within App", async () => {
+        renderApp();
+        const learnScheduledButton = await screen.findByTestId(
+            "learn-all-trigger");
+        fireEvent.click(learnScheduledButton);
+        const details = await screen.findByTestId("card-details");
+
+        expect(details).toHaveTextContent("Computed interval1");
+        expect(details).toHaveTextContent("Reviews1");
+        expect(details).toHaveTextContent("Total reviews1");
+        expect(details).toHaveTextContent("Last reviewed2023-05-10");
+        expect(details).toHaveTextContent("Introduced on2023-05-10");
+        expect(details).toHaveTextContent("Review date2023-05-11");
+        expect(details).toHaveTextContent("Grade4");
+        expect(details).toHaveTextContent("Easiness2.5");
+    });
+
+    it("returns to 'empty' message after clicking 'stop'", async () => {
+        renderApp();
+        const learnScheduledButton = await screen.findByTestId(
+            "learn-all-trigger");
+        fireEvent.click(learnScheduledButton);
+        const details = await screen.findByTestId("card-details");
+        const stopButton = await screen.findByTestId(
+            "stop-reviews-trigger");
+        fireEvent.click(stopButton);
+
+        await waitFor(() => expect(screen.getByTestId("empty-card")));
+    });
 
     test("displaying details of memorized card", () => {
         render(<CardDetails card={reviewSuccess}/>);
         const details = screen.getByTestId("card-details");
 
-        expect(details).toHaveTextContent("Computed interval:1");
-        expect(details).toHaveTextContent("Lapses:0");
-        expect(details).toHaveTextContent("Reviews:1");
-        expect(details).toHaveTextContent("Total reviews:1");
-        expect(details).toHaveTextContent("Last reviewed:2023-05-15");
-        expect(details).toHaveTextContent("Introduced on:2023-05-10");
+        expect(details).toHaveTextContent("Computed interval1");
+        expect(details).toHaveTextContent("Lapses0");
+        expect(details).toHaveTextContent("Reviews1");
+        expect(details).toHaveTextContent("Total reviews1");
+        expect(details).toHaveTextContent("Last reviewed2023-05-15");
+        expect(details).toHaveTextContent("Introduced on2023-05-10");
         expect(details).not.toHaveTextContent(
-            "Introduced on:2023-05-10T10:06:01.179692Z");
-        expect(details).toHaveTextContent("Review date:2023-05-11");
-        expect(details).toHaveTextContent("Grade:4");
-        expect(details).toHaveTextContent("Easiness:2.5");
+            "Introduced on2023-05-10T10:06:01.179692Z");
+        expect(details).toHaveTextContent("Review date2023-05-11");
+        expect(details).toHaveTextContent("Grade4");
+        expect(details).toHaveTextContent("Easiness2.5");
     });
 
     it("renders notification for empty card", () => {
         render(<CardDetails card={queuedCard}/>);
         const details = screen.getByTestId("empty-card");
         expect(details).toBeInTheDocument();
-        expect(details).toHaveTextContent("Card data:Queued card");
+        expect(details).toHaveTextContent("Card dataempty");
     });
 });
 
@@ -241,7 +283,7 @@ describe("<CardCategoryBrowser/>", () => {
         // Something's wrong with CardCategoryBrowser or - more likely
         // - with CategoriesProvider: does not work if
         // <ComponentWithProviders/> is created only once
-        
+        downloadCards.mockClear();
         await renderComponent();
         await waitFor(() => expect(downloadCards).toHaveBeenCalledTimes(2));
     });
