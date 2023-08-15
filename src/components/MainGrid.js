@@ -8,14 +8,6 @@ import CardDetails from "./CardDetails";
 const { Content, Sider } = Layout;
 
 export default function MainGrid() {
-    /*
-    const currentCard = useRef(undefined);
-    const setCurrentCard = card => {
-        console.log("setting Card!");
-        currentCard.current = card;
-    };
-    */
-    // bad state update
     const [currentCard, setCurrentCard] = useState(undefined);
     const gutter = 8;
 
