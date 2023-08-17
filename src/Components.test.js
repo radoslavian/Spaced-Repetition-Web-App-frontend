@@ -781,7 +781,24 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         const component = await screen.findByTestId("card-body");
         expect(component).toHaveTextContent(lookUpText);
     });
+/*
+    it("downloads cards if `isLast == true and count != 0`", async () => {
+        // cram
+        renderScreen(userCredentials);
+        await triggerReviews("learn-crammed-trigger");
 
+        // 4 cards in mock cram queue
+        // should work if it loads next page after reviewing
+        // cards in the first one
+        for (let i = 0; i < 5; i++) {
+            await showAnswer();
+            const failGradeButton = await screen.findByTestId(
+                "grade-button-fail");
+            fireEvent.click(failGradeButton);
+        }
+        // expect endpoint to have been called
+    });
+*/
     test("if initial page contains triggers", () => {
         renderScreen();
         const learnAllTrigger = screen.getByTestId("learn-all-trigger");

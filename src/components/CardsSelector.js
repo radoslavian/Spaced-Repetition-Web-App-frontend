@@ -3,10 +3,10 @@ import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
 import MainDisplay from "./MainDisplay";
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button, Row, Col } from "antd"; 
 
-function getChecker(obj) {
+function getCardsLeft(obj) {
     return () => {
         // debug
         /*
@@ -16,7 +16,16 @@ function getChecker(obj) {
         */
         return (obj.cardsList.isLast === false
                 && obj.cardsList.currentPage.length === 0
-                && !obj.cardsList.isLoading);
+                && !obj.cardsList.isLoading
+                // new
+                // should pass with that:
+                /*
+                || obj.cardsList.count != 0
+                && obj.cardsList.isLast === true
+                && obj.cardsList.currentPage.length === 0
+                && !obj.cardsList.isLoading
+                */
+               );
     };
 };
 
@@ -57,9 +66,9 @@ export default function CardsSelector({setCurrentCard = f => f}) {
         gradingFn: memorize
     };
 
-    const outstandingChecker = getChecker(outstandingCards);
-    const cramChecker = getChecker(crammedCards);
-    const queuedChecker = getChecker(queuedCards);
+    const outstandingLeft = getCardsLeft(outstandingCards);
+    const cramLeft = getCardsLeft(crammedCards);
+    const queuedLeft = getCardsLeft(queuedCards);
     const stopReviews = () => {
         setStopped(true);
         setCurrentCard(undefined);
@@ -77,7 +86,7 @@ export default function CardsSelector({setCurrentCard = f => f}) {
     };
 
     // Flashing screen with another card - this is caused by
-    // setting another tab from the queue as currently displayed
+    // setting another card from the queue as currently displayed
     // before moving on to the correct queue. When I solve this
     // problem, I may be able to remove this fragment (useEffect).
     useEffect(() => {
@@ -87,13 +96,13 @@ export default function CardsSelector({setCurrentCard = f => f}) {
     }, [currentlyViewedQueue]);
 
     useEffect(() => {
-        if (outstandingChecker()) {
+        if (outstandingLeft()) {
             console.log("CardsSelector - outstanding: goToFirst");
             outstandingCards.cardsList.goToFirst();
-        } else if (cramChecker()) {
+        } else if (cramLeft()) {
             console.log("CardsSelector - cram: goToFirst");
             crammedCards.cardsList.goToFirst();
-        } else if (queuedChecker()) {
+        } else if (queuedLeft()) {
             console.log("CardsSelector - queued: goToFirst");
             queuedCards.cardsList.goToFirst();
         }
