@@ -6,16 +6,18 @@ import AnswerRater from "./AnswerRater";
 import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardsReviewer(
-    {cards, gradingFn, setCurrentCard = f => f,
-     stopReviews = f => f, title}) {
+    {viewedQueue, setCurrentCard = f => f,
+     stopReviews = f => f}) {
     const [showAnswer, setShowAnswer] = useState(false);
-    const card = cards.currentPage[0];
+    const card = viewedQueue?.cardsList.currentPage[0];
     const flipAnswer = () => setShowAnswer(!showAnswer);
     const gradeNFlipCard = async (gradedCard, cardGrade) => {
-        await gradingFn(gradedCard, cardGrade);
+        await viewedQueue.gradingFn(gradedCard, cardGrade);
+        // hideAnswer() wouldn't be more obvious?
         flipAnswer();
     };
     const { selectedCategories } = useCategories();
+    const title = viewedQueue?.title;
 
     useEffect(() => {
         if(showAnswer === true) {
@@ -60,7 +62,7 @@ export default function CardsReviewer(
     );
 
     return (
-        cards.isLoading === true ?
+        Boolean(viewedQueue) && viewedQueue.cardsList.isLoading === true ?
             <p>Loading</p>
             :
             <div style={{textAlign: "left"}}>

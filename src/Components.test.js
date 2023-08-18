@@ -466,6 +466,13 @@ describe("<CardsReviewer/>", () => {
         const { grade } = cards.functions;
         const { setSelectedCategories } = useCategories();
 
+        const outstandingCards = {
+            title: "Outstanding cards",
+            cardsList: outstanding,
+            gradingFn: grade
+        };
+
+
         return (
             <>
               <span data-testid="category-updater"
@@ -473,15 +480,20 @@ describe("<CardsReviewer/>", () => {
                         ["6d18daff-94d1-489b-97ce-969d1c2912a6"])}>
                 Update selected categories
               </span>
-              <CardsReviewer cards={outstanding} gradingFn={grade}/>
+              <CardsReviewer viewedQueue={outstandingCards}/>
             </>
         );
     };
 
-    const TestingComponent = getComponentWithProviders(Component);
-
-    beforeEach(async () => {
-        await act(() => render(<TestingComponent/>));
+    beforeEach(() => {
+        render(<ApiProvider>
+                 <LogInComponent credentials={{
+                     user: "user_1",
+                     password: "passwd"
+                 }}>
+                   <Component/>
+                 </LogInComponent>
+               </ApiProvider>);
     });
 
     test("updating selected categories hides the answer", async () => {
@@ -518,10 +530,10 @@ describe("<CardsReviewer/>", () => {
         }).rejects.toEqual(expect.anything());
     });
 
-    test("if 'Show answer' click shows answer field", async () => {
-        const showAnswer = screen.getByText("Show answer");
-        await act(() => fireEvent.click(showAnswer));
-        const answer = screen.getByText("Example Card answer.");
+    test("if 'Show answer' click displays answer field", async () => {
+        const showAnswer = await screen.findByText("Show answer");
+        fireEvent.click(showAnswer);
+        const answer = await screen.findByText("Example Card answer.");
         expect(answer).toBeInTheDocument();
     });
 
@@ -529,16 +541,16 @@ describe("<CardsReviewer/>", () => {
         // Clicking on the grade re-displays the "Show answer" bar,
         // the answer has a "card-answer" class.
 
-        const showAnswer = screen.getByText("Show answer");
-        await act(() => fireEvent.click(showAnswer));
+        const showAnswer = await screen.findByText("Show answer");
+        fireEvent.click(showAnswer);
         const idealGrade = await screen.findByTestId("grade-button-ideal");
-        await act(() => fireEvent.click(idealGrade));
-        const showAnswerNext = screen.getByText("Show answer");
+        fireEvent.click(idealGrade);
+        const showAnswerNext = await screen.findByText("Show answer");
         expect(showAnswerNext).toBeInTheDocument();
 
         // another card from the list is displayed
         const nextCardText = "Example answer (outstanding).";
-        const nextCard = screen.getByText(nextCardText);
+        const nextCard = await screen.findByText(nextCardText);
         expect(nextCard).toBeInTheDocument();
     });
 });
@@ -653,8 +665,7 @@ describe("<CardsSelector/> - loading more pages", () => {
                                      password: "passwd"
                                  }}>
                                    <CardsSelector/>
-                                 </
-                               LogInComponent>
+                                 </LogInComponent>
                                </ApiProvider>)
                  );
         const learnAllTrigger = await screen.findByTestId(
@@ -781,24 +792,7 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         const component = await screen.findByTestId("card-body");
         expect(component).toHaveTextContent(lookUpText);
     });
-/*
-    it("downloads cards if `isLast == true and count != 0`", async () => {
-        // cram
-        renderScreen(userCredentials);
-        await triggerReviews("learn-crammed-trigger");
 
-        // 4 cards in mock cram queue
-        // should work if it loads next page after reviewing
-        // cards in the first one
-        for (let i = 0; i < 5; i++) {
-            await showAnswer();
-            const failGradeButton = await screen.findByTestId(
-                "grade-button-fail");
-            fireEvent.click(failGradeButton);
-        }
-        // expect endpoint to have been called
-    });
-*/
     test("if initial page contains triggers", () => {
         renderScreen();
         const learnAllTrigger = screen.getByTestId("learn-all-trigger");

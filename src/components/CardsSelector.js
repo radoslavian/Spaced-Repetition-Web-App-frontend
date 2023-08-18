@@ -3,7 +3,7 @@ import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
 import MainDisplay from "./MainDisplay";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button, Row, Col } from "antd"; 
 
 function getCardsLeft(obj) {
@@ -29,26 +29,13 @@ function getCardsLeft(obj) {
     };
 };
 
-const cardsLists = {
-    scheduled: "scheduled",
-    cram: "cram",
-    queued: "queued"
-};
-
 // setCurrentCard falls to the placeholder too often
 export default function CardsSelector({setCurrentCard = f => f}) {
     const cards = useCards();
+    const selectedQueue = useRef(null);
     const { outstanding, cram, queued } = cards;
-    const [selectedCardsList, setSelectedCardsList] = useState(
-        cardsLists.scheduled);
     const [isStopped, setStopped] = useState(true);
-    const [currentlyViewedQueue, setViewedQueue] = useState(null);
     const { grade, memorize, reviewCrammed } = cards.functions;
-
-    const emptyQueue = () => (
-        currentlyViewedQueue === null ||
-            (currentlyViewedQueue.cardsList.count === 0
-             && currentlyViewedQueue.cardsList.isLoading === false));
 
     const crammedCards = {
         title: "Crammed cards",
@@ -66,6 +53,19 @@ export default function CardsSelector({setCurrentCard = f => f}) {
         gradingFn: memorize
     };
 
+    const queueSelection = {
+        outstanding: outstandingCards,
+        crammed: crammedCards,
+        queued: queuedCards
+    };
+    const currentlyViewedQueue = (queueSelection[selectedQueue.current]
+                                  || null);
+    const emptyQueue = () => (
+        currentlyViewedQueue === null ||
+            (currentlyViewedQueue.cardsList.count === 0
+             && currentlyViewedQueue.cardsList.isLoading === false));
+
+
     const outstandingLeft = getCardsLeft(outstandingCards);
     const cramLeft = getCardsLeft(crammedCards);
     const queuedLeft = getCardsLeft(queuedCards);
@@ -73,27 +73,6 @@ export default function CardsSelector({setCurrentCard = f => f}) {
         setStopped(true);
         setCurrentCard(undefined);
     };
-
-    const selectCardQueue = () => {
-        if(selectedCardsList === cardsLists.scheduled) {
-            return outstandingCards;
-        } else if (selectedCardsList === cardsLists.cram) {
-            return crammedCards;
-        } else if (selectedCardsList === cardsLists.queued) {
-            return queuedCards;
-        }
-        return null;
-    };
-
-    // Flashing screen with another card - this is caused by
-    // setting another card from the queue as currently displayed
-    // before moving on to the correct queue. When I solve this
-    // problem, I may be able to remove this fragment (useEffect).
-    useEffect(() => {
-        if(emptyQueue()) {
-            setCurrentCard(undefined);
-        }
-    }, [currentlyViewedQueue]);
 
     useEffect(() => {
         if (outstandingLeft()) {
@@ -106,28 +85,25 @@ export default function CardsSelector({setCurrentCard = f => f}) {
             console.log("CardsSelector - queued: goToFirst");
             queuedCards.cardsList.goToFirst();
         }
-        setViewedQueue(selectCardQueue());
-    }, [outstanding, cram, queued, selectedCardsList]);
+    }, [outstanding, cram, queued]);
 
-    const getReviewCallback = cardsList => () => {
-        setSelectedCardsList(cardsList);
+    const getReviewCallback = queue => () => {
+        selectedQueue.current = queue;
         setStopped(false);
     };
 
     // button callbacks
-    const reviewScheduled = getReviewCallback(cardsLists.scheduled);
-    const learnQueued = getReviewCallback(cardsLists.queued);
-    const reviewCram = getReviewCallback(cardsLists.cram);
+    const reviewScheduled = getReviewCallback("outstanding");
+    const learnQueued = getReviewCallback("queued");
+    const reviewCram = getReviewCallback("crammed");
 
     return (
         isStopped ?
-            // initial page
         <MainDisplay title="Select cards group to learn:">
           <Space direction="vertical"
                  size="large">
             <Button type="default"
                     size="large"
-        // learn-outstanding-trigger
                     data-testid="learn-all-trigger"
                     onClick={reviewScheduled}>
               Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}&nbsp;left
@@ -147,21 +123,16 @@ export default function CardsSelector({setCurrentCard = f => f}) {
           </Space>
         </MainDisplay>
         : emptyQueue() ?
-            // apparently this appears when screen flickers
-        // when loading another page
         <p data-testid="no-more-cards-for-review"
            onClick={stopReviews}>
+          {/* placeholder notification */}
           No more items on this list...<br/>
           Click to return to the main page.
         </p>
         :
         <>
-          {/* It's better to pass whole object (currentlyViewedQueue) */}
-          {/* rather than each field separately */}
-          <CardsReviewer cards={currentlyViewedQueue.cardsList}
+          <CardsReviewer viewedQueue={currentlyViewedQueue}
                          setCurrentCard={setCurrentCard}
-                         gradingFn={currentlyViewedQueue.gradingFn}
-                         title={currentlyViewedQueue.title}
                          stopReviews={stopReviews}/>
           <LearningProgress scheduled={outstanding.count}
                             cramQueue={cram.count}
