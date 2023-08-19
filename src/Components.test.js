@@ -743,9 +743,12 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         user: "CardsReviewer_user",
         password: "passwd"
     };
-
     const userCredentials = {
         user: "user_1",
+        password: "passwd"
+    };
+    const user_2Credentials = {
+        user: "user_2",
         password: "passwd"
     };
 
@@ -761,12 +764,22 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
 
     const triggerReviews = async (trigger) => {
         const learnTrigger = await screen.findByTestId(trigger);
-        await userEvent.click(learnTrigger);
+        userEvent.click(learnTrigger);
         const showAnswer = await screen.findByTestId("show-answer-button");
         fireEvent.click(showAnswer);
     };
 
     const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
+
+    it("downloads queue in case of count/next link discrepancy", async () => {
+        // next link is empty (next: null), count != 0
+        renderScreen(user_2Credentials);
+        await triggerReviews("learn-crammed-trigger");
+        const gradeFail = await screen.findByTestId("grade-button-fail");
+        axiosMatch.get.mockClear();
+        fireEvent.click(gradeFail);
+        await waitFor(() => expect(axiosMatch.get).toHaveBeenCalledTimes(1));
+    });
 
     it("triggers reviews of outstanding cards", async () => {
         renderScreen(userCredentials);
@@ -793,12 +806,14 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         expect(component).toHaveTextContent(lookUpText);
     });
 
-    test("if initial page contains triggers", () => {
+    test("if initial page contains triggers", async () => {
         renderScreen();
         const learnAllTrigger = screen.getByTestId("learn-all-trigger");
         const learnNewTrigger = screen.getByTestId("learn-new-trigger");
-        waitFor(() => expect(learnAllTrigger).toBeInTheDocument());
-        waitFor(() => expect(learnNewTrigger).toBeInTheDocument());
+        const cramTrigger = screen.getByTestId("learn-crammed-trigger");
+        await waitFor(() => expect(learnAllTrigger).toBeInTheDocument());
+        await waitFor(() => expect(learnNewTrigger).toBeInTheDocument());
+        await waitFor(() => expect(cramTrigger).toBeInTheDocument());
     });
 
     test("selecting to learn new cards", async () => {

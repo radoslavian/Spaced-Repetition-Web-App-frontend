@@ -14,18 +14,15 @@ function getCardsLeft(obj) {
           currentPage.length: ${obj.cardsList.currentPage.length},
           isLoading: ${obj.cardsList.isLoading}`);
         */
-        return (obj.cardsList.isLast === false
-                && obj.cardsList.currentPage.length === 0
-                && !obj.cardsList.isLoading
-                // new
-                // should pass with that:
-                /*
-                || obj.cardsList.count != 0
-                && obj.cardsList.isLast === true
-                && obj.cardsList.currentPage.length === 0
-                && !obj.cardsList.isLoading
-                */
-               );
+        const isEmpty_isLoading = (obj.cardsList.currentPage.length === 0
+                                   && !obj.cardsList.isLoading);
+
+        return (
+            (obj.cardsList.isLast === false && isEmpty_isLoading) ||
+                (obj.cardsList.count != 0
+                 && obj.cardsList.isLast === true
+                 && isEmpty_isLoading)
+        );
     };
 };
 
@@ -64,7 +61,6 @@ export default function CardsSelector({setCurrentCard = f => f}) {
         currentlyViewedQueue === null ||
             (currentlyViewedQueue.cardsList.count === 0
              && currentlyViewedQueue.cardsList.isLoading === false));
-
 
     const outstandingLeft = getCardsLeft(outstandingCards);
     const cramLeft = getCardsLeft(crammedCards);

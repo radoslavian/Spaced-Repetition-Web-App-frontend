@@ -3,11 +3,12 @@ import { tomorrow } from "../utils/testHelpers";
 export const authToken = {
     auth_token: "7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f"
 };
-
 export const authToken_1 = {
     auth_token: "1f3371582a52d0ef17877c61d1c82cdf9b7d8f4f"
 };
-
+export const authToken_2 = {
+    auth_token: "3f4471582a52d0ef17877c61d1c82cdf9b7d8f8f"
+};
 export const userData = {
     email: "user@userdomain.com.su",
     id: "626e4d32-a52f-4c15-8f78-aacf3b69a9b2",
@@ -1070,7 +1071,7 @@ export const cramQueueThirdPage = {
                     "title": "Vocabulary"
                 }
             ],
-            "cram_link": null,
+            "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/c9f2a0ec-fac1-4573-a553-26c5e8d8b5ab",
             "computed_interval": 1,
             "lapses": 0,
             "reviews": 1,

@@ -1,9 +1,9 @@
 import {
-    authToken, authToken_1, userData, userCategories, memorizedCardsSecondPage,
-    memorizedCardsThirdPage, memorizedCardsFirstPage, queuedCardsFirstPage,
-    queuedCardsMiddlePage, queuedCardsThirdPage, outstandingMiddlePage,
-    outstandingPrevPage, outstandingNextPage, allCardsMiddle, allCardsNext,
-    allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
+    authToken, authToken_1, authToken_2, userData, userCategories,
+    memorizedCardsSecondPage, memorizedCardsThirdPage, memorizedCardsFirstPage,
+    queuedCardsFirstPage, queuedCardsMiddlePage, queuedCardsThirdPage,
+    outstandingMiddlePage, outstandingPrevPage, outstandingNextPage, allCardsMiddle,
+    allCardsNext, allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
     cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList,
     queuedCard
 } from "./mockData";
@@ -47,6 +47,8 @@ export const axiosMatch = {
 	    return Promise.resolve({ data: authToken_1 });
 	} else if (config.data.user === "user_1") {
 	    return Promise.resolve({ data: authToken });
+        } else if (config.data.user === "user_2") {
+	    return Promise.resolve({ data: authToken_2 });
 	} else {
 	    return Promise.reject(
                 { data: "wrong authentication credentials" });
@@ -97,6 +99,11 @@ export const axiosMatch = {
 	    switch(config.headers.Authorization) {
             case `Token ${authToken_1.auth_token}`:
                 return Promise.resolve({ data: emptyCardsList });
+            case `Token ${authToken_2.auth_token}`:
+                const cramPage = { ...cramQueueThirdPage,
+                                   count: 1,
+                                   previous: null };
+                return Promise.resolve({ data: cramPage });
 	    default:
                 return Promise.resolve({ data: cramQueueSecondPage });
 	    }
@@ -115,6 +122,8 @@ export const axiosMatch = {
             case `Token ${authToken.auth_token}`:
                 return Promise.resolve({ data: queuedCardsMiddlePage });
 	    case `Token ${authToken_1.auth_token}`:
+		return Promise.resolve({ data: emptyCardsList });
+            case `Token ${authToken_2.auth_token}`:
 		return Promise.resolve({ data: emptyCardsList });
 	    default:
 		throw new Error(
