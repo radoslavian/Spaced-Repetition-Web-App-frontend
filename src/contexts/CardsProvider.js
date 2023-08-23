@@ -53,6 +53,7 @@ export function CardsProvider({ children }) {
 
 
     // all cards
+    // could this go into a separate hook?
     const [allCards, setAllCards] = useState([]);
     const allCardsCount = useRef(0);
     const allCardsNavigation = useRef(initNavigation());
@@ -151,11 +152,12 @@ export function CardsProvider({ children }) {
         outstandingCards, setOutstandingCards);
     const removeFromCram = getRemoveFromList(cramQueue, setCramQueue);
 
-    const removeFromCramQueue = card => {
+    const updateListsRemoveFromCram = card => {
         const setCram = cards => {
             const updatedCard = {
                 ...card,
-                cram_link: null
+                cram_link: null,
+                type: "memorized"
             };
             swapInAllCards(updatedCard);
             swapInMemorized(updatedCard);
@@ -209,6 +211,7 @@ export function CardsProvider({ children }) {
         outstandingNavigation.current.next, outstandingLoadMore);
 
     // memorized - loading more cards
+    // could this go into a hook?
     const memorizedMoreSetter = getMoreCardsSetter(
         memorizedCards, setMemorizedCards);
     const memorizedLoadMore = getCards(
@@ -256,6 +259,7 @@ export function CardsProvider({ children }) {
         getMemorized(memorizedUrl());
         getQueued(queuedUrl());
         getOutstanding(outstandingUrl());
+        // consider changing to this: [user, api, selectedCategories]
     }, [user, api, selectedCategories.length]);
 
     useEffect(() => {
@@ -267,7 +271,6 @@ export function CardsProvider({ children }) {
         getCram(cramQueueUrl());
     }, [user, api]);
 
-    // undefined fields need to be implemented
     const memorized = {
         currentPage: memorizedCards,
         count: memorizedCount.current,
@@ -327,8 +330,8 @@ export function CardsProvider({ children }) {
         loadMore: allCardsOnLoadMore,
         goToFirst: getGoToFirst(getAllCards, allCardsUrl)
     };
-
     const removeFromQueued = getRemoveFromList(queuedCards, setQueuedCards);
+
     const getCardSwapper = (cardList, listSetter) => card => {
         // optimization: should check first if card with a given id
         // already is on the list
@@ -428,7 +431,7 @@ export function CardsProvider({ children }) {
         reviewCrammed: async function(card, grade) {
             const minRemoveFromCramGrade = 4;
             if (grade < minRemoveFromCramGrade) {
-                removeFromCramQueue(card);
+                removeFromCram(card);
                 return;
             } 
             if (user === undefined) {
@@ -438,7 +441,7 @@ export function CardsProvider({ children }) {
 
             // 'response' is assigned a value but never used
             const response = await api.delete(url);
-            removeFromCramQueue(card);
+            updateListsRemoveFromCram(card);
             cramQueueCount.current--;
         },
 

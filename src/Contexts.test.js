@@ -1337,12 +1337,17 @@ describe("<CardsProvider/> - cram queue", () => {
               </div>
               <div data-testid="all-cards">
                 { allCards.currentPage.map(
-                    card => <span key={card.id}
+                    card => <div key={card.id}
                                   data-testid={card.id}
                                   onClick={() => cram(card)}
                             >
-                              {card.cram_link}
-                            </span>)}
+                              <span data-testid="cram-link">
+                                {card.cram_link}
+                              </span>
+                              <span data-testid="card-type">
+                                {card.type}
+                              </span>
+                            </div>)}
               </div>
               <div data-testid="queued-cards">
                 { cards.queued.currentPage.map(
@@ -1353,12 +1358,18 @@ describe("<CardsProvider/> - cram queue", () => {
               </div>
               <div data-testid="cram-list">
                 { cramQueue.currentPage.map(
-                    card => <span key={card.id}
-                                  data-testid={card.id}
-                                  onClick={() => reviewCrammed(card, 5)}
-                            >
-                              {card.cram_link}
-                            </span>)}
+                    card => <div key={card.id}
+                                 data-testid={card.id}>
+                              <span data-testid={'successful-review-' + card.id}
+                                    onClick={() => reviewCrammed(card, 5)}
+                              />
+                              <span data-testid={'failed-review-' + card.id}
+                                    onClick={() => reviewCrammed(card, 2)}
+                              />
+                              <span data-testid="card-cramlink">
+                                {card.cram_link}
+                              </span>
+                            </div>)}
               </div>
               <span data-testid="cram-count">
                 {cramQueue.count}
@@ -1367,8 +1378,14 @@ describe("<CardsProvider/> - cram queue", () => {
         );
     };
 
-    const CramComponentWithProviders = getComponentWithProviders(
-        CramTestingComponent);
+    const CramComponentWithProviders = () => (
+        <ApiProvider>
+          <LogInComponent credentials={{user: "user_1",
+                                        password: "passwd"}}>
+              <CramTestingComponent/>
+            </LogInComponent>
+        </ApiProvider>
+    );
 
     test("grading queued card < 4 increases cram count by 1", async () => {
         render(<CramComponentWithProviders/>);
@@ -1381,14 +1398,15 @@ describe("<CardsProvider/> - cram queue", () => {
         await waitFor(() => expect(cramCount).toHaveTextContent(63));
     });
 
-    test("crammed card graded > 3 has the cram link dropped", async () => {
+    test("successful crammed card review", async () => {
+        /*
+         * card graded > 3 has the cram link dropped,
+         * card type in allCards is memorized
+         * number of cards in cram is decreased by 1
+         */
+        // type in allCards is memorized
         // test both all and memorized cards
         render(<CramComponentWithProviders/>);
-        // get list of memorized cards
-        // select card 5b457c11-b751-436c-9cfe-f3f4d173c1ba (findBy...)
-        // in memorized
-        // get cram-list
-        // review card 5b457c11-b751-436c-9cfe-f3f4d173c1ba in cram list
         const cramLink = "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/"
         + "cards/cram-queue/5b457c11-b751-436c-9cfe-f3f4d173c1ba";
         const cardById = "5b457c11-b751-436c-9cfe-f3f4d173c1ba";
@@ -1397,16 +1415,87 @@ describe("<CardsProvider/> - cram queue", () => {
               .findByTestId(cardById);
         const allCards = await screen.findByTestId("all-cards");
         const cardInAllCards = await within(allCards).findByTestId(cardById);
+        const cardInAllCards_cramLink = within(cardInAllCards).getByTestId(
+            "cram-link");
+        const cardInAllCards_type = within(cardInAllCards).getByTestId(
+            "card-type");
         const cramList = await screen.findByTestId("cram-list");
         const memorizedCardInCram = await within(cramList)
               .findByTestId(cardById);
+        const cardSuccessfulReview = within(memorizedCardInCram).getByTestId(
+            'successful-review-' + cardById);
+        const cramCount = await screen.findByTestId("cram-count");
 
         expect(memorizedCardInCram).toHaveTextContent(cramLink);
-        fireEvent.click(memorizedCardInCram);
+        fireEvent.click(cardSuccessfulReview);
+        await waitFor(() => expect(cramCount).toHaveTextContent("61"));
+
         await waitFor(() => expect(memorizedCard)
                       .not.toHaveTextContent(cramLink));
-        await waitFor(() => expect(cardInAllCards)
+
+        await waitFor(() => expect(cardInAllCards_cramLink)
                       .not.toHaveTextContent(cramLink));
+
+        await expect(async () => {
+            await waitFor(() => expect(cardInAllCards_type)
+                          .not.toHaveTextContent("memorized"));
+        }).rejects.toEqual(expect.anything());
+    });
+
+    test("failed (<4) crammed card review", async () => {
+        /* This test is way too long - shall get split 
+         * within nested 'describe' block
+         */
+        // Card is only removed from the cram queue
+        // cram link in allCards isn’t removed
+        // card has type “memorized” in allCards
+        render(<CramComponentWithProviders/>);
+        const cramLink = "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/"
+        + "cards/cram-queue/5b457c11-b751-436c-9cfe-f3f4d173c1ba";
+        const cardById = "5b457c11-b751-436c-9cfe-f3f4d173c1ba";
+        const memorizedCards = await screen.findByTestId("memorized-cards");
+        const memorizedCard = await within(memorizedCards)
+              .findByTestId(cardById);
+        const allCards = await screen.findByTestId("all-cards");
+        const cardInAllCards = await within(allCards).findByTestId(cardById);
+        const cardInAllCards_cramLink = within(cardInAllCards).getByTestId(
+            "cram-link");
+        const cardInAllCards_type = within(cardInAllCards).getByTestId(
+            "card-type");
+        const cramList = await screen.findByTestId("cram-list");
+        const memorizedCardInCram = await within(cramList)
+              .findByTestId(cardById);
+        const failCardReview = within(memorizedCardInCram).getByTestId(
+            'failed-review-' + cardById);
+        const cramCount = await screen.findByTestId("cram-count");
+
+        expect(memorizedCardInCram).toHaveTextContent(cramLink);
+        fireEvent.click(failCardReview);
+
+        await waitFor(() => expect(memorizedCardInCram)
+                      .not.toBeInTheDocument());
+
+        await expect(async () => {
+            await waitFor(() => expect(cardInAllCards_cramLink)
+                          .not.toHaveTextContent(cramLink));
+        }).rejects.toEqual(expect.anything());
+
+        await expect(async () => {
+            await waitFor(() => expect(memorizedCard)
+                          .not.toHaveTextContent(cramLink));
+        }).rejects.toEqual(expect.anything());
+
+        await expect(async () => {
+            await waitFor(() => expect(cardInAllCards_type)
+                          .not.toHaveTextContent("memorized"));
+        }).rejects.toEqual(expect.anything());
+
+        await expect(async () => {
+            await waitFor(
+                // cram count IS NOT decreased by 1
+                () => expect(cramCount).toHaveTextContent("61")
+            );
+        }).rejects.toEqual(expect.anything());
     });
 
     test("adding memorized card to cram queue", async () => {
@@ -1454,7 +1543,10 @@ describe("<CardsProvider/> - cram queue", () => {
     test("removing card from the cram", async () => {
         await act(() => render(<CramComponentWithProviders/>));
         const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
-        const crammedCard = await screen.findByTestId(crammedCardId);
+        const cramList = await screen.findByTestId("cram-list");
+        screen.debug();
+        const crammedCard = await within(cramList).findByTestId(
+            'successful-review-' + crammedCardId);
         fireEvent.click(crammedCard);
         await waitFor(() => expect(crammedCard).not.toBeInTheDocument());
     });
@@ -1561,6 +1653,7 @@ describe("<CardsProvider/> - card grading", () => {
         fireEvent.click(card);
 
         // current error handling
+        console.error.mockClear();
         await waitFor(() => expect(console.error).toBeCalled());
         expect(console.error).toHaveBeenCalledWith(errorMessage);
         // cram count doesn't change

@@ -14,14 +14,14 @@ function getCardsLeft(obj) {
           currentPage.length: ${obj.cardsList.currentPage.length},
           isLoading: ${obj.cardsList.isLoading}`);
         */
-        const isEmpty_isLoading = (obj.cardsList.currentPage.length === 0
-                                   && !obj.cardsList.isLoading);
+        const isEmpty_isNotLoading = (obj.cardsList.currentPage.length === 0
+                                      && !obj.cardsList.isLoading);
 
         return (
-            (obj.cardsList.isLast === false && isEmpty_isLoading) ||
+            (obj.cardsList.isLast === false && isEmpty_isNotLoading) ||
                 (obj.cardsList.count != 0
                  && obj.cardsList.isLast === true
-                 && isEmpty_isLoading)
+                 && isEmpty_isNotLoading)
         );
     };
 };
