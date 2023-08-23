@@ -2,10 +2,9 @@ import { PushpinOutlined, HourglassOutlined,
          EyeOutlined } from "@ant-design/icons";
 import { useState, useRef } from "react";
 import { List, Button } from "antd";
-import { Modal } from "antd";
-import parse from "html-react-parser";
 import { cardTextForList } from "../utils/helpers";
 import CardBody from "./CardBody";
+import CardPreviewModal from "./CardPreviewModal";
 
 const queuedStamp = <>
                       <HourglassOutlined
@@ -26,23 +25,6 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
 
     const openCardPreview = () => setCardPreviewOpen(true);
     const closeCardPreview = () => setCardPreviewOpen(false);
-
-    const CardPreviewModal = ({ card }) => (
-        <Modal title="Card preview"
-               centered
-               closable={false}
-               data-testid="card-preview-window"
-               open={isCardPreviewOpen}
-               footer={[
-                   <Button onClick={closeCardPreview}>
-                     Close
-                   </Button>
-               ]}>
-          <div className="card-preview">
-            { card ? parse(card.body) : "" }
-          </div>
-        </Modal>
-    );
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -112,7 +94,9 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     return (
         <>
           <CardPreviewModal data-testid="card-preview-window"
-                            card={previewedCard.current}/>
+                            card={previewedCard.current}
+                            isCardPreviewOpen={isCardPreviewOpen}
+                            closeCardPreview={closeCardPreview}/>
           <List
             bordered
             dataSource={cards}
