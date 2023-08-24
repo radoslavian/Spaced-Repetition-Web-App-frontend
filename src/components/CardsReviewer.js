@@ -66,15 +66,20 @@ export default function CardsReviewer(
         Boolean(viewedQueue) && viewedQueue.cardsList.isLoading === true ?
             <p>Loading</p>
             :
-            displayCard === true ? 
-            <div style={{textAlign: "left"}}
-                 id="cards-reviewer">
-              <CardBody card={card}
-                        title={title}
-                        setCurrentCard={setCurrentCard}
-                        showAnswer={showAnswer} />
-               { bottomBar }
-            </div>
+        // Workaraound for issue with conflicting css styles
+        // when displaying two cards in a browser:
+        //  - one card in CardsReviewer
+        //  - another in card-preview modal in cards browser
+
+        displayCard === true ? 
+        <div style={{textAlign: "left"}}
+             id="cards-reviewer">
+          <CardBody card={card}
+                    title={title}
+                    setCurrentCard={setCurrentCard}
+                    showAnswer={showAnswer} />
+          { bottomBar }
+        </div>
         : ""
     );
 }
