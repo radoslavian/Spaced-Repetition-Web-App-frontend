@@ -6,7 +6,8 @@ import CardBrowser from "./CardBrowser";
 import CardsBrowserModal from "./CardsBrowserModal";
 import { useCategories } from "../contexts/CategoriesProvider";
 
-export default function CardCategoryBrowser() {
+export default function CardCategoryBrowser(
+    { set_cardBody_visible = f => f }) {
     const { categories, selectedCategories,
             setSelectedCategories } = useCategories();
     const allCards = useCards().all;
@@ -14,9 +15,14 @@ export default function CardCategoryBrowser() {
     const { loadMore } = allCards;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const showModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
-
+    const showModal = () => {
+        setIsModalOpen(true);
+        set_cardBody_visible(false);
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+        set_cardBody_visible(true);
+    };
     const onCheck = checkedKeysValues =>
           setSelectedCategories(checkedKeysValues);
 

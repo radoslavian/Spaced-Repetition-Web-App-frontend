@@ -27,7 +27,8 @@ function getCardsLeft(obj) {
 };
 
 // setCurrentCard falls to the placeholder too often
-export default function CardsSelector({setCurrentCard = f => f}) {
+export default function CardsSelector({ setCurrentCard = f => f,
+                                        displayCardBody = true }) {
     const cards = useCards();
     const selectedQueue = useRef(null);
     const { outstanding, cram, queued } = cards;
@@ -95,44 +96,50 @@ export default function CardsSelector({setCurrentCard = f => f}) {
 
     return (
         isStopped ?
-        <MainDisplay title="Select cards group to learn:">
-          <Space direction="vertical"
-                 size="large">
-            <Button type="default"
-                    size="large"
-                    data-testid="learn-all-trigger"
-                    onClick={reviewScheduled}>
-              Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}&nbsp;left
-            </Button>
-            <Button type="default"
-                    size="large"
-                    data-testid="learn-crammed-trigger"
-                    onClick={reviewCram}>
-              Learn&nbsp;from&nbsp;cram&nbsp;-&nbsp;{cram.count}&nbsp;left
-            </Button>
-            <Button type="dashed"
-                    size="large"
-                    data-testid="learn-new-trigger"
-                    onClick={learnQueued}>
-              Learn&nbsp;new&nbsp;cards&nbsp;-&nbsp;{queued.count}&nbsp;left
-            </Button>
-          </Space>
-        </MainDisplay>
+            <MainDisplay title="Select cards group to learn:">
+              <Space direction="vertical"
+                     size="large">
+                <Button type="default"
+                        size="large"
+                        data-testid="learn-all-trigger"
+                        onClick={reviewScheduled}>
+                  Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}
+                  &nbsp;left
+                </Button>
+                <Button type="default"
+                        size="large"
+                        data-testid="learn-crammed-trigger"
+                        onClick={reviewCram}>
+                  Learn&nbsp;from&nbsp;cram&nbsp;-&nbsp;{cram.count}&nbsp;left
+                </Button>
+                <Button type="dashed"
+                        size="large"
+                        data-testid="learn-new-trigger"
+                        onClick={learnQueued}>
+                  Learn&nbsp;new&nbsp;cards&nbsp;-&nbsp;
+                  {queued.count}&nbsp;left
+                </Button>
+              </Space>
+            </MainDisplay>
         : emptyQueue() ?
-        <p data-testid="no-more-cards-for-review"
-           onClick={stopReviews}>
-          {/* placeholder notification */}
-          No more items on this list...<br/>
-          Click to return to the main page.
-        </p>
+            <p data-testid="no-more-cards-for-review"
+               onClick={stopReviews}>
+              {/* placeholder notification */}
+              No more items on this list...<br/>
+              Click to return to the main page.
+            </p>
         :
-        <>
-          <CardsReviewer viewedQueue={currentlyViewedQueue}
-                         setCurrentCard={setCurrentCard}
-                         stopReviews={stopReviews}/>
-          <LearningProgress scheduled={outstanding.count}
-                            cramQueue={cram.count}
-                            queued={queued.count}/>
-        </>
+            <div id="cards-reviewer-and-learning-progress">
+              <CardsReviewer viewedQueue={currentlyViewedQueue}
+                             setCurrentCard={setCurrentCard}
+                             stopReviews={stopReviews}
+                             displayCard={displayCardBody}/>
+              {/* Hide component when CategoryBrowser is visible */}
+              { displayCardBody ?
+              <LearningProgress scheduled={outstanding.count}
+                                cramQueue={cram.count}
+                queued={queued.count}/>
+                : "" }
+            </div>
     );
 }

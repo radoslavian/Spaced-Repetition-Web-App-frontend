@@ -7,7 +7,8 @@ import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardsReviewer(
     {viewedQueue, setCurrentCard = f => f,
-     stopReviews = f => f}) {
+     stopReviews = f => f,
+     displayCard = true}) {
     const [showAnswer, setShowAnswer] = useState(false);
     const card = viewedQueue?.cardsList.currentPage[0];
     const flipAnswer = () => setShowAnswer(!showAnswer);
@@ -65,13 +66,16 @@ export default function CardsReviewer(
         Boolean(viewedQueue) && viewedQueue.cardsList.isLoading === true ?
             <p>Loading</p>
             :
-            <div style={{textAlign: "left"}}>
+            displayCard === true ? 
+            <div style={{textAlign: "left"}}
+                 id="cards-reviewer">
               <CardBody card={card}
                         title={title}
                         setCurrentCard={setCurrentCard}
                         showAnswer={showAnswer} />
-              { bottomBar }
+               { bottomBar }
             </div>
+        : ""
     );
 }
 
