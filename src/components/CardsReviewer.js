@@ -66,10 +66,12 @@ export default function CardsReviewer(
         Boolean(viewedQueue) && viewedQueue.cardsList.isLoading === true ?
             <p>Loading</p>
             :
-        // Workaraound for issue with conflicting css styles
-        // when displaying two cards in a browser:
+        // Workaraound for issue with conflicting css styles.
+        // When displaying two cards in a browser:
         //  - one card in CardsReviewer
         //  - another in card-preview modal in cards browser
+        // styles from one element overwrite styles in
+        // another.
 
         displayCard === true ? 
         <div style={{textAlign: "left"}}

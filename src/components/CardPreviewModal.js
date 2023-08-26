@@ -10,6 +10,7 @@ export default function CardPreviewModal({ card, isCardPreviewOpen,
                closable={true}
                data-testid="card-preview-window"
                open={isCardPreviewOpen}
+               onCancel={closeCardPreview}
                footer={[
                    <Button onClick={closeCardPreview}>
                      Close

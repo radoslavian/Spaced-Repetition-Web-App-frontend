@@ -9,7 +9,8 @@ export default function CardsBrowser(
                centered
                width="600px"
                open={isOpen}
-               closable={false}
+               closable={true}
+               onCancel={closeModal}
                footer={[
                    <Button key="Close"
                            onClick={closeModal}>
