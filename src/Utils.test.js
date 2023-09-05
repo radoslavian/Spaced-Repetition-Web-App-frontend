@@ -3,7 +3,7 @@ import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
          removeElementsByClass, extractDate,
-         tagContentClearer } from "./utils/helpers";
+         tagContentClearer, textCleaner } from "./utils/helpers";
 import { queuedCardsMiddlePage } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 

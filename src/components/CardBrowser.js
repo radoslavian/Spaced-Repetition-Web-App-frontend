@@ -1,6 +1,6 @@
 import { PushpinOutlined, HourglassOutlined,
          EyeOutlined } from "@ant-design/icons";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { List, Button } from "antd";
 import { cardTextForList } from "../utils/helpers";
 import CardBody from "./CardBody";
@@ -20,11 +20,27 @@ const disabledStamp = "[dis]";
 
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     const { memorize, forget, cram, enable } = functions;
-    const previewedCard = useRef(cards[0]);
+    const [previewedCard, setPreviewedCard] = useState(undefined);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
 
     const openCardPreview = () => setCardPreviewOpen(true);
-    const closeCardPreview = () => setCardPreviewOpen(false);
+    const closeCardPreview = () => setPreviewedCard(undefined);
+
+    useEffect(() => {
+        /* This, together with closeCardPreview, is a workaround
+         * for removing card previewed in a CardBrowser list
+         * from the DOM before closing the preview (the 'eye' icon) modal.
+         * 1. Closing modal callback function actually sets
+         *    currently previewedCard to 'undefined'
+         * 2. the useEffect gets triggered by the previewedCard
+         *    state change and
+         * 3. actually closes the modal.
+         * -- this has no coverage in tests! --
+         */
+        if (previewedCard === undefined) {
+            setCardPreviewOpen(false);
+        }
+    }, [previewedCard]);
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -72,7 +88,7 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
         actions.push(
             <EyeOutlined title="preview card"
                          onClick={() => {
-                             previewedCard.current = card;
+                             setPreviewedCard(card);
                              openCardPreview();
                          }}
             />
@@ -94,7 +110,7 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     return (
         <>
           <CardPreviewModal data-testid="card-preview-window"
-                            card={previewedCard.current}
+                            card={previewedCard}
                             isCardPreviewOpen={isCardPreviewOpen}
                             closeCardPreview={closeCardPreview}/>
           <div id="scrollable-card-list-browser"
