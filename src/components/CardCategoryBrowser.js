@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Button } from "antd";
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Input } from "antd";
 import CategorySelector from "./CategorySelector";
 import { useCards } from "../contexts/CardsProvider";
 import CardBrowser from "./CardBrowser";
@@ -8,11 +9,13 @@ import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardCategoryBrowser(
     { set_cardBody_visible = f => f }) {
+    const { Search } = Input;
     const { categories, selectedCategories,
             setSelectedCategories } = useCategories();
     const allCards = useCards().all;
     const functions = useCards().functions;
     const { loadMore } = allCards;
+    const [searchedPhrase, setSearchedPhrase] = useState();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -23,7 +26,7 @@ export default function CardCategoryBrowser(
         setIsModalOpen(false);
         set_cardBody_visible(true);
     };
-    const onCheck = checkedKeysValues =>
+    const onCategoryCheck = checkedKeysValues =>
           setSelectedCategories(checkedKeysValues);
 
     return (
@@ -31,7 +34,7 @@ export default function CardCategoryBrowser(
 	  <CategorySelector
             categories={categories}
             selectedCategories={selectedCategories}
-            onCheck={onCheck}
+            onCheck={onCategoryCheck}
           />
           <Button type="primary"
                   onClick={showModal}>
@@ -44,19 +47,16 @@ export default function CardCategoryBrowser(
                                  closeModal();
                              }}
                              closeModal={closeModal}>
-            <div id="scrollable-card-list-browser"
-                 style={{
-                     // found in StackOverflow question:
-                     // "How to limit the height of the modal?"
-                     maxHeight: "calc(100vh - 225px)",
-                     overflow: "auto",
-                     padding: '0 16px',
-                 }}
-            >
+            <Search placeholder="Search for..." allowClear
+                    /* returns event data:
+                     * onPressEnter={a => console.log(a)} */
+                    onSearch={phrase => allCards.setSearchedPhrase(phrase)}
+                    /* loading={true} */
+            />
               <CardBrowser loadMore={loadMore}
                            cards={allCards.currentPage}
                            functions={functions}/>
-            </div>
+
           </CardsBrowserModal>
         </>
     );

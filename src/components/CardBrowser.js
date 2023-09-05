@@ -97,6 +97,15 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                             card={previewedCard.current}
                             isCardPreviewOpen={isCardPreviewOpen}
                             closeCardPreview={closeCardPreview}/>
+          <div id="scrollable-card-list-browser"
+                 style={{
+                     // found in StackOverflow question:
+                     // "How to limit the height of the modal?"
+                     maxHeight: "calc(100vh - 225px)",
+                     overflow: "auto",
+                     padding: '0 16px',
+                 }}
+            >
           <List
             bordered
             dataSource={cards}
@@ -105,7 +114,8 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
           <Button type="link"
             onClick={loadMore}>
             load more
-          </Button>
+        </Button>
+        </div>
         </>
     );
 }

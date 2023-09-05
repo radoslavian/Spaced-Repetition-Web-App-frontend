@@ -685,6 +685,14 @@ describe("<CardsProvider/> - all cards - general", () => {
          });
 });
 
+describe("<CardsProvider/> - searching all cards", () => {
+    const TestingComponent = () => {
+        // const { memorized, outstanding, queued, cram, all } = cards;
+        const cards = useCards();
+        const { searchAll }  = cards;
+    };
+});
+
 describe("<CardsProvider/> - all cards - navigation", () => {
     const QueuedTestingComponent = () => getNavigationTestingComponent(
         useCards().all)();
@@ -1534,7 +1542,7 @@ describe("<CardsProvider/> - cram queue", () => {
         expect(axiosMatch.put).not.toHaveBeenCalled();
         await expect(async () => {
             await waitFor(
-                // cram count IS NOT increased by 1
+                // cram count SHOULD NOT be increased by 1
                 () => expect(cramCount).toHaveTextContent("63")
             );
         }).rejects.toEqual(expect.anything());
@@ -1544,7 +1552,6 @@ describe("<CardsProvider/> - cram queue", () => {
         await act(() => render(<CramComponentWithProviders/>));
         const crammedCardId = "7cf7ed26-bfd3-45z8-a9fc-a284a86a6bfa";
         const cramList = await screen.findByTestId("cram-list");
-        screen.debug();
         const crammedCard = await within(cramList).findByTestId(
             'successful-review-' + crammedCardId);
         fireEvent.click(crammedCard);

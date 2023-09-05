@@ -5,7 +5,7 @@ import {
     outstandingMiddlePage, outstandingPrevPage, outstandingNextPage, allCardsMiddle,
     allCardsNext, allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
     cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList,
-    queuedCard
+    queuedCard, allCardsSearchResults
 } from "./mockData";
 
 const cramQueueRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
@@ -32,6 +32,7 @@ const gradeSuccessRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[8
 const gradeFailRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/c0320d44-c157-4857-a2b8-39ce89d168f5$/;
 const forgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/5b457c11-b751-436c-9cfe-f3f4d173c1ba$/;
 const failedForgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/4a58594b-1c84-41f5-b4f0-72dc573b6406$/;
+const searchAllCardsRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?search\=[\w\+]+/;
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
 export const downloadCards = jest.fn();
@@ -40,6 +41,7 @@ export const gradeCard = jest.fn();
 export const forgetCard = jest.fn();
 export const getQueuedCard = jest.fn();
 export const dropCram = jest.fn();
+export const searchAllCards = jest.fn();
 
 export const axiosMatch = {
     post: jest.fn().mockImplementation(config => {
@@ -61,6 +63,10 @@ export const axiosMatch = {
 	}
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
+        }
+        else if (searchAllCardsRoute.test(config.url)) {
+            searchAllCards(config);
+            return Promise.resolve({ data: allCardsSearchResults });
         }
         else if (queuedCardRoute.test(config.url)) {
             getQueuedCard(config);

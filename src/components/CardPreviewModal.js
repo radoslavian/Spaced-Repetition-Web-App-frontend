@@ -1,12 +1,30 @@
-import { Modal } from "antd";
-import { Button } from "antd";
+import { Modal, Button, Tabs } from "antd";
 import parse from "html-react-parser";
+import CardDetails from "./CardDetails";
 
 export default function CardPreviewModal({ card, isCardPreviewOpen,
                                            closeCardPreview })  {
+    const cardPreviewTab = (
+        <div className="card-preview">
+          { card ? parse(card.body) : "" }
+        </div>
+    );
+    const cardDetailsTab = <CardDetails card={card}/>;
+    const items = [
+        {
+            key: "card_preview",
+            label: "Card preview",
+            children: cardPreviewTab
+        },
+        {
+            key: "card_details",
+            label: "Details",
+            children: cardDetailsTab
+        }
+    ];
+    
     return (
-        <Modal title="Card preview"
-               centered
+        <Modal centered
                closable={true}
                data-testid="card-preview-window"
                open={isCardPreviewOpen}
@@ -16,9 +34,7 @@ export default function CardPreviewModal({ card, isCardPreviewOpen,
                      Close
                    </Button>
                ]}>
-          <div className="card-preview">
-            { card ? parse(card.body) : "" }
-          </div>
+          <Tabs defaultActiveKey="card_preview" items={items}/>
         </Modal>
     );
 }

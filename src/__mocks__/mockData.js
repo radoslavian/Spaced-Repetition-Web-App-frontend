@@ -1165,3 +1165,37 @@ export const queuedCard = {
         }
     ]
 };
+
+export const allCardsSearchResults = {
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": "7d257a29-5334-4ef4-a2c9-cc9c942a108f",
+            "body": "Search result",
+            "projected_review_data": null,
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": null,
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+    ]
+};

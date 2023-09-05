@@ -5,6 +5,7 @@ import { getAuthToken } from "../utils/helpers.js";
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
+    // set user to undefined as an initial state ...
     const [user, setUser] = useState();
     const api = useApi();
     const token = getAuthToken();
@@ -15,6 +16,7 @@ export function UserProvider({ children }) {
                 const response = await api.get("/auth/users/me/");
                 setUser(response !== undefined ? response : null);
             } else {
+		// ... and remove this snippet:
                 setUser(null);
             }
         };

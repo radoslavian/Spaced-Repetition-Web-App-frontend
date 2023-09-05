@@ -16,16 +16,34 @@ import { userCategories2 as userCategories } from "./__mocks__/mockData";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
 import CardsReviewer from "./components/CardsReviewer";
 import CardsSelector from "./components/CardsSelector";
-import axios, { downloadCards, axiosMatch, gradeCard } from "axios";
+import axios, { downloadCards, axiosMatch, gradeCard,
+                searchAllCards } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
 import { reviewSuccess, queuedCard } from "./__mocks__/mockData";
 import MainGrid from "./components/MainGrid";
+import CardPreviewModal from "./components/CardPreviewModal";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
     fireEvent.click(showAnswer);
 }
+
+describe("<CardPreviewModal/>", () => {
+    it("displays card details after selecting a tab", async () => {
+        render(
+            <CardPreviewModal card={reviewSuccess}
+                              isCardPreviewOpen={true}
+                              closeCardPreview={f => f}/>
+        );
+        const cardDetailsTab = screen.getByText("Details");
+        fireEvent.click(cardDetailsTab);
+        const cardDetails = await screen.findByTestId("card-details");
+
+        expect(cardDetails).toBeInTheDocument();
+        expect(cardDetails).toHaveTextContent("Last reviewed2023-05-15");
+    });
+});
 
 describe("<CardDetails/>", () => {
     // component displays: lapses, computed interval, number of reviews etc.
@@ -258,8 +276,6 @@ describe("<CardCategoryBrowser/>", () => {
             })();
         }, []);
 
-        // looks like the component is not re-rendered after authentication
-
         return (
             api.isAuthenticated() ? 
                 <CardCategoryBrowser/>
@@ -269,14 +285,44 @@ describe("<CardCategoryBrowser/>", () => {
     const ComponentWithProviders = getComponentWithProviders(
         TestingComponent);
 
-    const renderComponent = async () => await act(() => render(
-        <ComponentWithProviders/>));
+    // const renderComponent = async () => await act(() => render(
+    //     <ComponentWithProviders/>));
+    const renderComponent = () => render(
+        <ApiProvider>
+          <LogInComponent credentials={{
+              user: "user_1",
+              password: "passwd"
+          }}>
+            <CardCategoryBrowser/>
+          </LogInComponent>
+        </ApiProvider>
+    );
 
     beforeEach(async () => {
-        await renderComponent();
+        renderComponent();
         const browseAllCardsButton = await screen.findByText(
             "Browse all cards");
         fireEvent.click(browseAllCardsButton);
+    });
+
+    it("searching: calling api endpoint and returning results", async () => {
+        const searchField = await screen.findByPlaceholderText(
+            "Search for...");
+        const cardsBrowser = await screen.findByText("Browse all cards");
+        fireEvent.click(cardsBrowser);
+        const searchButton = await screen.findByLabelText("search");
+        const expectedUrl = "http://localhost:8000/api/users/626e4d32-"
+              + "a52f-4c15-8f78-aacf3b69a9b2/cards/?search=searched+phrase";
+        fireEvent.change(searchField, {
+            target: { value: "searched phrase" }
+        });
+        fireEvent.click(searchButton);
+        const searchResult = await screen.findByText("Search result");
+        
+        expect(searchResult).toBeInTheDocument();
+        expect(searchAllCards).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {url: expectedUrl}));
     });
 
     test("if component downloads cards from the server", async () => {
@@ -289,15 +335,16 @@ describe("<CardCategoryBrowser/>", () => {
     });
 
     test("if clicking 'load more' works", async () => {
-        const loadMoreButton = await screen.findByText("load more");
-        fireEvent.click(loadMoreButton);
         const cardMiddle = await screen.findByTestId(
             "f8f3ef31-1554-450f-ad7b-589bfd0e068d");  // allCardsMiddle
+        const loadMoreButton = await screen.findByText("load more");
+        fireEvent.click(loadMoreButton);
+
         const cardNext = await screen.findByTestId(
             "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");  // allCardsNext
         fireEvent.click(loadMoreButton);
         const cardNext_1 = await screen.findByTestId(
-        "e6e7b3ea-72d7-4663-8c0d-591c7b9fcafb");
+            "e6e7b3ea-72d7-4663-8c0d-591c7b9fcafb");
 
         // assert cards from all pages
         expect(cardMiddle).toBeInTheDocument();
@@ -553,6 +600,48 @@ describe("<CardsReviewer/>", () => {
         const nextCard = await screen.findByText(nextCardText);
         expect(nextCard).toBeInTheDocument();
     });
+});
+
+describe("<CardsSelector/> - hints for selectors", () => {
+    beforeEach(() => render(
+        <ApiProvider>
+          <LogInComponent credentials={{
+              user: "user_1",
+              password: "passwd"
+          }}>
+            <CardsSelector/>
+          </LogInComponent>
+        </ApiProvider>
+    ));
+
+    it("displays help for the 'Learn scheduled' button", async () => {
+        const learnScheduledButton = screen.getByTestId("learn-all-trigger");
+        fireEvent.mouseOver(learnScheduledButton);
+        const helpTip = await screen.findByText(
+            "Learn scheduled cards first");
+        expect(helpTip).toBeInTheDocument();
+    });
+
+    it("displays help for the 'Learn from cram' button", async () => {
+        const learnFromCramButton = screen.getByTestId(
+            "learn-crammed-trigger");
+        fireEvent.mouseOver(learnFromCramButton);
+        const helpTip = await screen.findByText(
+            "Review crammed cards");
+        expect(helpTip).toBeInTheDocument();
+    });
+
+    it("displays help for the 'Learn new cards' button", async () => {
+        const learnNewCards = screen.getByTestId(
+            "learn-new-trigger");
+        fireEvent.mouseOver(learnNewCards);
+        const helpTip = await screen.findByText(
+            "Learn cards that haven't been put into learning process yet.");
+        expect(helpTip).toBeInTheDocument();
+    });
+
+    // remaining buttons
+
 });
 
 describe("<CardsSelector/> - general & grading scheduled cards", () => {

@@ -1,10 +1,49 @@
-import { Space } from "antd";
+import { Space, Button, Row, Col, Popover } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
 import MainDisplay from "./MainDisplay";
 import { useState, useEffect, useRef } from "react";
-import { Button, Row, Col } from "antd"; 
+
+const scheduledButtonHelp = {
+    title: "Learn scheduled cards first",
+    content: (
+        <div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br/>
+            Nullam eu dui eu erat <b>molestie</b> scelerisque non vel est.</p>
+          <p>Mauris pretium aliquam odio, eget ultrices mi ullamcorper in.<br/>
+            Sed facilisis pharetra sodales.</p>
+        </div>
+    )
+};
+
+const cramButtonHelp = {
+    title: "Review crammed cards",
+    content: (
+        <div>
+          <p>Suspendisse a ornare erat. Pellentesque habitant morbi<br/>
+            tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+          <p>Donec luctus rutrum est, ut dignissim odio condimentum non.<br/>
+            Curabitur consectetur lorem ex, non dignissim arcu faucibus eu.<br/>
+            Suspendisse ut purus at augue pellentesque euismod sed sit amet sem.</p>
+        </div>
+    )
+};
+
+const learnNewButtonHelp = {
+    title: "Learn cards that haven't been put into learning process yet.",
+    content: (
+        <div>
+          <p>Ut elementum sit amet est nec efficitur.<br/>
+            Praesent eget nisi et ipsum maximus pellentesque. Praesent<br/>
+            ullamcorper aliquam accumsan.</p>
+          <p>Praesent pharetra magna erat, id consequat arcu porttitor eu.<br/>
+            Ut placerat varius dolor sit amet consectetur. Nam nec turpis luctus,<br/>
+            cursus nulla vitae, porttitor diam.</p>
+          <p>Proin in sem scelerisque, rhoncus arcu sit amet, accumsan est.</p>
+        </div>
+    )
+};
 
 function getCardsLeft(obj) {
     return () => {
@@ -99,26 +138,38 @@ export default function CardsSelector({ setCurrentCard = f => f,
             <MainDisplay title="Select cards group to learn:">
               <Space direction="vertical"
                      size="large">
-                <Button type="default"
-                        size="large"
-                        data-testid="learn-all-trigger"
-                        onClick={reviewScheduled}>
-                  Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}
-                  &nbsp;left
-                </Button>
-                <Button type="default"
-                        size="large"
-                        data-testid="learn-crammed-trigger"
-                        onClick={reviewCram}>
-                  Learn&nbsp;from&nbsp;cram&nbsp;-&nbsp;{cram.count}&nbsp;left
-                </Button>
-                <Button type="dashed"
-                        size="large"
-                        data-testid="learn-new-trigger"
-                        onClick={learnQueued}>
-                  Learn&nbsp;new&nbsp;cards&nbsp;-&nbsp;
-                  {queued.count}&nbsp;left
-                </Button>
+                <Popover placement="rightTop"
+                         title={scheduledButtonHelp.title}
+                         content={scheduledButtonHelp.content}>
+                  <Button type="default"
+                          size="large"
+                          data-testid="learn-all-trigger"
+                          onClick={reviewScheduled}>
+                    Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}
+                    &nbsp;left
+                  </Button>
+                </Popover>
+                <Popover placement="rightTop"
+                         title={cramButtonHelp.title}
+                         content={cramButtonHelp.content}>
+                  <Button type="default"
+                          size="large"
+                          data-testid="learn-crammed-trigger"
+                          onClick={reviewCram}>
+                    Learn&nbsp;from&nbsp;cram&nbsp;-&nbsp;{cram.count}&nbsp;left
+                  </Button>
+                </Popover>
+                <Popover placement="rightTop"
+                         title={learnNewButtonHelp.title}
+                         content={learnNewButtonHelp.content}>
+                  <Button type="dashed"
+                          size="large"
+                          data-testid="learn-new-trigger"
+                          onClick={learnQueued}>
+                    Learn&nbsp;new&nbsp;cards&nbsp;-&nbsp;
+                    {queued.count}&nbsp;left
+                  </Button>
+                </Popover>
               </Space>
             </MainDisplay>
         : emptyQueue() ?

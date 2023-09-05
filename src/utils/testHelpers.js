@@ -3,6 +3,7 @@ import { UserProvider } from "../contexts/UserProvider";
 import { ApiProvider, useApi } from "../contexts/ApiProvider";
 import { CategoriesProvider } from "../contexts/CategoriesProvider";
 import { CardsProvider } from "../contexts/CardsProvider.js";
+import { useUser } from "../contexts/UserProvider.js";
 
 export function getComponentWithProviders(Component) {
     return () => (<ApiProvider>
@@ -17,6 +18,15 @@ export function getComponentWithProviders(Component) {
                  );
 }
 
+function UserChecker() {
+    const user = useUser();
+    return (
+        <span data-testid="user-checker">
+          { (user === undefined || user === null) ? "undefined" : "user" }
+        </span>
+    );
+}
+
 export function LogInComponent ({children, credentials}) {
     const [loggedIn, setLoggedIn] = useState(false);
     const api = useApi();
@@ -25,7 +35,7 @@ export function LogInComponent ({children, credentials}) {
             await api.authenticate("/auth/token/login/", credentials);
             setLoggedIn(true);
         })();
-    }, []);
+    }, [api]);
 
     // login first into the API
     // then render UserProvider
@@ -33,6 +43,8 @@ export function LogInComponent ({children, credentials}) {
         <UserProvider>
           <CategoriesProvider>
             <CardsProvider>
+              <UserChecker/>
+              <span data-testid="logged-in">{ loggedIn.toString() }</span>
               {children}
             </CardsProvider>
           </CategoriesProvider>

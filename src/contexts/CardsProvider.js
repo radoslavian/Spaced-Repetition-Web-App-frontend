@@ -58,6 +58,7 @@ export function CardsProvider({ children }) {
     const allCardsCount = useRef(0);
     const allCardsNavigation = useRef(initNavigation());
     const [allCardsIsLoading, setAllCardsLoading] = useState(false);
+    const [allCardsSearchedPhrase, setAllCardsSearchedPhrase] = useState("");
 
     // later this should come from a separate module used by both
     // front-end app and back-end app
@@ -244,12 +245,24 @@ export function CardsProvider({ children }) {
     const cramOnLoadMore = getCardsOnLoadMore(
         cramQueueNavigation.current.next, cramLoadMore);
 
-    const allCardsUrl = () => `/users/${user.id}/cards/`;
+    const allCardsUrl = () => {
+        if(allCardsSearchedPhrase !== "") {
+            const searchQuery = new URLSearchParams(
+                {search: allCardsSearchedPhrase});
+            return `/users/${user.id}/cards/?${searchQuery}`;
+        }
+        else {
+            return `/users/${user.id}/cards/`;
+        }
+    };
     const memorizedUrl = () => `/users/${user.id}/cards/memorized/`;
     const queuedUrl = () => `/users/${user.id}/cards/queued/`;
     const outstandingUrl = () =>  `/users/${user.id}/cards/outstanding/`;
     const cramQueueUrl = () => `/users/${user.id}/cards/cram-queue/`;
 
+    // these useEffects should be ultimately reorganized and
+    // put into hook returning objects that are listed below
+    // (memorized, all, outstanding etc.)
     useEffect(() => {
         if (!api.isAuthenticated() || user === undefined) {
             return;
@@ -261,6 +274,12 @@ export function CardsProvider({ children }) {
         getOutstanding(outstandingUrl());
         // consider changing to this: [user, api, selectedCategories]
     }, [user, api, selectedCategories.length]);
+
+    useEffect(() => {
+        if (Boolean(user)) {
+            getAllCards(allCardsUrl());
+        }
+    }, [allCardsSearchedPhrase]);
 
     useEffect(() => {
         // cram shall be loaded separately since its independent
@@ -328,7 +347,8 @@ export function CardsProvider({ children }) {
         nextPage: nextPageAllCards,
         prevPage: prevPageAllCards,
         loadMore: allCardsOnLoadMore,
-        goToFirst: getGoToFirst(getAllCards, allCardsUrl)
+        goToFirst: getGoToFirst(getAllCards, allCardsUrl),
+        setSearchedPhrase: setAllCardsSearchedPhrase
     };
     const removeFromQueued = getRemoveFromList(queuedCards, setQueuedCards);
 
