@@ -28,13 +28,14 @@ export function cardTextForList(text) {
 };
 
 const textCleaner = composeAll(
+    text => tagContentClearer(text, "audio"),
     text => tagContentClearer(text, "script"),
     text => tagContentClearer(text, "style"),
-    text => tagContentClearer(text, "audio"),
     stripOfHtmlTags,
     removeNewlines,
     reduceWhiteSpaces,
-    text => text.trim());
+    text => text.trim()
+);
 
 
 function compose(f, g) {
