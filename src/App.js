@@ -7,6 +7,7 @@ import { CategoriesProvider } from "./contexts/CategoriesProvider";
 import { CardsProvider } from "./contexts/CardsProvider";
 import { getAuthToken } from "./utils/helpers.js";
 import MainGrid from "./components/MainGrid";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
     const api = useApi();
@@ -39,11 +40,12 @@ function App() {
                 </CategoriesProvider>
               </UserProvider>
             </div>
-            :
-            <p>
-              Api - is authenticated:
-              { api.isAuthenticated().toString() }
-            </p>
+        :
+        <p>
+          Api - is authenticated:
+          { api.isAuthenticated().toString() }
+        </p>
+
     );
 }
 

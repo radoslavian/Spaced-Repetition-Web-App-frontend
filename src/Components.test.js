@@ -21,7 +21,7 @@ import axios, { downloadCards, axiosMatch, gradeCard,
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
 import { reviewSuccess, queuedCard } from "./__mocks__/mockData";
-import MainGrid from "./components/MainGrid";
+import PageContent from "./components/PageContent";
 import CardPreviewModal from "./components/CardPreviewModal";
 
 async function showAnswer() {
@@ -54,7 +54,7 @@ describe("<CardDetails/>", () => {
               user: "user_1",
               password: "passwd"
           }}>
-            <MainGrid/>
+            <PageContent/>
           </LogInComponent>
         </ApiProvider>
     );
