@@ -1,8 +1,6 @@
-import {Row, Col, theme } from "antd";
 import { Route, Routes } from "react-router-dom";
 import LearnCardsPage from "./LearnCardsPage";
 import PageHeader from "./PageHeader";
-import { Link } from "react-router-dom";
 
 export default function MainGrid() {
 
