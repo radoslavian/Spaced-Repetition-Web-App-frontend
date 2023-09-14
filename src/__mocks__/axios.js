@@ -5,7 +5,7 @@ import {
     outstandingMiddlePage, outstandingPrevPage, outstandingNextPage, allCardsMiddle,
     allCardsNext, allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
     cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList,
-    queuedCard, allCardsSearchResults
+    queuedCard, allCardsSearchResults, cardsDistribution_12Days
 } from "./mockData";
 
 const cramQueueRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
@@ -34,6 +34,7 @@ const forgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89a
 const failedForgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/4a58594b-1c84-41f5-b4f0-72dc573b6406$/;
 const searchAllCardsRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?search\=[\w\+]+/;
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
+const cardsDistribution_12DaysRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/\?days-range=\w+$/;
 
 export const downloadCards = jest.fn();
 export const categoriesCalls = jest.fn();
@@ -64,6 +65,9 @@ export const axiosMatch = {
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
         }
+	else if (cardsDistribution_12DaysRoute.test(config.url)) {
+	    return Promise.resolve({ data: cardsDistribution_12Days });
+	}
         else if (searchAllCardsRoute.test(config.url)) {
             searchAllCards(config);
             return Promise.resolve({ data: allCardsSearchResults });

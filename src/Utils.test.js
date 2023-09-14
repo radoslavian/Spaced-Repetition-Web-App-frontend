@@ -219,3 +219,25 @@ test("tagContentClearer", () => {
     expect(expectedOutput).toEqual(receivedOutput);
 });
 
+describe("compareDate", () => {
+    test("dateA before dateB", () => {
+        const dateA = "2023-08-15";
+        const dateB = "2023-09-15";
+        const result = compareDate(dateA, dateB);
+        expect(result).toEqual(-1);
+    });
+
+    test("date b before date a", () => {
+        const dateA = "2023-09-15";
+        const dateB = "2023-08-15";
+        const result = compareDate(dateA, dateB);
+        expect(result).toEqual(1);
+    });
+
+    test("dates are equal", () => {
+        const dateA = "2023-09-15";
+        const dateB = "2023-09-15";
+        const result = compareDate(dateA, dateB);
+        expect(result).toEqual(0);
+    });
+});
