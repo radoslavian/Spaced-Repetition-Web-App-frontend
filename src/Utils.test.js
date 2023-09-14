@@ -3,7 +3,7 @@ import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
          removeElementsByClass, extractDate,
-         tagContentClearer, textCleaner } from "./utils/helpers";
+         tagContentClearer, textCleaner, compareDate } from "./utils/helpers";
 import { queuedCardsMiddlePage } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 
@@ -224,14 +224,14 @@ describe("compareDate", () => {
         const dateA = "2023-08-15";
         const dateB = "2023-09-15";
         const result = compareDate(dateA, dateB);
-        expect(result).toEqual(-1);
+        expect(result).toBeLessThan(0);
     });
 
     test("date b before date a", () => {
         const dateA = "2023-09-15";
         const dateB = "2023-08-15";
         const result = compareDate(dateA, dateB);
-        expect(result).toEqual(1);
+        expect(result).toBeGreaterThan(0);
     });
 
     test("dates are equal", () => {

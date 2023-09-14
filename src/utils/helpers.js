@@ -125,3 +125,8 @@ export function tagContentClearer(input, tag) {
     return parentDiv.innerHTML;
 }
 
+export function compareDate(dateA, dateB) {
+    // sorting function - from Stackoverflow:
+    // How to sort an object array by date property?
+    return new Date(dateA) - new Date(dateB);
+}
