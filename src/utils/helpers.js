@@ -126,7 +126,18 @@ export function tagContentClearer(input, tag) {
 }
 
 export function compareDate(dateA, dateB) {
-    // sorting function - from Stackoverflow:
+    // date sorting function - from Stackoverflow:
     // How to sort an object array by date property?
     return new Date(dateA) - new Date(dateB);
 }
+
+export function convertEFactorData(eFactorData) {
+    // convert array data received from the API
+    // into an object = { "e-factor": value }
+    // With the help from StackOverflow:
+    // How do I convert array of Objects into one Object in JavaScript?
+    const mapped = eFactorData.map(ef => ({ [ef["e-factor"]]: ef["count"] }));
+    const convertedData = Object.assign({}, ...mapped);
+    return convertedData;
+}
+

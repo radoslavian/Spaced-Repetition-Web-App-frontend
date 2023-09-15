@@ -16,18 +16,60 @@ import { userCategories2 as userCategories } from "./__mocks__/mockData";
 import CardCategoryBrowser from "./components/CardCategoryBrowser";
 import CardsReviewer from "./components/CardsReviewer";
 import CardsSelector from "./components/CardsSelector";
-import axios, { downloadCards, axiosMatch, gradeCard,
-                searchAllCards } from "axios";
+import axios, {
+    downloadCards, axiosMatch, searchAllCards, gradeCard,
+    cardsDistribution_12DaysCallback, cardsMemorization_12DaysCallback,
+    gradesDistributionRouteCallback,
+    eFactorDistributionRouteCallback } from "axios";
 import { getComponentWithProviders } from "./utils/testHelpers";
 import { LogInComponent } from "./utils/testHelpers";
 import { reviewSuccess, queuedCard } from "./__mocks__/mockData";
 import LearnCardsPage from "./components/LearnCardsPage";
 import CardPreviewModal from "./components/CardPreviewModal";
+import { CardDistributionChart } from "./components/DistributionCharts";
+import CardsDistributionPage from "./components/CardsDistributionPage";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
     fireEvent.click(showAnswer);
 }
+
+async function expectToRejectCalls(functions) {
+    for (let fn of functions) {
+        await expect(async () => {
+            await waitFor(() => expect(fn).toHaveBeenCalled());
+        }).rejects.toEqual(expect.anything());
+    }
+}
+/*
+// these tests (most likely) throw errors because
+// there is no canvas support in a testing environment
+describe("<CardsDistributionPage/>", () => {
+    const renderComponent = () => render(
+        <ApiProvider>
+          <LogInComponent credentials={{
+              user: "user_1",
+              password: "passwd"
+          }}>
+            <CardsDistributionPage/>
+          </LogInComponent>
+        </ApiProvider>
+    );
+
+    it("fetches data from the API for 12 days in advance", async () => {
+        renderComponent();
+        await waitFor(() => expect(cardsDistribution_12DaysCallback)
+                      .toHaveBeenCalledTimes(1));
+    });
+
+    it("doesn't connect with other API endpoints", async () => {
+        renderComponent();
+        await expectToRejectCalls([cardsMemorization_12DaysCallback,
+                                   gradesDistributionRouteCallback,
+                                   eFactorDistributionRouteCallback]);
+    });
+});
+*/
 
 describe("<CardPreviewModal/>", () => {
     it("displays card details after selecting a tab", async () => {

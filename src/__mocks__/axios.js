@@ -5,7 +5,8 @@ import {
     outstandingMiddlePage, outstandingPrevPage, outstandingNextPage, allCardsMiddle,
     allCardsNext, allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
     cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList,
-    queuedCard, allCardsSearchResults, cardsDistribution_12Days
+    queuedCard, allCardsSearchResults, cardsDistribution_12Days,
+    memorizationDistribution, eFactorDistribution, gradesDistribution
 } from "./mockData";
 
 const cramQueueRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
@@ -34,7 +35,12 @@ const forgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89a
 const failedForgetCardRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/memorized\/4a58594b-1c84-41f5-b4f0-72dc573b6406$/;
 const searchAllCardsRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/\?search\=[\w\+]+/;
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
+
+// statistics-distribution endpoints
 const cardsDistribution_12DaysRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/\?days-range=\w+$/;
+const cardsMemorization_12DaysRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/memorized\/\?days-range=12$/;
+const gradesDistributionRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/grades\/$/;
+const eFactorDistributionRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/e-factor\/$/;
 
 export const downloadCards = jest.fn();
 export const categoriesCalls = jest.fn();
@@ -43,6 +49,12 @@ export const forgetCard = jest.fn();
 export const getQueuedCard = jest.fn();
 export const dropCram = jest.fn();
 export const searchAllCards = jest.fn();
+
+// cards distribution spy functions
+export const cardsDistribution_12DaysCallback = jest.fn();
+export const cardsMemorization_12DaysCallback = jest.fn();
+export const gradesDistributionRouteCallback = jest.fn();
+export const eFactorDistributionRouteCallback = jest.fn();
 
 export const axiosMatch = {
     post: jest.fn().mockImplementation(config => {
@@ -65,7 +77,20 @@ export const axiosMatch = {
         if (config.url.includes("/auth/users/me/")) {
             return Promise.resolve({ data: userData });
         }
+        else if (eFactorDistributionRoute.test(config.url)) {
+            eFactorDistributionRouteCallback();
+            return Promise.resolve({ data: eFactorDistribution });
+        }
+        else if (gradesDistributionRoute.test(config.url)) {
+            gradesDistributionRouteCallback();
+            return Promise.resolve({ data: gradesDistribution });
+        }
+        else if (cardsMemorization_12DaysRoute.test(config.url)) {
+            cardsMemorization_12DaysCallback();
+            return Promise.resolve({ data: memorizationDistribution });
+        }
 	else if (cardsDistribution_12DaysRoute.test(config.url)) {
+	    cardsDistribution_12DaysCallback();
 	    return Promise.resolve({ data: cardsDistribution_12Days });
 	}
         else if (searchAllCardsRoute.test(config.url)) {

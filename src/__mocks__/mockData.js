@@ -1214,3 +1214,98 @@ export const cardsDistribution_12Days = {
     "2023-09-25": 2,
     "2023-09-26": 2
 };
+
+export const gradesDistribution = {
+    "0": 2,
+    "1": 5,
+    "2": 25,
+    "3": 42,
+    "4": 4,
+    "5": 13
+};
+
+export const eFactorDistribution = [
+    {
+        "e-factor": "1.3",
+        "count": 2
+    },
+    {
+        "e-factor": "1.7",
+        "count": 2
+    },
+    {
+        "e-factor": "1.72",
+        "count": 2
+    },
+    {
+        "e-factor": "1.76",
+        "count": 1
+    },
+    {
+        "e-factor": "1.78",
+        "count": 1
+    },
+    {
+        "e-factor": "1.82",
+        "count": 1
+    },
+    {
+        "e-factor": "1.9",
+        "count": 2
+    },
+    {
+        "e-factor": "1.96",
+        "count": 2
+    },
+    {
+        "e-factor": "2.04",
+        "count": 1
+    },
+    {
+        "e-factor": "2.04",
+        "count": 7
+    },
+    {
+        "e-factor": "2.18",
+        "count": 6
+    },
+    {
+        "e-factor": "2.22",
+        "count": 8
+    },
+    {
+        "e-factor": "2.28",
+        "count": 6
+    },
+    {
+        "e-factor": "2.36",
+        "count": 19
+    },
+    {
+        "e-factor": "2.46",
+        "count": 2
+    },
+    {
+        "e-factor": "2.5",
+        "count": 2
+    },
+    {
+        "e-factor": "2.6",
+        "count": 4
+    }
+];
+
+export const memorizationDistribution = {
+    "2023-09-13": 1,
+    "2023-09-12": 2,
+    "2023-09-11": 0,
+    "2023-09-10": 1,
+    "2023-09-09": 0,
+    "2023-09-08": 5,
+    "2023-09-07": 0,
+    "2023-09-06": 5,
+    "2023-09-05": 36,
+    "2023-09-04": 0,
+    "2023-09-03": 4,
+    "2023-09-02": 10
+}

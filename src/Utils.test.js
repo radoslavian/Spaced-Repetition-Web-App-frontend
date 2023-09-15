@@ -3,8 +3,10 @@ import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
          removeElementsByClass, extractDate,
-         tagContentClearer, textCleaner, compareDate } from "./utils/helpers";
-import { queuedCardsMiddlePage } from "./__mocks__/mockData";
+         tagContentClearer, textCleaner, compareDate,
+         convertEFactorData } from "./utils/helpers";
+import { queuedCardsMiddlePage,
+         eFactorDistribution } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 
 describe("APIClient", () => {
@@ -241,3 +243,28 @@ describe("compareDate", () => {
         expect(result).toEqual(0);
     });
 });
+
+test("convertEFactorData", () => {
+    const expectedOutput = {
+        "1.3": 2,
+        "1.7": 2,
+        "1.72": 2,
+        "1.76": 1,
+        "1.78": 1,
+        "1.82": 1,
+        "1.9": 2,
+        "1.96": 2,
+        "2.04": 1,
+        "2.04": 7,
+        "2.18": 6,
+        "2.22": 8,
+        "2.28": 6,
+        "2.36": 19,
+        "2.46": 2,
+        "2.5": 2,
+        "2.6": 4
+    };
+    const receivedOutput = convertEFactorData(eFactorDistribution);
+    expect(receivedOutput).toMatchObject(expectedOutput);
+});
+
