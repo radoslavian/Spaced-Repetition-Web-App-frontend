@@ -3,8 +3,7 @@ import LearnCardsPage from "./LearnCardsPage";
 import PageHeader from "./PageHeader";
 import StatisticsPage from "./StatisticsPage";
 import GradesDistributionPage from "./GradesDistributionPage";
-import { MemorizedCardsDistributionPage,
-         DailyCardsDistributionPage }from "./CardsDistributionPage";
+import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
 
 export default function MainGrid() {
@@ -21,10 +20,15 @@ export default function MainGrid() {
                      element={<EFactorDistributionPage/>}
               />
               <Route path="memorization"
-                     element={<MemorizedCardsDistributionPage/>}
+                     element={<CardsDistributionPage
+                                title="Weekly memorization distribution"
+                                daysRange={7}
+                                path="distribution/memorized/"/>}
               />
               <Route path="cards-distribution"
-                     element={<DailyCardsDistributionPage/>}/>
+                     element={<CardsDistributionPage
+                                title="Weekly distribution of card reviews"
+                                daysRange={7}/>}/>
             </Route>
           </Routes>
         </>        

@@ -25,7 +25,7 @@ export default function StatisticsPage() {
             key: "/statistics/grades-distribution"
         },
         {
-            label: "E-Factor distribubtion",
+            label: "E-Factor distribution",
             key: "/statistics/e-factor-distribution"
         }
     ];
