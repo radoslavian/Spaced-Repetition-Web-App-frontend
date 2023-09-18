@@ -20,6 +20,7 @@ const disabledStamp = "[dis]";
 
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     const { memorize, forget, cram, enable } = functions;
+    const scroll = useRef(true);
     const topRef = useRef(null);
     const [previewedCard, setPreviewedCard] = useState(undefined);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
@@ -51,7 +52,13 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     };
 
     // scrolls on card list update, instead of button click
-    useEffect(scrollToTop, [cards]);
+    useEffect(() => {
+        if (scroll.current) {
+            scrollToTop();
+        } else {
+            scroll.current = true;
+        }
+    }, [cards]);
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -140,7 +147,10 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
               renderItem={renderCard}
             />
             <Button type="link"
-                    onClick={loadMore}>
+                    onClick={() => {
+                        scroll.current = false;
+                        loadMore();
+                    }}>
               load more
             </Button>
           </div>
