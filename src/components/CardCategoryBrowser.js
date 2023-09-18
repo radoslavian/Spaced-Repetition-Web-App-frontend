@@ -7,7 +7,7 @@ import CardBrowser from "./CardBrowser";
 import CardsBrowserModal from "./CardsBrowserModal";
 import { useCategories } from "../contexts/CategoriesProvider";
 
-export default function CardCategoryBrowser(
+export default function CardCategoryBrowser (
     { set_cardBody_visible = f => f }) {
     const { Search } = Input;
     const { categories, selectedCategories,
@@ -15,7 +15,6 @@ export default function CardCategoryBrowser(
     const allCards = useCards().all;
     const functions = useCards().functions;
     const { loadMore } = allCards;
-    const [searchedPhrase, setSearchedPhrase] = useState();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
