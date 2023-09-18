@@ -28,11 +28,20 @@ import LearnCardsPage from "./components/LearnCardsPage";
 import CardPreviewModal from "./components/CardPreviewModal";
 import { CardDistributionChart } from "./components/DistributionCharts";
 import CardsDistributionPage from "./components/CardsDistributionPage";
+import EFactorDistributionPage from "./components/EFactorDistributionPage";
+import GradesDistributionPage from "./components/GradesDistributionPage";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
     fireEvent.click(showAnswer);
 }
+
+test("Canvas support works with context", () => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  expect(context).not.toBeUndefined();
+});
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -41,35 +50,134 @@ async function expectToRejectCalls(functions) {
         }).rejects.toEqual(expect.anything());
     }
 }
-/*
-// these tests (most likely) throw errors because
-// there is no canvas support in a testing environment
-describe("<CardsDistributionPage/>", () => {
-    const renderComponent = () => render(
-        <ApiProvider>
-          <LogInComponent credentials={{
-              user: "user_1",
-              password: "passwd"
-          }}>
-            <CardsDistributionPage/>
-          </LogInComponent>
-        </ApiProvider>
-    );
 
-    it("fetches data from the API for 12 days in advance", async () => {
-        renderComponent();
-        await waitFor(() => expect(cardsDistribution_12DaysCallback)
-                      .toHaveBeenCalledTimes(1));
+describe("statistic charts/pages", () => {
+    // Mock the ResizeObserver
+    // otherwise tests for components using chart-js will fail
+    global.ResizeObserver = jest.fn().mockImplementation(() => ({
+        observe: jest.fn(),
+        unobserve: jest.fn(),
+        disconnect: jest.fn(),
+    }));
+
+    const distributionSpies = [cardsDistribution_12DaysCallback,
+                               cardsMemorization_12DaysCallback,
+                               gradesDistributionRouteCallback,
+                               eFactorDistributionRouteCallback];
+
+    const resetDistributionSpies = () => {
+        for (let distributionSpy of distributionSpies) {
+            distributionSpy.mockClear();
+        }
+    };
+
+    afterEach(resetDistributionSpies);
+
+    describe("<CardsDistributionPage/> for subsequent days", () => {
+        const renderComponent = () => render(
+            <ApiProvider>
+              <LogInComponent credentials={{
+                  user: "user_1",
+                  password: "passwd"
+              }}>
+                <CardsDistributionPage/>
+              </LogInComponent>
+            </ApiProvider>
+        );
+
+        beforeEach(() => act(renderComponent));
+
+        it("fetches data from the API", async () => {
+            await waitFor(() => expect(cardsDistribution_12DaysCallback)
+                          .toHaveBeenCalledTimes(1));
+        });
+
+        it("doesn't connect with other API endpoints", async () => {
+            await expectToRejectCalls([cardsMemorization_12DaysCallback,
+                                       gradesDistributionRouteCallback,
+                                       eFactorDistributionRouteCallback]);
+        });
     });
 
-    it("doesn't connect with other API endpoints", async () => {
-        renderComponent();
-        await expectToRejectCalls([cardsMemorization_12DaysCallback,
-                                   gradesDistributionRouteCallback,
-                                   eFactorDistributionRouteCallback]);
+    describe("<CardsDistributionPage/> for cards memorization", () => {
+        const renderComponent = () => render(
+            <ApiProvider>
+              <LogInComponent credentials={{
+                  user: "user_1",
+                  password: "passwd"
+              }}>
+                <CardsDistributionPage path="distribution/memorized/"
+                                       daysRange={12}/>
+              </LogInComponent>
+            </ApiProvider>
+        );
+
+        beforeEach(() => act(renderComponent));
+
+        it("fetches data from the API", async () => {
+            await waitFor(() => expect(cardsMemorization_12DaysCallback)
+                          .toHaveBeenCalledTimes(1));
+        });
+
+        it("doesn't connect with other API endpoints", async () => {
+            await expectToRejectCalls([cardsDistribution_12DaysCallback,
+                                       gradesDistributionRouteCallback,
+                                       eFactorDistributionRouteCallback]);
+        });
+    });
+
+    describe("<EFactorDistributionPage/>", () => {
+        const renderComponent = () => render(
+            <ApiProvider>
+              <LogInComponent credentials={{
+                  user: "user_1",
+                  password: "passwd"
+              }}>
+                <EFactorDistributionPage/>
+              </LogInComponent>
+            </ApiProvider>
+        );
+
+        beforeEach(() => act(renderComponent));
+
+        it("fetches data from the API", async () => {
+            await waitFor(() => expect(eFactorDistributionRouteCallback)
+                          .toHaveBeenCalledTimes(1));
+        });
+
+        it("doesn't connect with other API endpoints", async () => {
+            await expectToRejectCalls([cardsMemorization_12DaysCallback,
+                                       gradesDistributionRouteCallback,
+                                       cardsDistribution_12DaysCallback]);
+        });
+    });
+
+    describe("<GradesDistributionPage/>", () => {
+        const renderComponent = () => render(
+            <ApiProvider>
+              <LogInComponent credentials={{
+                  user: "user_1",
+                  password: "passwd"
+              }}>
+                <GradesDistributionPage/>
+              </LogInComponent>
+            </ApiProvider>
+        );
+
+        beforeEach(() => act(renderComponent));
+
+        it("fetches data from the API", async () => {
+            await waitFor(() => expect(gradesDistributionRouteCallback)
+                          .toHaveBeenCalledTimes(1));
+        });
+
+        it("doesn't connect with other API endpoints", async () => {
+            await expectToRejectCalls([cardsMemorization_12DaysCallback,
+                                       eFactorDistributionRouteCallback,
+                                       cardsDistribution_12DaysCallback]);
+        });
     });
 });
-*/
 
 describe("<CardPreviewModal/>", () => {
     it("displays card details after selecting a tab", async () => {

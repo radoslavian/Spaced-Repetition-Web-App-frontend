@@ -49,6 +49,9 @@
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
-        "axios-mock-adapter": "^1.21.4"
+        "axios-mock-adapter": "^1.21.4",
+        "jest-canvas-mock": "^2.5.2",
+        "resize-observer": "^1.0.4",
+        "use-resize-observer": "^9.1.0"
     }
 }
