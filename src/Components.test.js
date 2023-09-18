@@ -448,11 +448,16 @@ describe("<CardCategoryBrowser/>", () => {
         </ApiProvider>
     );
 
-    beforeEach(async () => {
-        renderComponent();
+    const renderScreen = async () => {
+        act(() => renderComponent());
         const browseAllCardsButton = await screen.findByText(
             "Browse all cards");
         fireEvent.click(browseAllCardsButton);
+    };
+
+    beforeEach(() => {
+        window.HTMLElement.prototype.scrollIntoView = jest.fn();
+        renderScreen();
     });
 
     it("searching: calling api endpoint and returning results", async () => {
@@ -470,9 +475,22 @@ describe("<CardCategoryBrowser/>", () => {
         const searchResult = await screen.findByText("Search result");
         
         expect(searchResult).toBeInTheDocument();
-        expect(searchAllCards).toHaveBeenCalledWith(
+        await waitFor(() => expect(searchAllCards).toHaveBeenCalledWith(
             expect.objectContaining(
-                {url: expectedUrl}));
+                {url: expectedUrl})));
+
+        const closeButton = await screen.findByText("Close");
+        const clearUrl = "http://localhost:8000/api/users/626e4d32-"
+              + "a52f-4c15-8f78-aacf3b69a9b2/cards/";
+
+        // should reset search on closing modal
+        downloadCards.mockClear();
+        fireEvent.click(closeButton);
+        await waitFor(() => {
+            expect(downloadCards).toHaveBeenCalledWith(
+                expect.objectContaining({url: clearUrl}));
+            expect(downloadCards).toHaveBeenCalledTimes(1);
+        });
     });
 
     test("if component downloads cards from the server", async () => {

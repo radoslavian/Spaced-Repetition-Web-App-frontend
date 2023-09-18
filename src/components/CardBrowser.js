@@ -20,6 +20,7 @@ const disabledStamp = "[dis]";
 
 export default function CardBrowser({ cards, loadMore = f => f, functions }) {
     const { memorize, forget, cram, enable } = functions;
+    const topRef = useRef(null);
     const [previewedCard, setPreviewedCard] = useState(undefined);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
 
@@ -41,6 +42,16 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
             setCardPreviewOpen(false);
         }
     }, [previewedCard]);
+
+    const scrollToTop = () => {
+        // solution from:
+        // How to Scroll to the Bottom of a Div Element in React
+        // https://codingbeautydev.com/blog/react-scroll-to-bottom-of-div/
+        topRef?.current?.scrollIntoView();
+    };
+
+    // scrolls on card list update, instead of button click
+    useEffect(scrollToTop, [cards]);
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -114,24 +125,25 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                             isCardPreviewOpen={isCardPreviewOpen}
                             closeCardPreview={closeCardPreview}/>
           <div id="scrollable-card-list-browser"
-                 style={{
-                     // found in StackOverflow question:
-                     // "How to limit the height of the modal?"
-                     maxHeight: "calc(100vh - 225px)",
-                     overflow: "auto",
-                     padding: '0 16px',
-                 }}
-            >
-          <List
-            bordered
-            dataSource={cards}
-            renderItem={renderCard}
-          />
-          <Button type="link"
-            onClick={loadMore}>
-            load more
-        </Button>
-        </div>
+               style={{
+                   // found in StackOverflow question:
+                   // "How to limit the height of the modal?"
+                   maxHeight: "calc(100vh - 225px)",
+                   overflow: "auto",
+                   padding: '0 16px',
+               }}
+          >
+            <div ref={topRef}></div>
+            <List
+              bordered
+              dataSource={cards}
+              renderItem={renderCard}
+            />
+            <Button type="link"
+                    onClick={loadMore}>
+              load more
+            </Button>
+          </div>
         </>
     );
 }

@@ -15,6 +15,7 @@ export default function CardCategoryBrowser (
     const allCards = useCards().all;
     const functions = useCards().functions;
     const { loadMore } = allCards;
+    const [searchedPhrase, setSearchedPhrase] = useState("");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -24,6 +25,11 @@ export default function CardCategoryBrowser (
     const closeModal = () => {
         setIsModalOpen(false);
         set_cardBody_visible(true);
+    };
+    const onCloseModal = () => {
+        allCards.setSearchedPhrase("");
+        if (searchedPhrase !== "") setSearchedPhrase("");
+        closeModal();
     };
     const onCategoryCheck = checkedKeysValues =>
           setSelectedCategories(checkedKeysValues);
@@ -41,15 +47,13 @@ export default function CardCategoryBrowser (
           </Button>
           <CardsBrowserModal title="All cards"
                              isOpen={isModalOpen}
-                             onClose={e => {
-                                 e.stopPropagation();
-                                 closeModal();
-                             }}
-                             closeModal={closeModal}>
+                             closeModal={onCloseModal}>
             <Search placeholder="Search for..." allowClear
                     /* returns event data:
                      * onPressEnter={a => console.log(a)} */
                     onSearch={phrase => allCards.setSearchedPhrase(phrase)}
+                    value={searchedPhrase}
+                    onChange={e => setSearchedPhrase(e.target.value)}
                     /* loading={true} */
             />
               <CardBrowser loadMore={loadMore}

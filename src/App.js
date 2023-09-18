@@ -17,17 +17,15 @@ function App() {
         username: appUserName,
         password: appPassword
     };
-    // const { token, setToken } = useToken();
+    const { token, setToken } = useToken();
 
     useEffect(() => {
         (async () => {
             await api.authenticate("/auth/token/login/", credentials);
-            if (api.isAuthenticated()) {
-                const token = getAuthToken();
-                // setToken(token);
-            }
+            const token = getAuthToken();
+            setToken(token);
         })();
-    }, []);
+    }, [api, token]);
 
     return (
         api.isAuthenticated() ?

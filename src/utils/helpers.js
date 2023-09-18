@@ -72,10 +72,16 @@ export function removeNewlines(text) {
 export function getAuthToken() {
     const tokenString = localStorage.getItem('userToken');
     let userToken;
+    // why is userToken either a json data structure
+    // or json string?
     try {
-	userToken = JSON.parse(tokenString);
+    	userToken = JSON.parse(tokenString);
     } catch (e) { }
-    return userToken?.auth_token;
+    if(Boolean(userToken?.auth_token)) {
+	return userToken.auth_token;
+    } else {
+	return userToken;
+    }
 }
 
 export function saveToken(userToken) {

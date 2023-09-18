@@ -35,7 +35,7 @@ export function LogInComponent ({children, credentials}) {
             await api.authenticate("/auth/token/login/", credentials);
             setLoggedIn(true);
         })();
-    }, [api]);
+    }, [api, loggedIn]);
 
     // login first into the API
     // then render UserProvider
