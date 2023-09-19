@@ -1,6 +1,6 @@
 import { PushpinOutlined, HourglassOutlined,
          EyeOutlined } from "@ant-design/icons";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { List, Button } from "antd";
 import { cardTextForList } from "../utils/helpers";
 import CardBody from "./CardBody";
@@ -18,10 +18,9 @@ const memorizedStamp = <>
                        </>;
 const disabledStamp = "[dis]";
 
-export default function CardBrowser({ cards, loadMore = f => f, functions }) {
+export default function CardBrowser(
+    {scrollRef,  cards, loadMore = f => f, functions }) {
     const { memorize, forget, cram, enable } = functions;
-    const scroll = useRef(true);
-    const topRef = useRef(null);
     const [previewedCard, setPreviewedCard] = useState(undefined);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
 
@@ -43,22 +42,6 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
             setCardPreviewOpen(false);
         }
     }, [previewedCard]);
-
-    const scrollToTop = () => {
-        // solution from:
-        // How to Scroll to the Bottom of a Div Element in React
-        // https://codingbeautydev.com/blog/react-scroll-to-bottom-of-div/
-        topRef?.current?.scrollIntoView();
-    };
-
-    // scrolls on card list update, instead of button click
-    useEffect(() => {
-        if (scroll.current) {
-            scrollToTop();
-        } else {
-            scroll.current = true;
-        }
-    }, [cards]);
 
     const renderCard = card => {
         const cardClass = card.type || "unkonwn";
@@ -140,17 +123,14 @@ export default function CardBrowser({ cards, loadMore = f => f, functions }) {
                    padding: '0 16px',
                }}
           >
-            <div ref={topRef}></div>
+            <div ref={scrollRef}></div>
             <List
               bordered
               dataSource={cards}
               renderItem={renderCard}
             />
             <Button type="link"
-                    onClick={() => {
-                        scroll.current = false;
-                        loadMore();
-                    }}>
+                    onClick={loadMore}>
               load more
             </Button>
           </div>

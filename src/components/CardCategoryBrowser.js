@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from "antd";
 import CategorySelector from "./CategorySelector";
@@ -9,6 +9,7 @@ import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardCategoryBrowser (
     { set_cardBody_visible = f => f }) {
+    const scrollRef = useRef(null);
     const { Search } = Input;
     const { categories, selectedCategories,
             setSelectedCategories } = useCategories();
@@ -31,6 +32,17 @@ export default function CardCategoryBrowser (
         if (searchedPhrase !== "") setSearchedPhrase("");
         closeModal();
     };
+    const scrollToTop = () => {
+        // solution from:
+        // How to Scroll to the Bottom of a Div Element in React
+        // https://codingbeautydev.com/blog/react-scroll-to-bottom-of-div/
+        scrollRef?.current?.scrollIntoView();
+    };
+    const handleSearch = phrase => {
+        allCards.setSearchedPhrase(phrase);
+        scrollToTop();
+    };
+
     const onCategoryCheck = checkedKeysValues =>
           setSelectedCategories(checkedKeysValues);
 
@@ -51,14 +63,15 @@ export default function CardCategoryBrowser (
             <Search placeholder="Search for..." allowClear
                     /* returns event data:
                      * onPressEnter={a => console.log(a)} */
-                    onSearch={phrase => allCards.setSearchedPhrase(phrase)}
+                    onSearch={handleSearch}
                     value={searchedPhrase}
                     onChange={e => setSearchedPhrase(e.target.value)}
                     /* loading={true} */
             />
-              <CardBrowser loadMore={loadMore}
-                           cards={allCards.currentPage}
-                           functions={functions}/>
+            <CardBrowser scrollRef={scrollRef}
+                         loadMore={loadMore}
+                         cards={allCards.currentPage}
+                         functions={functions}/>
 
           </CardsBrowserModal>
         </>

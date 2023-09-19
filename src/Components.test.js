@@ -456,8 +456,8 @@ describe("<CardCategoryBrowser/>", () => {
     };
 
     beforeEach(() => {
-        window.HTMLElement.prototype.scrollIntoView = jest.fn();
         renderScreen();
+        window.HTMLElement.prototype.scrollIntoView = jest.fn();
     });
 
     it("searching: calling api endpoint and returning results", async () => {
@@ -533,6 +533,8 @@ describe("<CardBrowser>", () => {
     const disable = jest.fn();
     const enable = jest.fn();
     const loadMore = jest.fn();
+
+    beforeEach(() => window.HTMLElement.prototype.scrollIntoView = jest.fn());
 
     const functions = { memorize, forget, cram, disable, enable };
 
