@@ -74,14 +74,14 @@ export default function CardsReviewer(
         // another.
 
         displayCard === true ? 
-        <div style={{textAlign: "left"}}
+            <div style={{textAlign: "left"}}
              id="cards-reviewer">
-          <CardBody card={card}
-                    title={title}
-                    setCurrentCard={setCurrentCard}
-                    showAnswer={showAnswer} />
-          { bottomBar }
-        </div>
+              <CardBody card={card}
+                        title={title}
+                        setCurrentCard={setCurrentCard}
+                        showAnswer={showAnswer} />
+              { bottomBar }
+            </div>
         : ""
     );
 }

@@ -1,7 +1,8 @@
 import axios from "axios";
 import { getAuthToken, saveToken } from "./helpers.js";
 
-const BASE_API_URL = process.env.REACT_APP_BASE_API_URL || "http://localhost:8000";
+export const BASE_API_URL = (process.env.REACT_APP_BASE_API_URL
+			     || "http://localhost:8000");
 
 export default class ApiClient {
     constructor() {
