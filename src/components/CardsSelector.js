@@ -1,9 +1,23 @@
-import { Space, Button, Row, Col, Popover } from "antd";
+import { Space, Button, Row, Col, Popover, Result } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
 import MainDisplay from "./MainDisplay";
 import { useState, useEffect, useRef } from "react";
+
+function EmptyQueue({ onClick }){
+    return (<div data-testid="no-more-cards-for-review">
+              <Result status="success"
+                      title="No more items on this list."
+                      subTitle="Click to return to the initial screen."
+                      extra={
+                          <Button type="primary"
+                                  onClick={onClick}>
+                            Back to the main screen
+                          </Button>
+                      }/>
+            </div>);
+}
 
 const scheduledButtonHelp = {
     title: "Learn scheduled cards first",
@@ -173,24 +187,19 @@ export default function CardsSelector({ setCurrentCard = f => f,
               </Space>
             </MainDisplay>
         : emptyQueue() ?
-            <p data-testid="no-more-cards-for-review"
-               onClick={stopReviews}>
-              {/* placeholder notification */}
-              No more items on this list...<br/>
-              Click to return to the main page.
-            </p>
+            <EmptyQueue onClick={stopReviews}/>
         :
-            <div id="cards-reviewer-and-learning-progress">
-              <CardsReviewer viewedQueue={currentlyViewedQueue}
-                             setCurrentCard={setCurrentCard}
-                             stopReviews={stopReviews}
-                             displayCard={displayCardBody}/>
-              {/* Hide component when CategoryBrowser is visible */}
-              { displayCardBody ?
-              <LearningProgress scheduled={outstanding.count}
-                                cramQueue={cram.count}
-                queued={queued.count}/>
-                : "" }
-            </div>
+        <div id="cards-reviewer-and-learning-progress">
+          <CardsReviewer viewedQueue={currentlyViewedQueue}
+                         setCurrentCard={setCurrentCard}
+                         stopReviews={stopReviews}
+                         displayCard={displayCardBody}/>
+          {/* Hide component when CategoryBrowser is visible */}
+          { displayCardBody ?
+            <LearningProgress scheduled={outstanding.count}
+                              cramQueue={cram.count}
+                              queued={queued.count}/>
+            : "" }
+        </div>
     );
 }
