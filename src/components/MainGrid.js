@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Result, Button } from "antd";
 import LearnCardsPage from "./LearnCardsPage";
 import PageHeader from "./PageHeader";
 import StatisticsPage from "./StatisticsPage";
@@ -7,6 +9,8 @@ import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
 
 export default function MainGrid() {
+    const navigate = useNavigate();
+
     return (
         <>
           <PageHeader/>
@@ -30,6 +34,17 @@ export default function MainGrid() {
                                 title="Weekly distribution of card reviews"
                                 daysRange={7}/>}/>
             </Route>
+            <Route path="*" element={
+                  <Result
+                    status="404"
+                    title="404"
+                    subTitle="Sorry, the page you visited does not exist."
+                    extra={<Button type="primary"
+                                   onClick={() => navigate("/")}>
+                             Back Home
+                           </Button>}
+                  />}
+              />
           </Routes>
         </>        
     );
