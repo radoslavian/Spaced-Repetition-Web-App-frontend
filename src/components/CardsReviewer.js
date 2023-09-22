@@ -11,11 +11,9 @@ export default function CardsReviewer(
      displayCard = true}) {
     const [showAnswer, setShowAnswer] = useState(false);
     const card = viewedQueue?.cardsList.currentPage[0];
-    const flipAnswer = () => setShowAnswer(!showAnswer);
     const gradeNFlipCard = async (gradedCard, cardGrade) => {
         await viewedQueue.gradingFn(gradedCard, cardGrade);
-        // hideAnswer() wouldn't be more obvious?
-        flipAnswer();
+        setShowAnswer(false);
     };
     const { selectedCategories } = useCategories();
     const title = viewedQueue?.title;
@@ -24,7 +22,7 @@ export default function CardsReviewer(
         if(showAnswer === true) {
             setShowAnswer(false);
         }
-    }, [selectedCategories]);
+    }, [selectedCategories, card]);
 
     const StopButton = () => (<Button data-testid="stop-reviews-trigger"
                                       block danger ghost
@@ -52,7 +50,7 @@ export default function CardsReviewer(
                     block
                     id="show-answer-button"
                     data-testid="show-answer-button"
-                    onClick={flipAnswer}>
+                    onClick={() => setShowAnswer(true)}>
               Show&nbsp;answer
             </Button>
           </Col>
