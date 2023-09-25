@@ -5,7 +5,8 @@ export default function PlayAudio({ url }) {
     const audioRef = useRef("audio_tag");
     const audioUrl = BASE_API_URL + url;
 
-    return (<audio style={{ minWidth: "10%",
+    return (<audio data-testid={`basic-audio-player-component-${url}`}
+                   style={{ minWidth: "10%",
                             maxWidth: "20%",
                             height: "30px" }}
                    ref={audioRef}
