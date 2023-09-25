@@ -1,5 +1,5 @@
 import { Space } from "antd";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import parse from "html-react-parser";
 import PlayAudio from "./PlayAudio";
 import MainDisplay from "./MainDisplay";
@@ -14,17 +14,15 @@ export default function CardBody({ card, title, setCurrentCard = f => f,
     const hiddenClass = "card-answer";
     const body = useRef(emptyMessage);
 
-    useMemo(() => {
-        if(Boolean(card?.body)) {
-            if(showAnswer) {
-                body.current = card.body;
-            } else {
-                body.current = removeElementsByClass(card?.body, hiddenClass);
-            };
+    if(Boolean(card?.body)) {
+        if(showAnswer) {
+            body.current = card.body;
         } else {
-            body.current = emptyMessage;
-        }
-    }, [showAnswer]);
+            body.current = removeElementsByClass(card?.body, hiddenClass);
+        };
+    } else {
+        body.current = emptyMessage;
+    }
 
     useEffect(() => {
         setCurrentCard(card);
