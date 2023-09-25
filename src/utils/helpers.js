@@ -77,15 +77,11 @@ export function getAuthToken() {
     try {
     	userToken = JSON.parse(tokenString);
     } catch (e) { }
-    if(Boolean(userToken?.auth_token)) {
-	return userToken.auth_token;
-    } else {
-	return userToken;
-    }
+    return userToken;
 }
 
 export function saveToken(userToken) {
-    localStorage.setItem('userToken', JSON.stringify(userToken));
+    localStorage.setItem('userToken', JSON.stringify(userToken.auth_token));
 }
 
 export function timeOut(ms) {

@@ -21,11 +21,11 @@ function App() {
 
     useEffect(() => {
         (async () => {
-            await api.authenticate("/auth/token/login/", credentials);
-            const token = getAuthToken();
-            setToken(token);
+            const authToken = await api.authenticate(
+                "/auth/token/login/", credentials);
+            setToken(authToken);
         })();
-    }, [api, token]);
+    }, [api]);
 
     return (
         api.isAuthenticated() ?

@@ -11,10 +11,7 @@ export default class ApiClient {
 
     async authenticate(endpoint, credentials) {
         const localToken = await this.post(endpoint, {data: credentials});
-        if (localToken !== undefined) {
-            saveToken(localToken);
-            this.token = localToken;
-        }
+	return localToken;
     }
 
     isAuthenticated() {
@@ -51,7 +48,7 @@ export default class ApiClient {
     async request(url, method, options = {}) {
         const requestUrl = this.getRequestUrl(url);
         const authToken = getAuthToken();
-        const headers = authToken !== undefined ? {
+        const headers = Boolean(authToken) ? {
             'Content-Type': 'application/json',
             Authorization: 'Token ' + authToken
         } : {

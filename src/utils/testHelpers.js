@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import useToken from "../hooks/useToken";
 import { UserProvider } from "../contexts/UserProvider";
 import { ApiProvider, useApi } from "../contexts/ApiProvider";
 import { CategoriesProvider } from "../contexts/CategoriesProvider";
@@ -28,14 +29,15 @@ function UserChecker() {
 }
 
 export function LogInComponent ({children, credentials}) {
-    const [loggedIn, setLoggedIn] = useState(false);
+    const { token, setToken } = useToken();
     const api = useApi();
     useEffect(() => {
         (async () => {
-            await api.authenticate("/auth/token/login/", credentials);
-            setLoggedIn(true);
+            const authToken = await api.authenticate(
+		"/auth/token/login/", credentials);
+            setToken(authToken);
         })();
-    }, [api, loggedIn]);
+    }, [api]);
 
     // login first into the API
     // then render UserProvider
@@ -44,7 +46,6 @@ export function LogInComponent ({children, credentials}) {
           <CategoriesProvider>
             <CardsProvider>
               <UserChecker/>
-              <span data-testid="logged-in">{ loggedIn.toString() }</span>
               {children}
             </CardsProvider>
           </CategoriesProvider>

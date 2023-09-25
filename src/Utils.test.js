@@ -3,10 +3,10 @@ import APIClient from "./utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
          removeElementsByClass, extractDate,
-         tagContentClearer, textCleaner, compareDate,
+         tagContentClearer, textCleaner, compareDate, saveToken,
          convertEFactorData } from "./utils/helpers";
 import { queuedCardsMiddlePage,
-         eFactorDistribution } from "./__mocks__/mockData";
+         eFactorDistribution, authToken } from "./__mocks__/mockData";
 import{ axiosMatch } from "axios";
 
 describe("APIClient", () => {
@@ -22,6 +22,7 @@ describe("APIClient", () => {
 
     test("calling route using an absolute URL", async () => {
         const allowedUrl = "http://localhost:8000/test/url";
+	saveToken(authToken);
         const response = await apiClient.request(allowedUrl, "get");
         expect(response).toBe("correct response");
         // to have been called times 1
