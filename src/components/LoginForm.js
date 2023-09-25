@@ -1,10 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./loginForm.css";
-import { Form, Input, Button, Checkbox, Row } from "antd";
+import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
-// form based on:
+// Form based on:
 // https://codesandbox.io/s/login-form-ant-design-demo-rx2qf
 
 export default function LoginForm({ setCredentials, authMessage, loading }) {

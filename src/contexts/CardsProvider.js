@@ -64,7 +64,6 @@ export function CardsProvider({ children }) {
     // front-end app and back-end app
     // or: be imported by a backend-app and then stored as a field
     // in a user instance
-    const cardsPerPage = 20;
 
     // countParam - added due to naming differences of this attribute
     // between endpoint for all cards and the remaining

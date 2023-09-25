@@ -1,7 +1,5 @@
-import {Row, Col, theme, Layout, Menu } from "antd";
+import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
-
-const { Header } = Layout;
 
 export default function PageHeader() {
     const navigate = useNavigate();

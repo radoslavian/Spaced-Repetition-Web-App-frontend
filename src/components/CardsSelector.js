@@ -1,4 +1,4 @@
-import { Space, Button, Row, Col, Popover, Result } from "antd";
+import { Space, Button, Popover, Result } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
@@ -72,7 +72,7 @@ function getCardsLeft(obj) {
 
         return (
             (obj.cardsList.isLast === false && isEmpty_isNotLoading) ||
-                (obj.cardsList.count != 0
+                (obj.cardsList.count !== 0
                  && obj.cardsList.isLast === true
                  && isEmpty_isNotLoading)
         );
@@ -135,7 +135,9 @@ export default function CardsSelector({ setCurrentCard = f => f,
             console.log("CardsSelector - queued: goToFirst");
             queuedCards.cardsList.goToFirst();
         }
-    }, [outstanding, cram, queued]);
+    }, [outstanding, cram, queued, cramLeft, crammedCards.cardsList,
+        outstandingCards.cardsList, outstandingLeft, queuedCards.cardsList,
+        queuedLeft]);
 
     const getReviewCallback = queue => () => {
         selectedQueue.current = queue;

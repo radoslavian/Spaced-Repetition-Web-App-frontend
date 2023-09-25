@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuthToken, saveToken } from "./helpers.js";
+import { getAuthToken } from "./helpers.js";
 
 export const BASE_API_URL = (process.env.REACT_APP_BASE_API_URL
 			     || "http://localhost:8000");

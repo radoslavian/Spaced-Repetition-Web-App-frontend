@@ -5,9 +5,7 @@ import { useApi } from "./contexts/ApiProvider";
 import { UserProvider } from './contexts/UserProvider';
 import { CategoriesProvider } from "./contexts/CategoriesProvider";
 import { CardsProvider } from "./contexts/CardsProvider";
-import { getAuthToken } from "./utils/helpers.js";
 import MainGrid from "./components/MainGrid";
-import { Route, Routes } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 
 function App() {
@@ -17,7 +15,7 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [credentials, setCredentials] = useState({});
     const [authMessage, setAuthMessage] = useState("");
-    const { token, setToken } = useToken();
+    const { setToken } = useToken();
     const timeout = 500;
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-import { Card, Space } from "antd";
+import { Card } from "antd";
 
 export default function MainDisplay({testId, title, children}) {
     return (

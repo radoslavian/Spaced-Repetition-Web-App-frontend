@@ -2,8 +2,6 @@ import { createContext, useContext, useState, useRef,
          useEffect } from "react";
 import { useApi } from "./ApiProvider";
 import { useUser } from "./UserProvider";
-import { timeOut } from "../utils/helpers";
-import { getAuthToken } from "../utils/helpers.js";
 
 const CategoriesContext = createContext();
 

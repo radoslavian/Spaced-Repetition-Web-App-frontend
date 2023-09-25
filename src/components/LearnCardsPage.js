@@ -1,10 +1,10 @@
-import { Layout, Menu } from "antd";
+import { Layout } from "antd";
 import { useState } from "react";
 import CardCategoryBrowser from "./CardCategoryBrowser";
 import CardDetails from "./CardDetails";
 import CardsSelector from "./CardsSelector";
 
-const { Header, Content, Sider } = Layout;
+const {  Content, Sider } = Layout;
 
 export default function LearnCardsPage() {
     const [currentCard, setCurrentCard] = useState(undefined);

@@ -1,9 +1,5 @@
 import { Menu, Layout } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { CardDistributionChart,
-         GradesDistributionChart,
-         EFactorDistribution } from "./DistributionCharts";
-import { useState } from "react";
 
 const { Content, Sider } = Layout;
 

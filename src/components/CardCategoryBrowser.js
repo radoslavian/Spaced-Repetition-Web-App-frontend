@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input } from "antd";
 import CategorySelector from "./CategorySelector";
 import { useCards } from "../contexts/CardsProvider";
