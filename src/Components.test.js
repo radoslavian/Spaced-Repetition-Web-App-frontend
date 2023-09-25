@@ -44,6 +44,10 @@ async function expectToRejectCalls(functions) {
     }
 }
 
+test("<Login/>", () => {
+    
+});
+
 test("Canvas support works with context", () => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");

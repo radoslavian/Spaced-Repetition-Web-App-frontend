@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useToken from "./hooks/useToken";
 import { useApi } from "./contexts/ApiProvider";
 import { UserProvider } from './contexts/UserProvider';
@@ -8,24 +8,39 @@ import { CardsProvider } from "./contexts/CardsProvider";
 import { getAuthToken } from "./utils/helpers.js";
 import MainGrid from "./components/MainGrid";
 import { Route, Routes } from "react-router-dom";
+import LoginForm from "./components/LoginForm";
 
 function App() {
     const api = useApi();
-    const appUserName = "simple_user1";
-    const appPassword = "aber45jhdfsfrg";
-    const credentials = {
-        username: appUserName,
-        password: appPassword
-    };
+    // const appUserName = "simple_user1";
+    // const appPassword = "aber45jhdfsfrg";
+    const [loading, setLoading] = useState(false);
+    const [credentials, setCredentials] = useState({});
+    const [authMessage, setAuthMessage] = useState("");
     const { token, setToken } = useToken();
+    const timeout = 500;
 
     useEffect(() => {
         (async () => {
+            if(Object.keys(credentials).length === 0) {
+                return;
+            }
+            setLoading(true);
             const authToken = await api.authenticate(
                 "/auth/token/login/", credentials);
-            setToken(authToken);
+            if(Boolean(authToken)) {
+                setTimeout(() => {
+                    setToken(authToken);
+                    setLoading(false);
+                }, timeout);
+            } else {
+                setTimeout(() => {
+                    setAuthMessage("Wrong password or username.");
+                    setLoading(false);
+                }, timeout);
+            }
         })();
-    }, [api]);
+    }, [api, credentials]);
 
     return (
         api.isAuthenticated() ?
@@ -38,12 +53,10 @@ function App() {
                 </CategoriesProvider>
               </UserProvider>
             </div>
-        :
-        <p>
-          Api - is authenticated:
-          { api.isAuthenticated().toString() }
-        </p>
-
+            :
+            <LoginForm setCredentials={setCredentials}
+                       authMessage={authMessage}
+                       loading={loading}/>
     );
 }
 
