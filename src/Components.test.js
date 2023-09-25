@@ -36,13 +36,6 @@ async function showAnswer() {
     fireEvent.click(showAnswer);
 }
 
-test("Canvas support works with context", () => {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-
-  expect(context).not.toBeUndefined();
-});
-
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
         await expect(async () => {
@@ -50,6 +43,13 @@ async function expectToRejectCalls(functions) {
         }).rejects.toEqual(expect.anything());
     }
 }
+
+test("Canvas support works with context", () => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  expect(context).not.toBeUndefined();
+});
 
 describe("statistic charts/pages", () => {
     // Mock the ResizeObserver
