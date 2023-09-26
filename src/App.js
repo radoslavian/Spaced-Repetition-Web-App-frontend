@@ -2,7 +2,6 @@ import './App.css';
 import { useEffect, useState } from "react";
 import useToken from "./hooks/useToken";
 import { useApi } from "./contexts/ApiProvider";
-import { UserProvider } from './contexts/UserProvider';
 import { CategoriesProvider } from "./contexts/CategoriesProvider";
 import { CardsProvider } from "./contexts/CardsProvider";
 import MainGrid from "./components/MainGrid";
@@ -43,13 +42,11 @@ function App() {
     return (
         api.isAuthenticated() ?
             <div className="App">
-              <UserProvider>
                 <CategoriesProvider>
                   <CardsProvider>
                     <MainGrid/>
                   </CardsProvider>
                 </CategoriesProvider>
-              </UserProvider>
             </div>
             :
             <LoginForm setCredentials={setCredentials}
