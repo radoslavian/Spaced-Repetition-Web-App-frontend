@@ -24,7 +24,7 @@ const scheduledButtonHelp = {
     content: (
         <div>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br/>
-            Nullam eu dui eu erat <b>molestie</b> scelerisque non vel est.</p>
+            Nullam eu dui eu erat molestie scelerisque non vel est.</p>
           <p>Mauris pretium aliquam odio, eget ultrices mi ullamcorper in.<br/>
             Sed facilisis pharetra sodales.</p>
         </div>
