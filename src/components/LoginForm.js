@@ -3,7 +3,7 @@ import "./loginForm.css";
 import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
-// Form based on:
+// Form based (with modifications) on:
 // https://codesandbox.io/s/login-form-ant-design-demo-rx2qf
 
 export default function LoginForm({ setCredentials, authMessage, loading }) {

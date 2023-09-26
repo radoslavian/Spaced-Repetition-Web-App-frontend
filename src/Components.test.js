@@ -30,6 +30,7 @@ import { CardDistributionChart } from "./components/DistributionCharts";
 import CardsDistributionPage from "./components/CardsDistributionPage";
 import EFactorDistributionPage from "./components/EFactorDistributionPage";
 import GradesDistributionPage from "./components/GradesDistributionPage";
+import LoginForm from "./components/LoginForm";
 
 async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
@@ -44,8 +45,39 @@ async function expectToRejectCalls(functions) {
     }
 }
 
-test("<Login/>", () => {
-    
+describe("<LoginForm/>", () => {
+    const expectedMessage = "authentication error message";
+
+    it("displays message passed in property", () => {
+        render(<LoginForm authMessage={expectedMessage}/>);
+        const receivedMessage = screen.getByText(expectedMessage);
+        expect(receivedMessage).toBeInTheDocument();
+    });
+
+    const setCredentialsFn = jest.fn();
+    const username = "Test_Username";
+    const password = "Odd#$1Pass65word";
+    const credentialsCallbackInput = {
+        username: username,
+        password: password
+    };
+
+    it("sets credentials using a callback", async () => {
+        render(<LoginForm setCredentials={setCredentialsFn}/>);
+
+        const usernameInput = screen.getByPlaceholderText("Username");
+        const passwordInput = screen.getByPlaceholderText("Password");
+        const logInButton = screen.getByText("Log in");
+
+        fireEvent.change(usernameInput, { target: { value: username } });
+        fireEvent.change(passwordInput, { target: { value: password } });
+        fireEvent.click(logInButton);
+        
+        await waitFor(() => expect(setCredentialsFn)
+                      .toHaveBeenCalledTimes(1));
+        expect(setCredentialsFn).toHaveBeenCalledWith(
+            expect.objectContaining(credentialsCallbackInput));
+    });
 });
 
 test("Canvas support works with context", () => {
