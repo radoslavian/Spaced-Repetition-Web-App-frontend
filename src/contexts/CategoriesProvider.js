@@ -22,16 +22,16 @@ export function CategoriesProvider({ children }) {
         }
         const url = `/users/${user.id}/categories/selected/`;
         const response = await api.put(url, {data: categories});
-        // here should go error handling
+        // here should error handling go
         setSelectedCategories(categories);
     };
 
     useEffect(() => {
         async function getCategories() {
-            const userId = user?.id;
-            if (userId === undefined) {
+            if (!Boolean(user) && !api.isAuthenticated()) {
                 return;
             }
+            const userId = user?.id;
             const url = `/users/${userId}/categories/`;
             const categoryData = await api.get(url);
             categories.current = categoryData.categories;

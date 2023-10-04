@@ -1,23 +1,42 @@
 import { waitFor } from "@testing-library/react";
-import APIClient from "./utils/APIClient";
+import APIClient from "../utils/APIClient";
 import { removeNewlines, cardTextForList, checkIfCardIsInList,
          reduceWhiteSpaces, extractCategoryKeys,
          removeElementsByClass, extractDate,
          tagContentClearer, textCleaner, compareDate, saveToken,
-         convertEFactorData } from "./utils/helpers";
+         convertEFactorData } from "../utils/helpers";
 import { queuedCardsMiddlePage,
-         eFactorDistribution, authToken } from "./__mocks__/mockData";
-import{ axiosMatch } from "axios";
+         eFactorDistribution, authToken } from "../__mocks__/mockData";
+import{ axiosMatch, logout } from "axios";
 
 describe("APIClient", () => {
     const apiClient = new APIClient();
 
     afterAll(jest.clearAllMocks);
 
-    beforeAll(() => {
+    const authenticate = async () => {
         const credentials = {user: "user_1",
                              password: "passwd"};
-        apiClient.authenticate("/auth/token/login/", credentials);
+        const token = await apiClient.authenticate(
+            "/auth/token/login/", credentials);
+        saveToken(token);
+    };
+
+    beforeAll(authenticate);
+
+    test("if logout() calls expected route", async () => {
+        await apiClient.logout();
+        const expectedCall = {
+            "headers": {
+                "Authorization": "Token 7f3371589a52d0ef17877c61d1c82cdf9b7d8f3f",
+                "Content-Type": "application/json"
+            },
+            "method": "post",
+        };
+
+        expect(logout).toHaveBeenCalledTimes(1);
+        expect(logout).toHaveBeenCalledWith(
+            expect.objectContaining(expectedCall));
     });
 
     test("calling route using an absolute URL", async () => {

@@ -9,6 +9,8 @@ import {
     memorizationDistribution, eFactorDistribution, gradesDistribution
 } from "./mockData";
 
+const loginRoute = /\/api\/auth\/token\/login\/$/;
+const logoutRoute = /\/api\/auth\/token\/logout\/$/;
 const cramQueueRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/cram-queue\/$/;
 const categoriesUrlMatch = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/?$/i;
 const categoriesSelectedUrlRoute = /\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/categories\/selected\/?$/;
@@ -49,6 +51,8 @@ export const forgetCard = jest.fn();
 export const getQueuedCard = jest.fn();
 export const dropCram = jest.fn();
 export const searchAllCards = jest.fn();
+export const logout = jest.fn();
+export const login = jest.fn();
 
 // cards distribution spy functions
 export const cardsDistribution_12DaysCallback = jest.fn();
@@ -58,16 +62,25 @@ export const eFactorDistributionRouteCallback = jest.fn();
 
 export const axiosMatch = {
     post: jest.fn().mockImplementation(config => {
-	if (config.data.user === "CardsReviewer_user") {
-	    return Promise.resolve({ data: authToken_1 });
-	} else if (config.data.user === "user_1") {
-	    return Promise.resolve({ data: authToken });
-        } else if (config.data.user === "user_2") {
-	    return Promise.resolve({ data: authToken_2 });
-	} else {
-	    return Promise.reject(
-                { data: "wrong authentication credentials" });
-	}
+        if(loginRoute.test(config.url)) {
+            login(config);
+	    if (config.data.user === "CardsReviewer_user") {
+	        return Promise.resolve({ data: authToken_1 });
+	    }  else if (config.data.user === "user_1") {
+	        return Promise.resolve({ data: authToken });
+            } else if (config.data.user === "user_2") {
+	        return Promise.resolve({ data: authToken_2 });
+            } else {
+	        return Promise.reject(
+                    { data: "wrong authentication credentials" });
+	    }
+	} else if (logoutRoute.test(config.url)) {
+            logout(config);
+            return Promise.resolve({ data: "" });
+        } else {
+            return Promise.reject(
+                { data: "unrecognized route" });
+        }
     }),
 
     get: jest.fn().mockImplementation(config => {

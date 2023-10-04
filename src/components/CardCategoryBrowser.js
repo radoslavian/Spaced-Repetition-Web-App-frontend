@@ -60,8 +60,6 @@ export default function CardCategoryBrowser (
                              isOpen={isModalOpen}
                              closeModal={onCloseModal}>
             <Search placeholder="Search for..." allowClear
-                    /* returns event data:
-                     * onPressEnter={a => console.log(a)} */
                     onSearch={handleSearch}
                     value={searchedPhrase}
                     onChange={e => setSearchedPhrase(e.target.value)}

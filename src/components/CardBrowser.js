@@ -133,7 +133,8 @@ export default function CardBrowser(
               renderItem={renderCard}
             />
             <Button type="link"
-                    onClick={loadMore}>
+                    onClick={loadMore}
+                    data-testid="load-more-button">
               load more
             </Button>
           </div>

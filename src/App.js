@@ -1,46 +1,25 @@
 import './App.css';
-import { useEffect, useState } from "react";
-import useToken from "./hooks/useToken";
-import { useApi } from "./contexts/ApiProvider";
+import { useState } from "react";
 import { CategoriesProvider } from "./contexts/CategoriesProvider";
 import { CardsProvider } from "./contexts/CardsProvider";
+import { useUser } from "./contexts/UserProvider";
 import MainGrid from "./components/MainGrid";
 import LoginForm from "./components/LoginForm";
 
 function App() {
-    const api = useApi();
     // const appUserName = "simple_user1";
-    // const appPassword = "aber45jhdfsfrg";
-    const [loading, setLoading] = useState(false);
-    const [credentials, setCredentials] = useState({});
-    const [authMessage, setAuthMessage] = useState("");
-    const { setToken } = useToken();
-    const timeout = 500;
+    // const userPassword = "aber45jhdfsfrg";
+    const [isLoading, setIsLoading] = useState(false);
+    const { user, logIn, authMessage } = useUser();
 
-    useEffect(() => {
-        (async () => {
-            if(Object.keys(credentials).length === 0) {
-                return;
-            }
-            setLoading(true);
-            const authToken = await api.authenticate(
-                "/auth/token/login/", credentials);
-            if(Boolean(authToken)) {
-                setTimeout(() => {
-                    setToken(authToken);
-                    setLoading(false);
-                }, timeout);
-            } else {
-                setTimeout(() => {
-                    setAuthMessage("Wrong password or username.");
-                    setLoading(false);
-                }, timeout);
-            }
-        })();
-    }, [api, credentials]);
+    const authenticate = async credentials => {
+        setIsLoading(true);
+        await logIn(credentials);
+        setIsLoading(false);
+    };
 
     return (
-        api.isAuthenticated() ?
+        Boolean(user)  ?
             <div className="App">
                 <CategoriesProvider>
                   <CardsProvider>
@@ -49,9 +28,9 @@ function App() {
                 </CategoriesProvider>
             </div>
             :
-            <LoginForm setCredentials={setCredentials}
-                       authMessage={authMessage}
-                       loading={loading}/>
+            <LoginForm setCredentials={authenticate}
+                       authMessage={authMessage.current}
+                       loading={isLoading}/>
     );
 }
 

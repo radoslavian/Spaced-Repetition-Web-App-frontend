@@ -10,13 +10,17 @@ import { getAuthToken, saveToken } from "../utils/helpers.js";
 export default function useToken() {
     const [token, setToken] = useState(getAuthToken());
 
-    const saveUserToken = userToken => {
-	saveToken(userToken);
+    const manageUserToken = userToken => {
+	if (userToken === null) {
+	    localStorage.removeItem("userToken");
+	} else {
+	    saveToken(userToken);
+	}
 	setToken(userToken);
     };
 
     return {
-	setToken: saveUserToken,
+	setToken: manageUserToken,
 	token
     };
 }
