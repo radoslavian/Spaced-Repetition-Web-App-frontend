@@ -14,6 +14,10 @@ export default class ApiClient {
 	return localToken;
     }
 
+    async logout() {
+	const response = await this.post("/auth/token/logout/");
+    }
+
     isAuthenticated() {
 	const token = getAuthToken();
         return Boolean(token);
@@ -62,9 +66,12 @@ export default class ApiClient {
         };
 
         // axios itself is only called in this place
-        return axios(config)
-            .then(response => response.data)
-            .catch(console.error);
+        try {
+            const response = await axios(config);
+            return response.data;
+        } catch (error) {
+            return error;
+        }
     }
 
     async get(url) {
