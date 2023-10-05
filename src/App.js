@@ -10,7 +10,7 @@ function App() {
     // const appUserName = "simple_user1";
     // const userPassword = "aber45jhdfsfrg";
     const [isLoading, setIsLoading] = useState(false);
-    const { user, logIn, authMessage } = useUser();
+    const { user, logIn, authMessages } = useUser();
 
     const authenticate = async credentials => {
         setIsLoading(true);
@@ -29,7 +29,7 @@ function App() {
             </div>
             :
             <LoginForm setCredentials={authenticate}
-                       authMessage={authMessage.current}
+                       authMessages={authMessages}
                        loading={isLoading}/>
     );
 }

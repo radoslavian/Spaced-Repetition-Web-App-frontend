@@ -7,7 +7,7 @@ const UserContext = createContext();
 
 export function UserProvider({ children }) {
     const [user, setUser] = useState(null);
-    const authMessage = useRef("");
+    const [authMessages, setAuthMessages] = useState([]);
     const { token, setToken } = useToken();
     const api = useApi();
 
@@ -29,19 +29,20 @@ export function UserProvider({ children }) {
         // localStorage from being sent to the API (while logging-in)
         // effectively locking the user out of the app
         // and forcing to remove the token manually
-
         if (token !== null) {
             setToken(null);
         }
-        const receivedToken = await api.authenticate(
+        if (authMessages.length !== 0) {
+                setAuthMessages([]);
+        }
+        const response = await api.authenticate(
             "/auth/token/login/", credentials);
-        if(Boolean(receivedToken)) {
-            setToken(receivedToken);
-            if (authMessage.current !== "") {
-                authMessage.current = "";
-            }
+        if (response?.status === 400) {
+            setAuthMessages(response.data.non_field_errors);
+        } else if (typeof(response) === "object") {
+            setToken(response);
         } else {
-            authMessage.current = "Authenticaton error. Check credentials.";
+            setAuthMessages(["Server error."]);
         }
     };
 
@@ -51,7 +52,7 @@ export function UserProvider({ children }) {
     };
 
     return (
-        <UserContext.Provider value={{ user, logIn, logOut, authMessage }}>
+        <UserContext.Provider value={{ user, logIn, logOut, authMessages }}>
           { children }
         </UserContext.Provider>
     );

@@ -7,37 +7,48 @@ import { ApiProvider } from "../contexts/ApiProvider";
 import { logoutUser } from "../utils/testHelpers";
 
 describe("<UserProvider/>", () => {
-    const TestingComponent = () => {
-        const credentials = {user: "user_1",
-                             password: "passwd"};
-        const { user, logIn, logOut } = useUser();
+    const TestingComponent = ({credentials}) => {
+        const { user, logIn, logOut, authMessages } = useUser();
 
         useEffect(() => {
             if(user === null) { logIn(credentials); }
-        }, [user]);
+        }, [user, credentials]);
 
         return (
             Boolean(user) ?
                 <div>
-                  <p>{ user.email }</p>
-                  <p>{ user.id }</p>
-                  <p>{ user.username }</p>
+                  <p>{ user?.email }</p>
+                  <p>{ user?.id }</p>
+                  <p>{ user?.username }</p>
                   <span onClick={ logOut }>
                     click to logout
                   </span>
                 </div>
-            : <span>logged out</span>
+            :
+            <>
+              <p data-testid="auth-messages">
+                { authMessages.map(item => item ) }
+              </p>
+              <span>logged out</span>
+            </>
         );
     };
 
     jest.spyOn(Storage.prototype, "setItem");
     jest.spyOn(Storage.prototype, "removeItem");
 
-    const renderComponent = () => {
+    const defaultCredentials = {user: "user_1",
+                                password: "passwd"};
+    const wrongCredentials = {user: "wrong_user",
+                              password: "wrong_password"};
+    const serverFailureCredentials = {user: "server_failure",
+                                      password: "failure_password"};
+
+    const renderComponent = (credentials = defaultCredentials) => {
         render(
             <ApiProvider>
               <UserProvider>
-                <TestingComponent/>
+                <TestingComponent credentials={credentials}/>
               </UserProvider>
             </ApiProvider>
         );
@@ -109,5 +120,23 @@ describe("<UserProvider/>", () => {
         renderComponent();
         const userName = await screen.findByText("user_name");
         expect(userName).toBeInTheDocument();
+    });
+
+    test("authetincation failure with bad credentials", async () => {
+        renderComponent(wrongCredentials);
+        const authMessage = await screen.findByTestId("auth-messages");
+        const expectedMessage = "Unable to log in with provided credentials.";
+
+        await waitFor(() => expect(authMessage)
+                      .toHaveTextContent(expectedMessage));
+    });
+
+    test("server failure on authentication attempt", async () => {
+        renderComponent(serverFailureCredentials);
+        const authMessage = await screen.findByTestId("auth-messages");
+        const expectedMessage = "Server error.";
+
+        await waitFor(() => expect(authMessage)
+                      .toHaveTextContent(expectedMessage));
     });
 });

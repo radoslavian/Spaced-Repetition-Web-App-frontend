@@ -1,13 +1,18 @@
-import React from "react";
+import { useRef } from "react";
 import "./loginForm.css";
-import { Form, Input, Button } from "antd";
+import { Alert, Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 // Form based (with modifications) on:
 // https://codesandbox.io/s/login-form-ant-design-demo-rx2qf
 
-export default function LoginForm({ setCredentials, authMessage, loading }) {
-    const onFinish = values => setCredentials(values);
+export default function LoginForm(
+    { setCredentials, authMessages = [], loading }) {
+    const loginAttempt = useRef(0);
+    const onFinish = values => {
+        setCredentials(values);
+        loginAttempt.current++;
+    };
     const componentStyle = {
         display: "flex",
         alignItems: "center",
@@ -25,9 +30,14 @@ export default function LoginForm({ setCredentials, authMessage, loading }) {
                 onFinish={onFinish}
           >
             <h2>Enter credentials:</h2>
-            <h4 id="login-authentication-message">
-              { authMessage }
-            </h4>
+            <div id="login-authentication-messages">
+              { authMessages.map(
+                  (message, index) => <Alert
+                                        key={index + loginAttempt.current}
+                                        message={message}
+                                        type="error"
+                                        closable />) }
+            </div>
             <Form.Item
               name="username"
               rules={[

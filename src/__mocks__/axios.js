@@ -70,9 +70,19 @@ export const axiosMatch = {
 	        return Promise.resolve({ data: authToken });
             } else if (config.data.user === "user_2") {
 	        return Promise.resolve({ data: authToken_2 });
+            } else if(config.data.user === "server_failure") {
+                return undefined;
             } else {
-	        return Promise.reject(
-                    { data: "wrong authentication credentials" });
+                const response = {
+                    status: 400,
+                    statusText: "Bad Request",
+                    data: {
+	                "non_field_errors": [
+		            "Unable to log in with provided credentials."
+	                ]
+                    }
+                };
+	        return Promise.reject({ response });
 	    }
 	} else if (logoutRoute.test(config.url)) {
             logout(config);
@@ -139,8 +149,6 @@ export const axiosMatch = {
 		return Promise.resolve({ data: emptyCardsList });
 	    default:
                 return Promise.resolve({ data: outstandingMiddlePage });
-		throw new Error(
-		    "No pattern matched in outstandingCardsMainPageRoute");
 	    }
         }
         else if (cramQueueMiddleRoute.test(config.url)) {

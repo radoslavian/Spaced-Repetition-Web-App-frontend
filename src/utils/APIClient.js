@@ -70,7 +70,7 @@ export default class ApiClient {
             const response = await axios(config);
             return response.data;
         } catch (error) {
-            return error;
+            return error.response;
         }
     }
 

@@ -1,5 +1,3 @@
-/* Tests for remaining of the components. */
-
 import { render, screen, act, fireEvent,
          waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react";
@@ -34,11 +32,11 @@ async function expectToRejectCalls(functions) {
 }
 
 describe("<LoginForm/>", () => {
-    const expectedMessage = "authentication error message";
+    const expectedMessages = ["authentication error message"];
 
     it("displays message passed in property", () => {
-        render(<LoginForm authMessage={expectedMessage}/>);
-        const receivedMessage = screen.getByText(expectedMessage);
+        render(<LoginForm authMessages={expectedMessages}/>);
+        const receivedMessage = screen.getByText(expectedMessages[0]);
         expect(receivedMessage).toBeInTheDocument();
     });
 
