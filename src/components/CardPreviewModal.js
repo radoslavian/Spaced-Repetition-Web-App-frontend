@@ -30,7 +30,8 @@ export default function CardPreviewModal({ card, isCardPreviewOpen,
                open={isCardPreviewOpen}
                onCancel={closeCardPreview}
                footer={[
-                   <Button onClick={closeCardPreview}>
+                   <Button key="close"
+                           onClick={closeCardPreview}>
                      Close
                    </Button>
                ]}>

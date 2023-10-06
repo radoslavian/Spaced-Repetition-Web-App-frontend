@@ -1,4 +1,4 @@
-import { Button, Popover, Badge } from "antd";
+import { Button, Popover, Badge, Space } from "antd";
 
 const defaultContent = {
     title: "default title",
@@ -10,7 +10,7 @@ export default function LearnButton(
      onClick = () => {}, buttonTitle = "", buttonType = "default",
      badgeColor="cyan"}) {
     return (
-        <div data-testid={`button-${dataTestId}`}>
+        <span data-testid={`button-${dataTestId}`}>
         <Popover placement="rightTop"
                  title={popoverContent.title}
                  content={popoverContent.content}>
@@ -25,6 +25,6 @@ export default function LearnButton(
             </Button>
           </Badge>
         </Popover>
-        </div>
+        </span>
     );
 }

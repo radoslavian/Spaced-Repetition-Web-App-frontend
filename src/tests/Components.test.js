@@ -14,9 +14,9 @@ import {
     gradesDistributionRouteCallback,
     eFactorDistributionRouteCallback,
     cardsDistribution_TwoWeeksCallback,
-    cardsMemorization_TwoWeeksCallback } from "axios";
+    cardsMemorization_TwoWeeksCallback, dropCram } from "axios";
 import LearningProgress from "../components/LearningProgress";
-import { getRenderScreen, waitForDataToLoad,
+import { getRenderScreen,
          renderComponent_waitForUser } from "../utils/testHelpers";
 import LearnCardsPage from "../components/LearnCardsPage";
 import CardPreviewModal from "../components/CardPreviewModal";
@@ -26,6 +26,8 @@ import GradesDistributionPage from "../components/GradesDistributionPage";
 import CategorySelector from "../components/CategorySelector";
 import LoginForm from "../components/LoginForm";
 import LearnButton from "../components/LearnButton";
+import DropCramModal from "../components/DropCramModal";
+import CardsMenu from "../components/CardsMenu";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -34,6 +36,70 @@ async function expectToRejectCalls(functions) {
         }).rejects.toEqual(expect.anything());
     }
 }
+
+const credentials = {
+    user: "user_1",
+    password: "passwd"
+};
+
+describe("<CardsMenu/>", () => {
+    const renderComponent = getRenderScreen(CardsMenu, credentials);
+    
+    it("sends request to drop cram", async () => {
+        renderComponent();
+        const cardsMenu = await screen.findByTestId("cards-menu");
+        fireEvent.mouseOver(cardsMenu);
+        const dropCramTrigger = await screen.findByText("Drop cram");
+        fireEvent.click(dropCramTrigger);
+        const modal = await screen.findByTestId(
+            "drop-cram-confirmation-dialog");
+        const dropButton = await within(modal).findByText("Drop cram");
+        dropCram.mockClear();
+        fireEvent.click(dropButton);
+        expect(dropCram).toHaveBeenCalledTimes(1);        
+    });
+});
+
+describe("<DropCramModal/>", () => {
+    const dropFn = jest.fn();
+
+    const showDropCramModal = async () => {
+        render(<DropCramModal isModalOpen={true}
+                              dropFunction={dropFn}/>);
+        const modal = await screen.findByTestId(
+            "drop-cram-confirmation-dialog");
+        return modal;
+    };
+
+    afterEach(dropFn.mockClear);
+
+    it("should display request to confirm dropping cram", async () => {
+        render(<DropCramModal isModalOpen={true}/>);
+        const confirmationText = "Are you really sure to remove "
+              + "cards from the cram queue?";
+        expect(await screen.findByText(confirmationText)).toBeInTheDocument();
+    });
+
+    it("should drop cram queue", async () => {
+        const confirmationModal = await showDropCramModal();
+        const dropButton = await within(confirmationModal)
+              .findByText("Drop cram");
+        fireEvent.click(dropButton);
+
+        expect(dropFn).toHaveBeenCalledTimes(1);
+    });
+
+    it("should cancel removing the cram", async () => {
+        const confirmationModal = await showDropCramModal();
+        const cancelRemoving = await within(confirmationModal)
+              .findByText("Cancel");
+        fireEvent.click(cancelRemoving);
+
+        await expect(async () => {
+            await waitFor(() => expect(dropFn).toHaveBeenCalled());
+        }).rejects.toEqual(expect.anything());
+    });
+});
 
 describe("<LearnButton/>", () => {
     const popOverTitle = "Pop-over title";

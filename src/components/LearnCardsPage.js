@@ -1,8 +1,9 @@
-import { Layout } from "antd";
+import { Layout, Space } from "antd";
 import { useState } from "react";
 import CardCategoryBrowser from "./CardCategoryBrowser";
 import CardDetails from "./CardDetails";
 import CardsSelector from "./CardsSelector";
+import CardsMenu from "./CardsMenu";
 
 const {  Content, Sider } = Layout;
 
@@ -14,11 +15,14 @@ export default function LearnCardsPage() {
         <Layout>
           <Sider width={280}
                  theme="light">
+            <Space direction="vertical"
+                   size="small"
+                   style={{ marginTop: "15px" }}>
+            <CardsMenu/>
             <CardCategoryBrowser
               set_cardBody_visible={setCardBody_visible}/>
-            <div style={{marginTop: "10px"}}>
               <CardDetails card={currentCard}/>
-            </div>
+        </Space>
           </Sider>
           <Content>
             <CardsSelector
