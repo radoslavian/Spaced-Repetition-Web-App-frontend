@@ -2,14 +2,15 @@ import {  useEffect, useState } from "react";
 import { CardDistributionChart } from "./DistributionCharts";
 import { useApi } from "../contexts/ApiProvider";
 import { useUser } from "../contexts/UserProvider";
+import { Segmented } from "antd";
 
 export default function CardsDistributionPage(
-    {title = "Distribution of card reviews",
-     path = "distribution/",
-     daysRange = 7}) {
+    { title = "Distribution of card reviews",
+      path = "distribution/" }) {
     const api = useApi();
     const { user } = useUser();
     const [data, setData] = useState({});
+    const [daysRange, setDaysRange] = useState(7);
 
     useEffect(() => {
         (async () => {
@@ -21,7 +22,48 @@ export default function CardsDistributionPage(
         })();
     }, [user, api, daysRange, path]);
 
-    return (<CardDistributionChart chartData={data}
-                                   title={title}/>);
+    const handleOnChange = value => {
+        switch(value) {
+        case "one-week":
+            setDaysRange(7);
+            break;
+        case "two-weeks":
+            setDaysRange(14);
+            break;
+        case "one-month":
+            setDaysRange(31);
+            break;
+        default:
+            console.log(value);
+            break;
+        }
+    };
+
+    return (
+        <>
+          <Segmented data-testid="days-range-selector"
+                     defaultValue="one-week"
+                     block
+                     size="large"
+                        onChange={handleOnChange}
+                        options={[
+                            {
+                                label: "one week",
+                                value: "one-week"
+                            },
+                            {
+                                label: "two weeks",
+                                value: "two-weeks"
+                            },
+                            {
+                                label: "one month",
+                                value: "one-month"
+                            }
+                        ]}
+                />
+          <CardDistributionChart chartData={data}
+                                 title={title}/>
+        </>
+    );
 }
 

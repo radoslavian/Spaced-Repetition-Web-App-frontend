@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Result, Button } from "antd";
+import { Result, Button, Typography } from "antd";
 import LearnCardsPage from "./LearnCardsPage";
 import PageHeader from "./PageHeader";
 import StatisticsPage from "./StatisticsPage";
@@ -8,9 +8,29 @@ import GradesDistributionPage from "./GradesDistributionPage";
 import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
 
+const { Text } = Typography;
+
+const MemorizationDistribution = () => (
+    <>
+      <CardsDistributionPage
+        path="distribution/memorized/"
+        title="Cards memorized in past weeks"/>
+      <div style={{margin: "30px",
+                   textAlign: "center"}}>
+        <Text type="secondary">
+          Please keep in mind that the chart
+          only shows cards that have been added to the
+          learning process and are still in it.
+          Forgetting a card will remove
+          it from the chart.
+        </Text>
+      </div>
+    </>
+);
+
 export default function MainGrid() {
     const navigate = useNavigate();
-
+    
     return (
         <>
           <PageHeader/>
@@ -18,21 +38,24 @@ export default function MainGrid() {
             <Route path="/" element={<LearnCardsPage/>}/>
             <Route path="statistics" element={<StatisticsPage/>}>
               <Route path="grades-distribution"
+                     key="grades-distribution-route"
                      element={<GradesDistributionPage/>}
               />
               <Route path="e-factor-distribution"
+                     keys="e-factor-distribution-route"
                      element={<EFactorDistributionPage/>}
               />
-              <Route path="memorization"
-                     element={<CardsDistributionPage
-                                title="Weekly memorization distribution"
-                                daysRange={7}
-                                path="distribution/memorized/"/>}
+              <Route exact
+                     path="memorization"
+                     element={<MemorizationDistribution/>}
               />
               <Route path="cards-distribution"
-                     element={<CardsDistributionPage
-                                title="Weekly distribution of card reviews"
-                                daysRange={7}/>}/>
+                     key="cards-distribution-route"
+                     element={
+                         <CardsDistributionPage
+                           title="Distribution of card reviews"/>
+                     } />
+                
             </Route>
             <Route path="*" element={
                   <Result

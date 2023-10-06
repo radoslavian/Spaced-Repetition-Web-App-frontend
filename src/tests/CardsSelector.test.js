@@ -434,24 +434,30 @@ describe("<CardsSelector/> - reviewing crammed & learning new cards", () => {
         // TODO: add throw if left for another time
     });
 
-    test("if button for scheduled cards show number of reviews", async () => {
+    test("if button for scheduled cards shows number of reviews", async () => {
         renderScreen(userCredentials);
-        const expectedText = "Learn scheduled - 3 left";
-        const received = await screen.findByText(expectedText);
+        const button = await screen.findByTestId("button-learn-all-trigger");
+        // const expectedText = "Learn scheduled";
+        // const textFinder = (_, element)
+        //       => element.textContent === expectedText;
+        // approximation, because the above solution doesn't work
+        const received = await within(button).findByText(3);
         expect(received).toBeInTheDocument();
     });
 
-    test("if button for crammed cards show number of reviews", async () => {
+    test("if button for crammed cards shows number of reviews", async () => {
         renderScreen(userCredentials);
-        const expectedText = "Learn from cram - 62 left";
-        const received = await screen.findByText(expectedText);
+        const button = await screen.findByTestId("button-learn-crammed-trigger");
+        const received = await within(button).findByText(
+            (_, element) => element.textContent === "62");
         expect(received).toBeInTheDocument();
     });
 
-    test("if button for queued cards show number of reviews", async () => {
+    test("if button for queued cards shows number of reviews", async () => {
         renderScreen(userCredentials);
-        const expectedText = "Learn new cards - 60 left";
-        const received = await screen.findByText(expectedText);
+        const button = await screen.findByTestId("button-learn-new-trigger");
+        const received = await within(button).findByText(
+            (_, element) => element.textContent === "60");
         expect(received).toBeInTheDocument();
     });
 });

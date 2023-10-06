@@ -39,8 +39,10 @@ const searchAllCardsRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-
 const apiClientAbsoluteUrlTest = /http:\/\/localhost:8000\/test\/url/;
 
 // statistics-distribution endpoints
-const cardsDistribution_12DaysRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/\?days-range=\w+$/;
-const cardsMemorization_12DaysRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/memorized\/\?days-range=12$/;
+const cardsDistribution_7DaysRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/\?days-range=7$/;
+const cardsMemorization_7DaysRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/memorized\/\?days-range=7$/;
+const cardsMemorization_TwoWeeksRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/memorized\/\?days-range=14$/;
+const cardsDistribution_TwoWeeksRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/\?days-range=14$/;
 const gradesDistributionRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/grades\/$/;
 const eFactorDistributionRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/e-factor\/$/;
 
@@ -55,8 +57,10 @@ export const logout = jest.fn();
 export const login = jest.fn();
 
 // cards distribution spy functions
-export const cardsDistribution_12DaysCallback = jest.fn();
-export const cardsMemorization_12DaysCallback = jest.fn();
+export const cardsDistribution_7DaysCallback = jest.fn();
+export const cardsMemorization_7DaysCallback = jest.fn();
+export const cardsDistribution_TwoWeeksCallback = jest.fn();
+export const cardsMemorization_TwoWeeksCallback = jest.fn();
 export const gradesDistributionRouteCallback = jest.fn();
 export const eFactorDistributionRouteCallback = jest.fn();
 
@@ -108,12 +112,21 @@ export const axiosMatch = {
             gradesDistributionRouteCallback();
             return Promise.resolve({ data: gradesDistribution });
         }
-        else if (cardsMemorization_12DaysRoute.test(config.url)) {
-            cardsMemorization_12DaysCallback();
+        else if (cardsDistribution_TwoWeeksRoute.test(config.url)) {
+            cardsDistribution_TwoWeeksCallback(config);
+            return Promise.resolve({ data: cardsDistribution_12Days });
+        }
+        else if (cardsMemorization_TwoWeeksRoute.test(config.url)) {
+            cardsMemorization_TwoWeeksCallback(config);
             return Promise.resolve({ data: memorizationDistribution });
         }
-	else if (cardsDistribution_12DaysRoute.test(config.url)) {
-	    cardsDistribution_12DaysCallback();
+
+        else if (cardsMemorization_7DaysRoute.test(config.url)) {
+            cardsMemorization_7DaysCallback();
+            return Promise.resolve({ data: memorizationDistribution });
+        }
+	else if (cardsDistribution_7DaysRoute.test(config.url)) {
+	    cardsDistribution_7DaysCallback(config);
 	    return Promise.resolve({ data: cardsDistribution_12Days });
 	}
         else if (searchAllCardsRoute.test(config.url)) {

@@ -13,6 +13,14 @@ export async function waitForDataToLoad() {
     await waitFor(() => expect(isLast).toHaveTextContent("false"));
 };
 
+export async function renderComponent_waitForUser(renderComponent) {
+    renderComponent();
+    // wait for user to log in
+    const userName = await screen.findByTestId("user-checker");
+    await waitFor(() => expect(userName)
+                  .toHaveTextContent("user user_name"));
+};
+
 
 export async function showAnswer() {
     const showAnswer = await screen.findByText("Show answer");
@@ -132,10 +140,11 @@ export function getComponentWithProviders(Component) {
 }
 
 function UserChecker() {
-    const user = useUser();
+    const { user } = useUser();
     return (
         <span data-testid="user-checker">
-          { (user === undefined || user === null) ? "undefined" : "user" }
+          { (user === undefined || user === null) ? "undefined"
+            : "user " + user.username }
         </span>
     );
 }

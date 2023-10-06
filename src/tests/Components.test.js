@@ -10,11 +10,14 @@ import { userCategories2 as userCategories, reviewSuccess,
 import CardCategoryBrowser from "../components/CardCategoryBrowser";
 import {
     downloadCards, searchAllCards, 
-    cardsDistribution_12DaysCallback, cardsMemorization_12DaysCallback,
+    cardsDistribution_7DaysCallback, cardsMemorization_7DaysCallback,
     gradesDistributionRouteCallback,
-    eFactorDistributionRouteCallback } from "axios";
+    eFactorDistributionRouteCallback,
+    cardsDistribution_TwoWeeksCallback,
+    cardsMemorization_TwoWeeksCallback } from "axios";
 import LearningProgress from "../components/LearningProgress";
-import { getRenderScreen } from "../utils/testHelpers";
+import { getRenderScreen, waitForDataToLoad,
+         renderComponent_waitForUser } from "../utils/testHelpers";
 import LearnCardsPage from "../components/LearnCardsPage";
 import CardPreviewModal from "../components/CardPreviewModal";
 import CardsDistributionPage from "../components/CardsDistributionPage";
@@ -22,6 +25,7 @@ import EFactorDistributionPage from "../components/EFactorDistributionPage";
 import GradesDistributionPage from "../components/GradesDistributionPage";
 import CategorySelector from "../components/CategorySelector";
 import LoginForm from "../components/LoginForm";
+import LearnButton from "../components/LearnButton";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -31,8 +35,49 @@ async function expectToRejectCalls(functions) {
     }
 }
 
+describe("<LearnButton/>", () => {
+    const popOverTitle = "Pop-over title";
+    const popOverContent = "Pop-over content";
+    const buttonTitle = "Button title";
+
+    const buttonPopoverContent = {
+        title: popOverTitle,
+        content: popOverContent
+    };
+
+    it("displays pop-over (together with title)", async () => {
+        render(<LearnButton popoverContent={buttonPopoverContent}
+                            buttonTitle={buttonTitle}
+                            dataTestId="learn-button"/>);
+        const learnButton = screen.getByTestId("learn-button");
+        fireEvent.mouseOver(learnButton);
+
+        expect(screen.getByText(buttonTitle)).toBeInTheDocument();
+        expect(await screen.findByText(popOverTitle)).toBeInTheDocument();
+        expect(screen.getByText(popOverContent)).toBeInTheDocument();
+    });
+
+    it("displays count", () => {
+        render(<LearnButton count={125}
+                            dataTestId="learn-button"/>);
+        const foundText = screen.getAllByText(
+            (_, element) => element.textContent === "125")[0];
+        expect(foundText).toBeInTheDocument();
+    });
+});
+
 describe("<LoginForm/>", () => {
     const expectedMessages = ["authentication error message"];
+    const multipleMessages = ["message number one", "message number two"];
+
+    it("displays multiple messages passed in property", () => {
+        render(<LoginForm authMessages={multipleMessages}/>);
+        const messageOne = screen.getByText(multipleMessages[0]);
+        const messageTwo = screen.getByText(multipleMessages[1]);
+
+        expect(messageOne).toBeInTheDocument();
+        expect(messageTwo).toBeInTheDocument();
+    });
 
     it("displays message passed in property", () => {
         render(<LoginForm authMessages={expectedMessages}/>);
@@ -82,8 +127,8 @@ describe("statistics charts/pages", () => {
         disconnect: jest.fn(),
     }));
 
-    const distributionSpies = [cardsDistribution_12DaysCallback,
-                               cardsMemorization_12DaysCallback,
+    const distributionSpies = [cardsDistribution_7DaysCallback,
+                               cardsMemorization_7DaysCallback,
                                gradesDistributionRouteCallback,
                                eFactorDistributionRouteCallback];
 
@@ -103,17 +148,25 @@ describe("statistics charts/pages", () => {
             }
         );
 
-        // TODO: this can't be here - using 'render' in setup
-        // is forbidden
-        beforeEach(renderComponent);
+        test("selecting days range: two weeks", async () => {
+            await renderComponent_waitForUser(renderComponent);
+            const twoWeeksSelector = await screen.findByText(
+                "two weeks");
+            fireEvent.click(twoWeeksSelector);
+
+            expect(cardsDistribution_TwoWeeksCallback)
+                          .toHaveBeenCalledTimes(1);
+        });
 
         it("fetches data from the API", async () => {
-            await waitFor(() => expect(cardsDistribution_12DaysCallback)
+            renderComponent();
+            await waitFor(() => expect(cardsDistribution_7DaysCallback)
                           .toHaveBeenCalledTimes(1));
         });
 
         it("doesn't connect with other API endpoints", async () => {
-            await expectToRejectCalls([cardsMemorization_12DaysCallback,
+            renderComponent();
+            await expectToRejectCalls([cardsMemorization_7DaysCallback,
                                        gradesDistributionRouteCallback,
                                        eFactorDistributionRouteCallback]);
         });
@@ -121,23 +174,30 @@ describe("statistics charts/pages", () => {
 
     describe("<CardsDistributionPage/> for cards memorization", () => {
         const renderComponent = getRenderScreen(
-            () => (<CardsDistributionPage path="distribution/memorized/"
-                                       daysRange={12}/>), {
-                                           user: "user_1",
-                                           password: "passwd"
-                                       }
+            () => (<CardsDistributionPage path="distribution/memorized/"/>), {
+                                              user: "user_1",
+                                              password: "passwd"
+                                          }
         );
 
+        test("selecting days range: two weeks", async () => {
+            await renderComponent_waitForUser(renderComponent);
+            const twoWeeksSelector = await screen.findByText("two weeks");
+            fireEvent.click(twoWeeksSelector);
 
-        beforeEach(renderComponent);  // was act(...)
+            expect(cardsMemorization_TwoWeeksCallback)
+                .toHaveBeenCalledTimes(1);
+        });
 
         it("fetches data from the API", async () => {
-            await waitFor(() => expect(cardsMemorization_12DaysCallback)
+            renderComponent();
+            await waitFor(() => expect(cardsMemorization_7DaysCallback)
                           .toHaveBeenCalledTimes(1));
         });
 
         it("doesn't connect with other API endpoints", async () => {
-            await expectToRejectCalls([cardsDistribution_12DaysCallback,
+            renderComponent();
+            await expectToRejectCalls([cardsDistribution_7DaysCallback,
                                        gradesDistributionRouteCallback,
                                        eFactorDistributionRouteCallback]);
         });
@@ -159,9 +219,9 @@ describe("statistics charts/pages", () => {
         });
 
         it("doesn't connect with other API endpoints", async () => {
-            await expectToRejectCalls([cardsMemorization_12DaysCallback,
+            await expectToRejectCalls([cardsMemorization_7DaysCallback,
                                        gradesDistributionRouteCallback,
-                                       cardsDistribution_12DaysCallback]);
+                                       cardsDistribution_7DaysCallback]);
         });
     });
 
@@ -181,9 +241,9 @@ describe("statistics charts/pages", () => {
         });
 
         it("doesn't connect with other API endpoints", async () => {
-            await expectToRejectCalls([cardsMemorization_12DaysCallback,
+            await expectToRejectCalls([cardsMemorization_7DaysCallback,
                                        eFactorDistributionRouteCallback,
-                                       cardsDistribution_12DaysCallback]);
+                                       cardsDistribution_7DaysCallback]);
         });
     });
 });

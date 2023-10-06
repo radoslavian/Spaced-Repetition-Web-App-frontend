@@ -1,7 +1,8 @@
-import { Space, Button, Popover, Result } from "antd";
+import { Space, Button, Result } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
+import LearnButton from "./LearnButton";
 import MainDisplay from "./MainDisplay";
 import { useState, useEffect, useRef } from "react";
 
@@ -154,38 +155,23 @@ export default function CardsSelector({ setCurrentCard = f => f,
             <MainDisplay title="Select cards group to learn:">
               <Space direction="vertical"
                      size="large">
-                <Popover placement="rightTop"
-                         title={scheduledButtonHelp.title}
-                         content={scheduledButtonHelp.content}>
-                  <Button type="default"
-                          size="large"
-                          data-testid="learn-all-trigger"
-                          onClick={reviewScheduled}>
-                    Learn&nbsp;scheduled&nbsp;-&nbsp;{outstanding.count}
-                    &nbsp;left
-                  </Button>
-                </Popover>
-                <Popover placement="rightTop"
-                         title={cramButtonHelp.title}
-                         content={cramButtonHelp.content}>
-                  <Button type="default"
-                          size="large"
-                          data-testid="learn-crammed-trigger"
-                          onClick={reviewCram}>
-                    Learn&nbsp;from&nbsp;cram&nbsp;-&nbsp;{cram.count}&nbsp;left
-                  </Button>
-                </Popover>
-                <Popover placement="rightTop"
-                         title={learnNewButtonHelp.title}
-                         content={learnNewButtonHelp.content}>
-                  <Button type="dashed"
-                          size="large"
-                          data-testid="learn-new-trigger"
-                          onClick={learnQueued}>
-                    Learn&nbsp;new&nbsp;cards&nbsp;-&nbsp;
-                    {queued.count}&nbsp;left
-                  </Button>
-                </Popover>
+                <LearnButton buttonTitle="Learn&nbsp;scheduled"
+                             dataTestId="learn-all-trigger"
+                             popoverContent={scheduledButtonHelp}
+                             count={outstanding.count}
+                             onClick={reviewScheduled}/>
+                <LearnButton buttonTitle="Learn&nbsp;from&nbsp;cram"
+                             dataTestId="learn-crammed-trigger"
+                             onClick={reviewCram}
+                             popoverContent={cramButtonHelp}
+                             count={cram.count}
+                             badgeColor="gold"/>
+                <LearnButton buttonTitle="Learn&nbsp;new&nbsp;cards"
+                             dataTestId="learn-new-trigger"
+                             onClick={learnQueued}
+                             popoverContent={learnNewButtonHelp}
+                             count={queued.count}
+                             badgeColor="geekblue"/>
               </Space>
             </MainDisplay>
         : emptyQueue() ?
