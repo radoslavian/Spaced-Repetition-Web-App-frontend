@@ -4,7 +4,6 @@ import { Button, Modal } from "antd";
 export default function DropCramModal(
     { isModalOpen = false, setModalOpen = () => {},
       dropFunction = () => {} }) {
-    const showModal = () => setModalOpen(true);
     const handleDropCram = () => {
         dropFunction();
         setModalOpen(false);
