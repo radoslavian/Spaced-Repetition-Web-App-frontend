@@ -1,6 +1,6 @@
 import { waitFor, screen, within,
          fireEvent } from "@testing-library/react";
-import { dropCram, axiosMatch } from "axios";
+import { downloadCards, dropCram, axiosMatch } from "axios";
 import { useCards } from "../contexts/CardsProvider.js";
 import { memorizedCardsSecondPage, memorizedCard,
          queuedCardsMiddlePage,
@@ -44,18 +44,35 @@ describe("general", () => {
 });
 
 describe("dropping cram", () => {
+    const printCards = cards => cards.currentPage.map(card => (
+        <div key={ card.id }
+             data-testid={ card.id }>
+          { Boolean(card?.cram_link) ?
+            <span data-testid="cram-link">
+              { card.cram_link }
+            </span>
+            : "" }
+        </div>
+    ));
+
     const DroppingCramComponent = () => {
         const cards = useCards();
-        const { cram } = cards;
+        const { cram, all, memorized, outstanding } = cards;
         const { dropCram } = cards.functions;
 
         return (
             <>
               <div data-testid="cram-queue">
-                { cram.currentPage.map(card => (
-                    <span key={ card.id }
-                          data-testid={ card.id }/>
-                )) }
+                { printCards(cram) }
+              </div>
+              <div data-testid="all-cards">
+                { printCards(all) }
+              </div>
+              <div data-testid="memorized">
+                { printCards(memorized) }
+              </div>
+              <div data-testid="outstanding-cards">
+                { printCards(outstanding) }
               </div>
               <span data-testid="drop-cram"
                     onClick={ () => dropCram() }/>
@@ -63,19 +80,68 @@ describe("dropping cram", () => {
         );
     };
 
+    const removeCram = async () => fireEvent.click(
+        await screen.findByTestId("drop-cram"));
+
+    const getAllCramLinks = async group => await within(group)
+          .findAllByTestId("cram-link");
+
     const renderComponent = getRenderScreen(
         DroppingCramComponent, credentials);
 
-    test("dropping cram - success", async () => {
+    test("removing cram-links in allCards", async () => {
+        renderComponent();
+
+        const allCards = await screen.findByTestId("all-cards");
+
+        // placeholder test
+        // wait till cards are loaded
+        await within(allCards).findByTestId(
+            "5b457c11-b751-436c-9cfe-f3f4d173c1ba");
+
+        // I struggled all day to get the test to work -
+        // I had to wait until the cards were loaded and then
+        // call the function to delete the cram.
+        await removeCram();
+
+        await waitFor(() => expect(
+            within(allCards).queryAllByTestId(
+                "cram-link").length).toEqual(0));
+    });
+
+    test("removing cram-links in memorized cards", async () => {
+        renderComponent();
+        const memorized = await screen.findByTestId("memorized");
+        await within(memorized).findByTestId(
+            "5949947a-92ad-4e10-94dc-51c7da11c6e8");
+        await removeCram();
+        await waitFor(() => expect(
+            within(memorized).queryAllByTestId(
+                "cram-link").length).toEqual(0));
+    });
+
+    test("removing cram-links in scheduled cards", async () => {
+        renderComponent();
+        const scheduled = await screen.findByTestId("outstanding-cards");
+        await within(scheduled).findByTestId(
+            "7cf7ed26-bfd2-45a8-a9fc-a284a86a6bfa");
+        await removeCram();
+        // const cramLinks = await getAllCramLinks(scheduled);
+        // expect(cramLinks.length).toEqual(0);
+        await waitFor(() => expect(
+            within(scheduled).queryAllByTestId(
+                "cram-link").length).toEqual(0));
+    });
+
+    test("success", async () => {
         renderComponent();
         const cramQueue = await screen.findByTestId("cram-queue");
-        const clickToDropCram = screen.getByTestId("drop-cram");
         const controlCardId = "1a5c7caf-fe7d-4b14-a022-91d9b52a36a0";
         const controlCard = await within(cramQueue)
               .findByTestId(controlCardId);
 
         expect(controlCard).toBeInTheDocument();
-        fireEvent.click(clickToDropCram);
+        await removeCram();
         expect(dropCram).toHaveBeenCalled();
         await waitFor(() => expect(cramQueue).toBeEmptyDOMElement());
     });

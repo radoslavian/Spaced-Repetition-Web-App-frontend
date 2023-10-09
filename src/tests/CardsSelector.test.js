@@ -155,13 +155,13 @@ describe("<CardsSelector/> - general & grading scheduled cards", () => {
 
     test("grading - the 'ideal' grade", async () => {
         const gradeIdeal = screen.getByTestId("grade-button-ideal");
-        await act(() => fireEvent.click(gradeIdeal));
+        fireEvent.click(gradeIdeal);
         const expectedGrade = 5;
 
-        expect(gradeCard).toHaveBeenCalledWith(
+        await waitFor(() => expect(gradeCard).toHaveBeenCalledWith(
             expect.objectContaining(
                 {data: {"grade": expectedGrade}})
-        );
+        ));
     });
 });
 
@@ -188,7 +188,7 @@ describe("<CardsSelector/> - loading more pages", () => {
         fireEvent.click(learnAllTrigger);
         axiosMatch.get.mockClear();
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
             const showAnswer = await screen.findByText("Show answer");
             await act(() => fireEvent.click(showAnswer));
             const gradeIdeal = await screen.findByTestId(

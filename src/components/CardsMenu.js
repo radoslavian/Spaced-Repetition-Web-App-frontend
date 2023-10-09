@@ -11,7 +11,6 @@ export default function CardsMenu() {
     const { cram } = cards;
     const { dropCram } = cards.functions;
     
-
     const showModal = () =>  setShowDropCramModal(true);
     const handleClick = ({ key }) => {
         switch(key) {

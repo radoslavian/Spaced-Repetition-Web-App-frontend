@@ -85,11 +85,10 @@ describe("<CardsReviewer/>", () => {
         fireEvent.click(showAnswer);
         const idealGrade = await screen.findByTestId("grade-button-ideal");
         fireEvent.click(idealGrade);
-        const showAnswerNext = await screen.findByText("Show answer");
-        expect(showAnswerNext).toBeInTheDocument();
+        fireEvent.click(await screen.findByText("Show answer"));
 
         // another card from the list is displayed
-        const nextCardText = "Example answer (outstanding).";
+        const nextCardText = "Example Card answer from outstanding card.";
         const nextCard = await screen.findByText(nextCardText);
         expect(nextCard).toBeInTheDocument();
     });

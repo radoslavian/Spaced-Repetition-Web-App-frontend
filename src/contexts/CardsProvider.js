@@ -152,6 +152,13 @@ export function CardsProvider({ children }) {
         outstandingCards, setOutstandingCards);
     const removeFromCram = getRemoveFromList(cramQueue, setCramQueue);
 
+    const getRemoveCramLinks = (cards, setter) => () => {
+        const newCards = cards.map(
+            card => card?.cram_link === null ? card
+                : {...card, cram_link: null});
+        setter(newCards);
+    };
+
     const updateListsRemoveFromCram = card => {
         const setCram = cards => {
             const updatedCard = {
@@ -520,7 +527,12 @@ export function CardsProvider({ children }) {
             const result = await api.delete(dropUrl);
 
             if(result === "") {
+                cramQueueCount.current = 0;
                 setCramQueue([]);
+                getRemoveCramLinks(allCards, setAllCards)();
+                getRemoveCramLinks(memorizedCards, setMemorizedCards)();
+                getRemoveCramLinks(outstandingCards, setOutstandingCards)();
+                console.log("dropped");
             }
         },
 

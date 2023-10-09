@@ -492,6 +492,76 @@ export const outstandingMiddlePage = {
             "comment": null
         },
         {
+            "id": "20c4420a-b691-49af-9828-3d40c394e850",
+            "body": `<div class="card-body">
+  <div class="card-question">
+    Example card question.
+  </div>
+  <div class="card-answer">
+    Example Card answer from outstanding card.
+  </div>
+</div>`,
+            "projected_review_data": {
+                "0": {
+                    "easiness": 1.7000000000000002,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "1": {
+                    "easiness": 1.96,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "2": {
+                    "easiness": 2.1799999999999997,
+                    "interval": 1,
+                    "reviews": 0,
+                    "review_date": "2023-05-16"
+                },
+                "3": {
+                    "easiness": 2.36,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "4": {
+                    "easiness": 2.5,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                },
+                "5": {
+                    "easiness": 2.6,
+                    "interval": 6,
+                    "reviews": 2,
+                    "review_date": "2023-05-21"
+                }
+            },
+            "categories": [
+                {
+                    "key": "6d18daff-94d1-489b-97ce-969d1c2912a6",
+                    "title": "Grammar"
+                },
+                {
+                    "key": "216682bb-7f28-42ed-8de8-37ff686cf62b",
+                    "title": "Vocabulary"
+                }
+            ],
+            "cram_link": "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/20c4420a-b691-49af-9828-3d40c394e850",
+            "computed_interval": 1,
+            "lapses": 0,
+            "reviews": 1,
+            "total_reviews": 1,
+            "last_reviewed": "2023-05-10",
+            "introduced_on": "2023-05-10T10:06:01.179692Z",
+            "review_date": "2023-05-11",
+            "grade": 4,
+            "easiness_factor": 2.5,
+            "comment": null
+        },
+        {
             "id": "c0320d44-c157-4857-a2b8-39ce89d168f5",
             "body": "<b>Example question on a <i>grammar</i> card.</b>\r\n<hr />\r\nExample answer (outstanding).",
             "projected_review_data": {
