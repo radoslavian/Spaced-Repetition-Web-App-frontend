@@ -44,12 +44,17 @@ const credentials = {
 
 describe("<CardsMenu/>", () => {
     const renderComponent = getRenderScreen(CardsMenu, credentials);
-    
-    it("sends request to drop cram", async () => {
-        renderComponent();
+
+    const findDropCramTrigger = async () => {
         const cardsMenu = await screen.findByTestId("cards-menu");
         fireEvent.mouseOver(cardsMenu);
         const dropCramTrigger = await screen.findByText("Drop cram");
+        return dropCramTrigger;
+    };
+    
+    it("sends request to drop cram", async () => {
+        renderComponent();
+        const dropCramTrigger = await findDropCramTrigger();
         fireEvent.click(dropCramTrigger);
         const modal = await screen.findByTestId(
             "drop-cram-confirmation-dialog");
@@ -57,6 +62,14 @@ describe("<CardsMenu/>", () => {
         dropCram.mockClear();
         fireEvent.click(dropButton);
         expect(dropCram).toHaveBeenCalledTimes(1);        
+    });
+
+    test("menu entry for dropping cram is disabled", async () => {
+        // CardsReviewer_user - mock for cram will return empty cards set
+        renderComponent({user: "CardsReviewer_user", password: "password"});
+        const dropCramTrigger = await findDropCramTrigger();
+        await waitFor(() => expect(dropCramTrigger.closest("li"))
+                      .toHaveAttribute("aria-disabled"));
     });
 });
 
