@@ -21,6 +21,7 @@ export default function DropCramModal(
                      Cancel
                    </Button>,
                    <Button key="drop-cram"
+                           danger
                            onClick={handleDropCram}>
                      Drop cram
                    </Button>

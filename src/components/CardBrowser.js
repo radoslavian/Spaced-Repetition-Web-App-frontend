@@ -130,13 +130,20 @@ export default function CardBrowser(
             <List
               style={{minHeight: "50vw"}}
               bordered
-              dataSource={cards}
+              dataSource={cards.currentPage}
               renderItem={renderCard}
             />
-            <Button type="link"
+            <Button type="default"
+                    block
                     onClick={loadMore}
-                    data-testid="load-more-button">
-              load more
+                    data-testid="load-more-button"
+                    /* button should get disabled when loading data
+                     * or there are no more cards in the list: */
+                    disabled={cards.isLoading || cards.isLast}
+                    loading={cards.isLoading}
+            >
+              { cards.isLoading ?
+                <span>Loading&hellip;</span> : <span>load more</span> }
             </Button>
           </div>
         </>

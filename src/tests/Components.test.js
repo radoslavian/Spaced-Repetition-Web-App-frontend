@@ -696,38 +696,82 @@ describe("<CardBrowser>", () => {
 
     const functions = { memorize, forget, cram, disable, enable };
 
-    const fakeCards = [
-        {
-            type: "queued",
-            body: "<p>Fake <b>card</b> one Very long title Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis rutrum lacus quis tellus aliquet, quis ornare felis imperdiet. Vivamus et elit scelerisque sapien blandit consequat vel non eros.</p>",
-            id: "3475ddea-2f52-4669-93ee-b1298b1f6c97",
-        },
-        {
-            type: "memorized",
-            body: "memorized fake card",
-            id: "9e477201-5852-48c8-92fb-3520c2bef099",
-            cram_link: null,
-        },
-        {
-            type: "memorized",
-            body: "memorized and crammed fake card",
-            id: "aaaaf426-e0b2-4832-b4bc-14e6446b8a69",
-            cram_link: "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad",
-        },
-        {
-            type: "disabled",
-            body: "disabled fake card",
-            id: "2ccd1b58-945e-40b3-98df-da6b6fe44266",
-        }
-    ];
+    const fakeCards = {
+        currentPage: [
+            {
+                type: "queued",
+                body: "<p>Fake <b>card</b> one Very long title Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis rutrum lacus quis tellus aliquet, quis ornare felis imperdiet. Vivamus et elit scelerisque sapien blandit consequat vel non eros.</p>",
+                id: "3475ddea-2f52-4669-93ee-b1298b1f6c97",
+            },
+            {
+                type: "memorized",
+                body: "memorized fake card",
+                id: "9e477201-5852-48c8-92fb-3520c2bef099",
+                cram_link: null,
+            },
+            {
+                type: "memorized",
+                body: "memorized and crammed fake card",
+                id: "aaaaf426-e0b2-4832-b4bc-14e6446b8a69",
+                cram_link: "/api/users/7cfaec0a-0cc6-4249-8240-b52e40b4da7a/cards/cram-queue/a0a5e0bb-d17a-4f1a-9945-ecb0bc5fc4ad",
+            },
+            {
+                type: "disabled",
+                body: "disabled fake card",
+                id: "2ccd1b58-945e-40b3-98df-da6b6fe44266",
+            }            
+        ],
+        isLast: true,
+        isLoading: false
+    };
 
-    beforeEach(() => {
+    test("'Load button' is enabled, loading attribute is false", () => {
+        const cards = {...fakeCards, isLast: false};
+        render(<CardBrowser cards={cards}
+                            loadMore={() => {}}
+                            functions={functions}/>);
+        const loadMoreButton = screen.getByTestId("load-more-button");
+
+        expect(loadMoreButton).not.toBeDisabled();
+        expect(loadMoreButton.classList.contains(
+            "ant-btn-loading")).not.toBe(true);
+    });
+
+    test("'Load button' is disabled, loading attribute is true", () => {
+        const cards = { ...fakeCards, isLoading: true };
+        render(<CardBrowser cards={cards}
+                            loadMore={() => {}}
+                            functions={functions}/>);
+        const loadMoreButton = screen.getByTestId("load-more-button");
+
+        expect(loadMoreButton).toBeDisabled();
+        expect(loadMoreButton.classList.contains(
+            "ant-btn-loading")).toBe(true);
+    });
+
+    test("isLast is set to 'false', 'Load more' is enabled", () => {
+        const cards = { ...fakeCards, isLast: false };
+        render(<CardBrowser cards={cards}
+                            loadMore={() => {}}
+                            functions={functions}/>);
+        const loadMoreButton = screen.getByTestId("load-more-button");
+
+        expect(loadMoreButton).not.toBeDisabled();
+    });
+
+    test("isLast is set to 'true', 'Load more' is disabled", () => {
         render(<CardBrowser cards={fakeCards}
-    loadMore={loadMore}
-    functions={functions}/>);
+                            loadMore={() => {}}
+                            functions={functions}/>);
+        const loadMoreButton = screen.getByTestId("load-more-button");
+
+        expect(loadMoreButton).toBeDisabled();
     });
 
     test("card preview", async () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const cardListItem = await screen.findByText(
             "Fake card one Very long title ...");
         const previewAction = within(cardListItem).getByTitle("preview card");
@@ -741,44 +785,69 @@ describe("<CardBrowser>", () => {
     });
 
     test("if clicking on the 'load more' works", async () => {
+        const cards = { ...fakeCards, isLast: false };
+        render(<CardBrowser cards={cards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const loadMoreButton = await screen.findByText("load more");
         fireEvent.click(loadMoreButton);
         expect(loadMore).toHaveBeenCalledTimes(1);
     });
 
     test("if list of cards displays", async () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const listItem = await screen.findByText("memorized fake card");
         expect(listItem).toBeVisible();
     });
 
     test("if long description gets shortened", async () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const listItemWithLongText = await screen.findByText(
             "Fake card one Very long title ...");
         expect(listItemWithLongText).toBeVisible();
     });
 
     test("if queued card has 'queued...' title", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const queuedCard = screen.getByTitle("queued - not yet memorized");
         expect(queuedCard).toBeVisible();
     });
 
     test("if memorized card has 'memorized' title", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const memorizedCard = screen.getAllByText("memorized fake card");
         expect(memorizedCard[0]).toBeVisible();
     });
 
     test("if disabled card is marked with '[dis]' stamp", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const disabledCard = screen.getByText("[dis]");
         expect(disabledCard).toBeVisible();
     });
 
     test("if queued card can be memorized", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const memorizeTrigger = screen.getByText("memorize");
         fireEvent.click(memorizeTrigger);
         expect(memorize).toHaveBeenCalledTimes(1);
     });
 
     test("if memorized card can be forgotten", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const memorizedCard = screen.getByText("memorized fake card");
         const forgetTrigger = within(memorizedCard).getByText("forget");
         fireEvent.click(forgetTrigger);
@@ -786,21 +855,30 @@ describe("<CardBrowser>", () => {
     });
 
     test("if memorized card can be crammed", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const memorizedCard = screen.getByText("memorized fake card");
         const cramTrigger = within(memorizedCard)
               .getByTitle("cram memorized card");
         fireEvent.click(cramTrigger);
         expect(cram).toHaveBeenCalledTimes(1);
-        expect(cram).toHaveBeenCalledWith(fakeCards[1]);
+        expect(cram).toHaveBeenCalledWith(fakeCards.currentPage[1]);
     });
 
     test("if disabled card can be re-enabled", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const enableTrigger = screen.getByTitle("re-enable disabled card");
         fireEvent.click(enableTrigger);
         expect(enable).toHaveBeenCalledTimes(1);
     });
 
     test("if crammed card doesn't have the 'cram' action", () => {
+        render(<CardBrowser cards={fakeCards}
+                            loadMore={loadMore}
+                            functions={functions}/>);
         const crammedCard = screen.getByTestId(
             "aaaaf426-e0b2-4832-b4bc-14e6446b8a69");
         const cramActionTitle = "cram memorized card";

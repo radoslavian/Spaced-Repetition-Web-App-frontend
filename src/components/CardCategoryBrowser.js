@@ -75,14 +75,13 @@ export default function CardCategoryBrowser (
                     onSearch={handleSearch}
                     value={searchedPhrase}
                     onChange={e => setSearchedPhrase(e.target.value)}
-                    /* loading={true} */
             />
             <Suspense displayChildren={(!allCards.isLoading
                                         || showSuspenseChildren.current)}
                       fallback={<LoadingFallback/>}>
               <CardBrowser scrollRef={scrollRef}
                            loadMore={loadMoreCards}
-                           cards={allCards.currentPage}
+                           cards={allCards}
                            functions={functions}/>
             </Suspense>
         </CardsBrowserModal>
