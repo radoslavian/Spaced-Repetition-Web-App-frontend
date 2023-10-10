@@ -8,6 +8,11 @@ export default function CardsBrowser(
         <Modal title={title}
                centered
                width="600px"
+               style={{
+                   height: "-webkit-fill-available",
+                   transformOrigin: "85px 43px",
+                   overflow: "hidden"
+               }}
                open={isOpen}
                closable={true}
                onCancel={closeModal}

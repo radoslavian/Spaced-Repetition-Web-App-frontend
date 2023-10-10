@@ -9,7 +9,7 @@ import Suspense from "./Suspense";
 
 function LoadingFallback() {
     return (<span data-testid="card-category-browser-fallback-component">
-              <Skeleton/>
+              <Skeleton style={{minHeight: "50vw"}}/>
             </span>);
 }
 

@@ -128,6 +128,7 @@ export default function CardBrowser(
           >
             <div ref={scrollRef}></div>
             <List
+              style={{minHeight: "50vw"}}
               bordered
               dataSource={cards}
               renderItem={renderCard}
