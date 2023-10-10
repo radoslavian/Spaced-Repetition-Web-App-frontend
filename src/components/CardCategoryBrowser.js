@@ -1,10 +1,17 @@
 import React, { useState, useRef } from "react";
-import { Button, Input } from "antd";
+import { Button, Input, Skeleton } from "antd";
 import CategorySelector from "./CategorySelector";
 import { useCards } from "../contexts/CardsProvider";
+import { useCategories } from "../contexts/CategoriesProvider";
 import CardBrowser from "./CardBrowser";
 import CardsBrowserModal from "./CardsBrowserModal";
-import { useCategories } from "../contexts/CategoriesProvider";
+import Suspense from "./Suspense";
+
+function LoadingFallback() {
+    return (<span data-testid="card-category-browser-fallback-component">
+              <Skeleton/>
+            </span>);
+}
 
 export default function CardCategoryBrowser (
     { set_cardBody_visible = f => f }) {
@@ -65,12 +72,14 @@ export default function CardCategoryBrowser (
                     onChange={e => setSearchedPhrase(e.target.value)}
                     /* loading={true} */
             />
-            <CardBrowser scrollRef={scrollRef}
-                         loadMore={loadMore}
-                         cards={allCards.currentPage}
-                         functions={functions}/>
-
-          </CardsBrowserModal>
+            <Suspense displayChildren={!allCards.isLoading}
+                      fallback={<LoadingFallback/>}>
+              <CardBrowser scrollRef={scrollRef}
+                           loadMore={loadMore}
+                           cards={allCards.currentPage}
+                           functions={functions}/>
+            </Suspense>
+        </CardsBrowserModal>
         </>
     );
 }

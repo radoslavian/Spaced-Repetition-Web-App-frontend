@@ -28,6 +28,7 @@ import LoginForm from "../components/LoginForm";
 import LearnButton from "../components/LearnButton";
 import DropCramModal from "../components/DropCramModal";
 import CardsMenu from "../components/CardsMenu";
+import Suspense from "../components/Suspense";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -41,6 +42,51 @@ const credentials = {
     user: "user_1",
     password: "passwd"
 };
+
+describe("<Suspense/>", () => {
+    const child1Text = "oh, my pretty child number one";
+    const child2Text = "oh, my pretty child number two";
+
+    const Child1 = () => (
+        <p>{ child1Text }</p>
+    );
+
+    const Child2 = () => (
+        <p>{ child2Text }</p>
+    );
+
+    const Fallback = () => (
+        <p>fallback component</p>
+    );
+
+    it("shows children", () => {
+        render(
+            <Suspense displayChildren={true}
+                      fallback={<Fallback/>}>
+              <Child1/>
+              <Child2/>
+            </Suspense>
+        );
+
+        expect(screen.getByText(child1Text)).toBeInTheDocument();
+        expect(screen.getByText(child2Text)).toBeInTheDocument();
+        expect(screen.queryByText("fallback component"))
+            .not.toBeInTheDocument();
+    });
+
+    it("shows fallback", () => {
+        render(
+            <Suspense displayChildren={false}
+                      fallback={<Fallback/>}>
+              <Child1/>
+              <Child2/>
+            </Suspense>
+        );
+        expect(screen.queryByText(child1Text)).not.toBeInTheDocument();
+        expect(screen.queryByText(child2Text)).not.toBeInTheDocument();
+        expect(screen.getByText("fallback component")).toBeInTheDocument();
+    });
+});
 
 describe("<CardsMenu/>", () => {
     const renderComponent = getRenderScreen(CardsMenu, credentials);
@@ -553,9 +599,9 @@ describe("<CardCategoryBrowser/>", () => {
         const browseAllCardsButton = await screen.findByText(
             "Browse all cards");
         fireEvent.click(browseAllCardsButton);
-        const noData = await screen.findByText("No data");
+        const noData = await screen.findByTestId(
+            "card-category-browser-fallback-component");
         await waitFor(() => expect(noData).not.toBeInTheDocument());
-        screen.debug();
     };
 
     beforeEach(() => {
@@ -595,6 +641,12 @@ describe("<CardCategoryBrowser/>", () => {
                 expect.objectContaining({url: clearUrl}));
             expect(downloadCards).toHaveBeenCalledTimes(1);
         });
+    });
+
+    it("displays fallback when loading data", async () => {
+        clickBrowseAllCards();
+        expect(await screen.findByTestId(
+            "card-category-browser-fallback-component")).toBeInTheDocument();
     });
 
     test("if component downloads cards from the server", async () => {
