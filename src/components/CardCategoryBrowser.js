@@ -23,6 +23,7 @@ export default function CardCategoryBrowser (
     const functions = useCards().functions;
     const { loadMore } = allCards;
     const [searchedPhrase, setSearchedPhrase] = useState("");
+    const showSuspenseChildren = useRef(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -48,9 +49,13 @@ export default function CardCategoryBrowser (
         allCards.setSearchedPhrase(phrase);
         scrollToTop();
     };
-
     const onCategoryCheck = checkedKeysValues =>
           setSelectedCategories(checkedKeysValues);
+    const loadMoreCards = async () => {
+        showSuspenseChildren.current = true;
+        await loadMore();
+        showSuspenseChildren.current = false;
+    };
 
     return (
         <>
@@ -72,10 +77,11 @@ export default function CardCategoryBrowser (
                     onChange={e => setSearchedPhrase(e.target.value)}
                     /* loading={true} */
             />
-            <Suspense displayChildren={!allCards.isLoading}
+            <Suspense displayChildren={(!allCards.isLoading
+                                        || showSuspenseChildren.current)}
                       fallback={<LoadingFallback/>}>
               <CardBrowser scrollRef={scrollRef}
-                           loadMore={loadMore}
+                           loadMore={loadMoreCards}
                            cards={allCards.currentPage}
                            functions={functions}/>
             </Suspense>
