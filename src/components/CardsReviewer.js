@@ -1,8 +1,9 @@
 import CardBody from "./CardBody";
 import {Row, Col } from "antd";
 import { useState, useEffect } from "react";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import AnswerRater from "./AnswerRater";
+import Suspense from "./Suspense";
 import { useCategories } from "../contexts/CategoriesProvider";
 
 export default function CardsReviewer(
@@ -10,9 +11,13 @@ export default function CardsReviewer(
      stopReviews = f => f,
      displayCard = true}) {
     const [showAnswer, setShowAnswer] = useState(false);
+    const [grading, setGrading] = useState(false);
     const card = viewedQueue?.cardsList.currentPage[0];
+
     const gradeNFlipCard = async (gradedCard, cardGrade) => {
+        setGrading(true);
         await viewedQueue.gradingFn(gradedCard, cardGrade);
+        setGrading(false);
         setShowAnswer(false);
     };
     const { selectedCategories } = useCategories();
@@ -37,7 +42,9 @@ export default function CardsReviewer(
             showAnswer ?
             <Row gutter={1}>
               <Col span={20}>
-                <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
+                <Spin spinning={grading}>
+                  <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
+                </Spin>
               </Col>
               <Col span={4}>
                 <StopButton/>
@@ -61,25 +68,25 @@ export default function CardsReviewer(
     );
 
     return (
-        Boolean(viewedQueue) && viewedQueue.cardsList.isLoading === true ?
-            <p>Loading</p>
-            :
         // Workaraound for issue with conflicting css styles.
         // When displaying two cards in a browser:
         //  - one card in CardsReviewer
         //  - another in card-preview modal in cards browser
         // styles from one element overwrite styles in
         // another.
-
-        displayCard === true ? 
+        displayCard === true ?
             <div style={{textAlign: "left"}}
-             id="cards-reviewer">
-              <CardBody card={card}
+                 id="cards-reviewer">
+              <Spin size="large"
+                    spinning={Boolean(viewedQueue)
+                              && viewedQueue.cardsList.isLoading === true}>
+                <CardBody card={card}
                         title={title}
                         setCurrentCard={setCurrentCard}
                         showAnswer={showAnswer} />
-              { bottomBar }
-            </div>
+                { bottomBar }
+              </Spin>
+        </div>
         : ""
     );
 }

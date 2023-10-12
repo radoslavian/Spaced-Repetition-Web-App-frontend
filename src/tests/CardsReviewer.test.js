@@ -4,6 +4,7 @@ import { render, screen, act, fireEvent,
          waitFor } from "@testing-library/react";
 import { getRenderScreen } from "../utils/testHelpers";
 import CardsReviewer from "../components/CardsReviewer";
+import { outstandingPrevPage } from "../__mocks__/mockData";
 
 describe("<CardsReviewer/>", () => {
     const Component = () => {
@@ -34,10 +35,9 @@ describe("<CardsReviewer/>", () => {
                      user: "user_1",
                      password: "passwd"
     });
-    beforeEach(renderScreen);
 
     test("updating selected categories hides the answer", async () => {
-        // const showAnswer = await screen.findByText("Show answer");
+        renderScreen();
         const showAnswer = await screen.findByTestId("show-answer-button");
         fireEvent.click(showAnswer);
         const answer = await screen.findByText("Example Card answer.");
@@ -51,6 +51,7 @@ describe("<CardsReviewer/>", () => {
     });
 
     test("if 'Show answer' click displays buttons with marks", async () => {
+        renderScreen();
         // expect - grade button was not found
         const showAnswer = await screen.findByText("Show answer");
         expect(showAnswer).toBeInTheDocument();
@@ -61,6 +62,7 @@ describe("<CardsReviewer/>", () => {
     });
 
     test("if answer field is hidden", async () => {
+        renderScreen();
         const question = await screen.findByText("Example card question.");
         await expect(async () => {
             await waitFor(
@@ -71,6 +73,7 @@ describe("<CardsReviewer/>", () => {
     });
 
     test("if 'Show answer' click displays answer field", async () => {
+        renderScreen();
         const showAnswer = await screen.findByText("Show answer");
         fireEvent.click(showAnswer);
         const answer = await screen.findByText("Example Card answer.");
@@ -81,6 +84,7 @@ describe("<CardsReviewer/>", () => {
         // Clicking on the grade re-displays the "Show answer" bar,
         // the answer has a "card-answer" class.
 
+        renderScreen();
         const showAnswer = await screen.findByText("Show answer");
         fireEvent.click(showAnswer);
         const idealGrade = await screen.findByTestId("grade-button-ideal");
