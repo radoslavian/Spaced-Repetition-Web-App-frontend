@@ -4,14 +4,16 @@ import PlayAudio from "./PlayAudio";
 import MainDisplay from "./MainDisplay";
 import { removeElementsByClass } from "../utils/helpers";
 
-export default function CardBody({ card, title, setCurrentCard = f => f,
-                                   showAnswer = false }) {
-    const emptyMessage = "<p><b>Empty</b> - looks like there are "
+const fallbackEmpty = "<p><b>Empty</b> - looks like there are "
           + "no more cards "
           + "left on this list. Click <b>'Stop'</b> in order to "
           + "return to the greeting screen.</p>";
+
+export default function CardBody(
+    { card, title, setCurrentCard = f => f,
+      showAnswer = false, fallbackText = fallbackEmpty }) {
     const hiddenClass = "card-answer";
-    const body = useRef(emptyMessage);
+    const body = useRef(fallbackText);
 
     if(Boolean(card?.body)) {
         if(showAnswer) {
@@ -20,7 +22,7 @@ export default function CardBody({ card, title, setCurrentCard = f => f,
             body.current = removeElementsByClass(card?.body, hiddenClass);
         };
     } else {
-        body.current = emptyMessage;
+        body.current = fallbackText;
     }
 
     useEffect(() => {

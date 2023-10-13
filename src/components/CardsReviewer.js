@@ -27,15 +27,22 @@ export default function CardsReviewer(
         if(showAnswer === true) {
             setShowAnswer(false);
         }
-    }, [selectedCategories, card]);
+    }, [selectedCategories, card/*, viewedQueue.cardsList */]);
 
-    const StopButton = () => (<Button data-testid="stop-reviews-trigger"
-                                      block danger ghost
-                                      type="primary"
-                                      onClick={stopReviews}>
-                                Stop
-                              </Button>);
-    const bottomBar = (
+    const StopButton = () => (
+        <Button data-testid="stop-reviews-trigger"
+                block danger ghost
+                type="primary"
+                onClick={stopReviews}>
+          Stop
+        </Button>
+    );
+
+    // const loadingData = (Boolean(viewedQueue)
+    //                      && viewedQueue.cardsList.isLoading === true);
+    const loadingData = viewedQueue?.cardsList.isLoading === true;
+
+    const BottomBar = () => (
         card === undefined ?
             <StopButton/>
             :
@@ -54,6 +61,7 @@ export default function CardsReviewer(
         <Row gutter={1}>
           <Col span={20}>
             <Button type="primary"
+                    disabled={loadingData}
                     block
                     id="show-answer-button"
                     data-testid="show-answer-button"
@@ -74,19 +82,20 @@ export default function CardsReviewer(
         //  - another in card-preview modal in cards browser
         // styles from one element overwrite styles in
         // another.
-        displayCard === true ?
+        displayCard === true ?  // <-- workaround
             <div style={{textAlign: "left"}}
                  id="cards-reviewer">
               <Spin size="large"
-                    spinning={Boolean(viewedQueue)
-                              && viewedQueue.cardsList.isLoading === true}>
+                    spinning={loadingData}
+                    tip="Please wait while loading cards.">
                 <CardBody card={card}
-                        title={title}
-                        setCurrentCard={setCurrentCard}
-                        showAnswer={showAnswer} />
-                { bottomBar }
+                          title={title}
+                          setCurrentCard={setCurrentCard}
+                          showAnswer={showAnswer}
+                          fallbackText=""/>
               </Spin>
-        </div>
+              <BottomBar/>
+            </div>
         : ""
     );
 }

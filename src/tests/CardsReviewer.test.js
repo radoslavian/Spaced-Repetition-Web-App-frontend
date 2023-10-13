@@ -50,6 +50,31 @@ describe("<CardsReviewer/>", () => {
         await waitFor(() => expect(answer).not.toBeInTheDocument());
     });
 
+    const cards = {
+        currentPage: outstandingPrevPage.results,
+        isLoading: true
+    };
+    const outstandingCards = {
+        title: "Cards",
+        cardsList: cards,
+        gradingFn: () => {}
+    };
+
+    const testSpinners = getRenderScreen(
+        () => <CardsReviewer viewedQueue={outstandingCards}/>, {
+            user: "user_1",
+            password: "passwd"
+        }
+    );
+
+    test("updating categories: show answer button is disabled", async () => {
+        // the button should get disabled if
+        // viewedQueue.cardsList.isLoading == true
+        testSpinners();
+        const showAnswerButton = await screen.findByTestId("show-answer-button");
+        await waitFor(() => expect(showAnswerButton).toBeDisabled());
+    });
+
     test("if 'Show answer' click displays buttons with marks", async () => {
         renderScreen();
         // expect - grade button was not found

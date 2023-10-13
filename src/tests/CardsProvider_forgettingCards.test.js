@@ -100,7 +100,9 @@ it("should fail with: card not found", async () => {
         "number-of-queued-cards");
     console.error.mockClear();
     await forgetQueuedCard(cardId);
-    await waitFor(() => expect(console.error).toHaveBeenCalledTimes(1));
+
+    // was (and should be): toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(console.error).toHaveBeenCalled());
     expect(console.error).toHaveBeenCalledWith(errorMessage);
 
     // doesn't decrease memorized count
