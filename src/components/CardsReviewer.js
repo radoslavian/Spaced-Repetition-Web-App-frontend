@@ -27,7 +27,7 @@ export default function CardsReviewer(
         if(showAnswer === true) {
             setShowAnswer(false);
         }
-    }, [selectedCategories, card/*, viewedQueue.cardsList */]);
+    }, [selectedCategories, card]);
 
     const StopButton = () => (
         <Button data-testid="stop-reviews-trigger"
@@ -76,27 +76,29 @@ export default function CardsReviewer(
     );
 
     return (
-        // Workaraound for issue with conflicting css styles.
+        // Suspense is a
+        // workaraound for issue with conflicting css styles.
         // When displaying two cards in a browser:
         //  - one card in CardsReviewer
         //  - another in card-preview modal in cards browser
         // styles from one element overwrite styles in
         // another.
-        displayCard === true ?  // <-- workaround
-            <div style={{textAlign: "left"}}
-                 id="cards-reviewer">
-              <Spin size="large"
-                    spinning={loadingData}
-                    tip="Please wait while loading cards.">
-                <CardBody card={card}
-                          title={title}
-                          setCurrentCard={setCurrentCard}
-                          showAnswer={showAnswer}
-                          fallbackText=""/>
-              </Spin>
-              <BottomBar/>
-            </div>
-        : ""
+        <Suspense displayChildren={displayCard}
+                  fallback={<span title="card is hidden"/>}>
+          <div style={{textAlign: "left"}}
+               id="cards-reviewer">
+            <Spin size="large"
+                  spinning={loadingData}
+                  tip="Please wait while loading cards.">
+              <CardBody card={card}
+                        title={title}
+                        setCurrentCard={setCurrentCard}
+                        showAnswer={showAnswer}
+                        fallbackText=""/>
+            </Spin>
+            <BottomBar/>
+          </div>
+        </Suspense>
     );
 }
 
