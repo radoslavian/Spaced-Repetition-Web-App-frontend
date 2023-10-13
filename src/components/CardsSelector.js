@@ -158,6 +158,7 @@ export default function CardsSelector({ setCurrentCard = f => f,
     return (
         isStopped ?
             <Spin spinning={areCardsLoading}
+                  delay={500}
                   tip="Loading cards...">
             <MainDisplay title="Select cards group to learn:">
               <Space direction="vertical"

@@ -49,7 +49,8 @@ export default function CardsReviewer(
             showAnswer ?
             <Row gutter={1}>
               <Col span={20}>
-                <Spin spinning={grading}>
+                <Spin spinning={grading}
+                      delay={200}>
                   <AnswerRater card={card} gradingFn={gradeNFlipCard}/>
                 </Spin>
               </Col>
@@ -89,6 +90,7 @@ export default function CardsReviewer(
                id="cards-reviewer">
             <Spin size="large"
                   spinning={loadingData}
+                  delay={500}
                   tip="Please wait while loading cards.">
               <CardBody card={card}
                         title={title}
