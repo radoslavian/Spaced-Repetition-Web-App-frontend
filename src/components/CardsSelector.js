@@ -1,4 +1,4 @@
-import { Space, Button, Result } from "antd";
+import { Space, Button, Result, Spin } from "antd";
 import { useCards } from "../contexts/CardsProvider";
 import CardsReviewer from "./CardsReviewer";
 import LearningProgress from "./LearningProgress";
@@ -151,8 +151,14 @@ export default function CardsSelector({ setCurrentCard = f => f,
     const learnQueued = getReviewCallback("queued");
     const reviewCram = getReviewCallback("crammed");
 
+    const areCardsLoading = (outstanding?.isLoading === true
+                             || cram?.isLoading === true
+                             || queued?.isLoading === true);
+
     return (
         isStopped ?
+            <Spin spinning={areCardsLoading}
+                  tip="Loading cards...">
             <MainDisplay title="Select cards group to learn:">
               <Space direction="vertical"
                      size="large">
@@ -174,7 +180,8 @@ export default function CardsSelector({ setCurrentCard = f => f,
                              count={queued.count}
                              badgeColor="geekblue"/>
               </Space>
-            </MainDisplay>
+        </MainDisplay>
+        </Spin>
         : emptyQueue() ?
             <EmptyQueue onClick={stopReviews}/>
         :

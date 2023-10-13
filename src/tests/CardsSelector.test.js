@@ -1,5 +1,5 @@
 import userEvent from '@testing-library/user-event';
-import { render, screen, act, fireEvent,
+import { screen, act, fireEvent,
          waitFor } from "@testing-library/react";
 import { within } from "@testing-library/dom";
 import { getComponentWithProviders,
@@ -14,7 +14,7 @@ import axios, {
     gradesDistributionRouteCallback,
     eFactorDistributionRouteCallback } from "axios";
 
-describe("<CardsSelector/> - hints for selectors", () => {
+describe("hints for selectors", () => {
     const renderScreen = getRenderScreen(CardsSelector, {
               user: "user_1",
               password: "passwd"
