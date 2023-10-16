@@ -6,7 +6,8 @@ import CardBrowser from "../components/CardBrowser";
 import CardBody from "../components/CardBody";
 import CardDetails from "../components/CardDetails";
 import { userCategories2 as userCategories, reviewSuccess,
-         queuedCard } from "../__mocks__/mockData";
+         queuedCard, generalStatistics, generalStatistics_noFurthestCard
+       } from "../__mocks__/mockData";
 import CardCategoryBrowser from "../components/CardCategoryBrowser";
 import {
     downloadCards, searchAllCards, 
@@ -29,6 +30,8 @@ import LearnButton from "../components/LearnButton";
 import DropCramModal from "../components/DropCramModal";
 import CardsMenu from "../components/CardsMenu";
 import Suspense from "../components/Suspense";
+import UserPage from "../components/UserPage";
+import GeneralStatistics from "../components/GeneralStatistics";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -42,6 +45,111 @@ const credentials = {
     user: "user_1",
     password: "passwd"
 };
+
+describe("<GeneralStatistics/>", () => {
+    const getGeneralStatistics = () => {
+        render(<GeneralStatistics statistics={generalStatistics}/>);
+        return screen.getByTestId("general-statistics");
+    };
+
+    it("shows retention score", () => {
+        const pageGeneralStatistics = getGeneralStatistics();
+        const retentionScore = within(pageGeneralStatistics).getByText(
+            "Retention score");
+        expect(retentionScore.closest("th").nextSibling)
+            .toHaveTextContent("75%");
+    });
+
+    it("shows number of memorized cards", () => {
+        const pageGeneralStatistics = getGeneralStatistics();
+        const memorizedCards = within(pageGeneralStatistics).getByText(
+            "Memorized cards (total)");
+        expect(memorizedCards.closest("th").nextSibling).toHaveTextContent(4);
+    });
+
+    it("shows total number of cards", () => {
+        const pageGeneralStatistics = getGeneralStatistics();
+        const totalNumberOfCards = within(pageGeneralStatistics).getByText(
+            "Total number of cards");
+        expect(totalNumberOfCards.closest("th").nextSibling)
+            .toHaveTextContent(123);
+    });
+
+    it("displays fallback when passed undefined value as prop", () => {
+        render(<GeneralStatistics statistics={undefined}/>);
+        const skeleton = document.getElementsByClassName(
+            "ant-skeleton-content")[0];
+        expect(skeleton).toBeInTheDocument();
+    });
+
+    it("displays fallback when passed empty object", () => {
+        render(<GeneralStatistics statistics={{}}/>);
+        const skeleton = document.getElementsByClassName(
+            "ant-skeleton-content")[0];
+        expect(skeleton).toBeInTheDocument();
+    });
+    
+    it("shows total number of queued cards", () => {
+        const pageGeneralStatistics = getGeneralStatistics();
+        const numberOfQueuedCards = within(pageGeneralStatistics).getByText(
+            "Number of queued cards (total)");
+        expect(numberOfQueuedCards.closest("th").nextSibling)
+            .toHaveTextContent(119);
+    });
+
+    describe("furthest scheduled card review", () => {
+        it("component renders", () => {
+            render(<GeneralStatistics statistics={generalStatistics}/>);
+            expect(screen.getByTestId("furthest-scheduled-card-review"))
+                .toBeInTheDocument();
+        });
+
+        it("shows card title", () => {
+            render(<GeneralStatistics statistics={generalStatistics}/>);
+            expect(screen.getByText(
+                "Q: Relate while.; A: The these decide.")).toBeInTheDocument();
+        });
+
+        it("shows card review date", () => {
+            render(<GeneralStatistics statistics={generalStatistics}/>);
+            expect(screen.getByText("2023-10-18")).toBeInTheDocument();
+        });
+
+        test("if entry for card doesn't appear", () => {
+            render(<GeneralStatistics
+                     statistics={generalStatistics_noFurthestCard}/>);
+            expect(screen.queryByTestId("furthest-scheduled-card-review"))
+                .not.toBeInTheDocument();
+        });
+    });    
+});
+
+describe("<UserPage/>", () => {
+    const renderScreen = getRenderScreen(UserPage, credentials);
+
+    it("downloads data for statistics", () => {});
+
+    test("if page contains user email", async () => {
+        renderScreen();
+        const userDetails = await screen.findByTestId("user-details");
+        expect(await within(userDetails).findByText("user@userdomain.com.su"))
+            .toBeInTheDocument();
+    });
+
+    test("if page contains username", async () => {
+        renderScreen();
+        const userDetails = await screen.findByTestId("user-details");
+        expect(await within(userDetails).findByText("User name"))
+            .toBeInTheDocument();
+    });
+
+    test("if page contains user id", async () => {
+        renderScreen();
+        const userDetails = await screen.findByTestId("user-details");
+        expect(await within(userDetails).findByText(
+            "626e4d32-a52f-4c15-8f78-aacf3b69a9b2")).toBeInTheDocument();
+    });
+});
 
 describe("<Suspense/>", () => {
     const child1Text = "oh, my pretty child number one";
@@ -280,7 +388,7 @@ describe("statistics charts/pages", () => {
             fireEvent.click(twoWeeksSelector);
 
             expect(cardsDistribution_TwoWeeksCallback)
-                          .toHaveBeenCalledTimes(1);
+                .toHaveBeenCalledTimes(1);
         });
 
         it("fetches data from the API", async () => {
@@ -300,9 +408,9 @@ describe("statistics charts/pages", () => {
     describe("<CardsDistributionPage/> for cards memorization", () => {
         const renderComponent = getRenderScreen(
             () => (<CardsDistributionPage path="distribution/memorized/"/>), {
-                                              user: "user_1",
-                                              password: "passwd"
-                                          }
+                user: "user_1",
+                password: "passwd"
+            }
         );
 
         test("selecting days range: two weeks", async () => {
@@ -728,7 +836,7 @@ describe("<CardBrowser>", () => {
     test("'Load button' is enabled, loading attribute is false", () => {
         const cards = {...fakeCards, isLast: false};
         render(<CardBrowser cards={cards}
-                            loadMore={() => {}}
+                                     loadMore={() => {}}
                             functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
 
@@ -959,7 +1067,7 @@ describe("<CardBody/>", () => {
 
 test("<LearningProgress/> - displaying progress", () => {
     render(<LearningProgress scheduled={20}
-                             cramQueue={10}
+                               cramQueue={10}
                              queued={90}/>);
 
     const learningProgress = screen.getByTestId("learning-progress-indicator");

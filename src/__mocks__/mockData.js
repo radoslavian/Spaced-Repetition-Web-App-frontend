@@ -1378,4 +1378,20 @@ export const memorizationDistribution = {
     "2023-09-04": 0,
     "2023-09-03": 4,
     "2023-09-02": 10
-}
+};
+
+export const generalStatistics = {
+    "retention_score": 75.0,
+    "number_of_memorized": 4,
+    "total_cards": 123,
+    "furthest_scheduled_review": {
+        "card_id": "5d5a8413-a791-48d0-b4a7-17602367cdfa",
+        "card_title": "Q: Relate while.; A: The these decide.",
+        "review_date": "2023-10-18"
+    }
+};
+
+export const generalStatistics_noFurthestCard = {
+    ...generalStatistics,
+    "furthest_scheduled_review": null
+};

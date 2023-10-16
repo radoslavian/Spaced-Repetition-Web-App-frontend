@@ -29,6 +29,10 @@ export default function PageHeader() {
             style: {marginLeft: "auto"},
             children: [
                 {
+                    label: "User details",
+                    key: "user-details",
+                },
+                {
                     label: "Log out",
                     key: "logout",
                     onClick: logOut
@@ -41,6 +45,7 @@ export default function PageHeader() {
         if (notSelectables.indexOf(key) !== -1) {
             return;
         }
+        console.log(key);
         navigate(key);
     };
 

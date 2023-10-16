@@ -4,6 +4,7 @@ import { Result, Button, Typography } from "antd";
 import LearnCardsPage from "./LearnCardsPage";
 import PageHeader from "./PageHeader";
 import StatisticsPage from "./StatisticsPage";
+import UserPage from "./UserPage";
 import GradesDistributionPage from "./GradesDistributionPage";
 import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
@@ -36,6 +37,10 @@ export default function MainGrid() {
           <PageHeader/>
           <Routes>
             <Route path="/" element={<LearnCardsPage/>}/>
+            <Route path="user-details"
+                   key="user-details-route"
+                   element={<UserPage/>}
+            />
             <Route path="statistics" element={<StatisticsPage/>}>
               <Route path="grades-distribution"
                      key="grades-distribution-route"
@@ -54,14 +59,15 @@ export default function MainGrid() {
                      element={
                          <CardsDistributionPage
                            title="Distribution of card reviews"/>
-                     } />
-                
+                     }
+              />
             </Route>
             <Route path="*" element={
                   <Result
                     status="404"
                     title="404"
-                    subTitle="Sorry, the page you visited does not exist."
+                    subTitle={"Sorry, the page you wanted to"
+                              + " visit does not exist."}
                     extra={<Button type="primary"
                                    onClick={() => navigate("/")}>
                              Back Home

@@ -6,7 +6,8 @@ import {
     allCardsNext, allCardsPrev, memorizedCard, allCardsNext_1, cramQueueFirstPage,
     cramQueueSecondPage, cramQueueThirdPage, reviewSuccess, emptyCardsList,
     queuedCard, allCardsSearchResults, cardsDistribution_12Days,
-    memorizationDistribution, eFactorDistribution, gradesDistribution
+    memorizationDistribution, eFactorDistribution, gradesDistribution,
+    generalStatistics, generalStatistics_noFurthestCard
 } from "./mockData";
 
 const loginRoute = /\/api\/auth\/token\/login\/$/;
@@ -45,6 +46,9 @@ const cardsMemorization_TwoWeeksRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0
 const cardsDistribution_TwoWeeksRoute = /\/api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/\?days-range=14$/;
 const gradesDistributionRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/grades\/$/;
 const eFactorDistributionRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/distribution\/e-factor\/$/;
+
+// general statistics endpoint
+const generalStatisticsRoute = /api\/users\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89az][0-9a-f]{3}-[0-9a-f]{12}\/cards\/general-statistics\/$/;
 
 export const downloadCards = jest.fn();
 export const categoriesCalls = jest.fn();
@@ -107,6 +111,16 @@ export const axiosMatch = {
         else if (eFactorDistributionRoute.test(config.url)) {
             eFactorDistributionRouteCallback();
             return Promise.resolve({ data: eFactorDistribution });
+        }
+        else if (generalStatisticsRoute.test(config.url)) {
+            switch(config.headers.Authorization) {
+	    case `Token ${authToken.auth_token}`:
+		return Promise.resolve({ data: generalStatistics });
+	    default:
+                return Promise.resolve({
+                    data: generalStatistics_noFurthestCard
+                });
+	    }
         }
         else if (gradesDistributionRoute.test(config.url)) {
             gradesDistributionRouteCallback();
