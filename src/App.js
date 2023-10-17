@@ -7,8 +7,6 @@ import MainGrid from "./components/MainGrid";
 import LoginForm from "./components/LoginForm";
 
 function App() {
-    // const appUserName = "simple_user1";
-    // const userPassword = "aber45jhdfsfrg";
     const [isLoading, setIsLoading] = useState(false);
     const { user, logIn, authMessages } = useUser();
 

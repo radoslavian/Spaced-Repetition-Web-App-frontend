@@ -18,11 +18,11 @@ export default function LearnCardsPage() {
             <Space direction="vertical"
                    size="small"
                    style={{ marginTop: "15px" }}>
-            <CardsMenu/>
-            <CardCategoryBrowser
-              set_cardBody_visible={setCardBody_visible}/>
+              <CardsMenu/>
+              <CardCategoryBrowser
+                set_cardBody_visible={setCardBody_visible}/>
               <CardDetails card={currentCard}/>
-        </Space>
+            </Space>
           </Sider>
           <Content>
             <CardsSelector

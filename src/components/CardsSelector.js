@@ -5,7 +5,6 @@ import LearningProgress from "./LearningProgress";
 import LearnButton from "./LearnButton";
 import MainDisplay from "./MainDisplay";
 import { useState, useEffect, useRef } from "react";
-import CardsMenu from "./CardsMenu";
 
 function EmptyQueue({ onClick }){
     return (<div data-testid="no-more-cards-for-review">
@@ -160,14 +159,14 @@ export default function CardsSelector({ setCurrentCard = f => f,
             <Spin spinning={areCardsLoading}
                   delay={500}
                   tip="Loading cards...">
-            <MainDisplay title="Select cards group to learn:">
+              <MainDisplay title="Select cards group to learn:">
               <Space direction="vertical"
                      size="large">
                 <LearnButton buttonTitle="Learn&nbsp;scheduled"
-                               dataTestId="learn-all-trigger"
-                               popoverContent={scheduledButtonHelp}
-                               count={outstanding.count}
-                               onClick={reviewScheduled}/>
+                             dataTestId="learn-all-trigger"
+                             popoverContent={scheduledButtonHelp}
+                             count={outstanding.count}
+                             onClick={reviewScheduled}/>
                 <LearnButton buttonTitle="Learn&nbsp;from&nbsp;cram"
                              dataTestId="learn-crammed-trigger"
                              onClick={reviewCram}

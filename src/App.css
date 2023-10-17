@@ -1,4 +1,13 @@
+body {
+    background-color: #f7f7f7;
+}
+
 .App {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 5px;
+    padding-right: 5px;
+    max-width: 1100px;
     text-align: left;
 }
 
@@ -26,13 +35,4 @@
 
 .App-link {
   color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
