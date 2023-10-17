@@ -7,27 +7,32 @@ import MainDisplay from "./MainDisplay";
 import { useState, useEffect, useRef } from "react";
 
 function EmptyQueue({ onClick }){
-    return (<div data-testid="no-more-cards-for-review">
-              <Result status="success"
-                      title="No more items on this list."
-                      subTitle="Click to return to the initial screen."
-                      extra={
-                          <Button type="primary"
-                                  onClick={onClick}>
-                            Back to the main screen
-                          </Button>
-                      }/>
-            </div>);
+    return (
+        <div data-testid="no-more-cards-for-review">
+          <Result status="success"
+                  title="No more items on this list."
+                  subTitle="Click to return to the initial screen."
+                  extra={
+                      <Button type="primary"
+                              onClick={onClick}>
+                        Back to the main screen
+                      </Button>
+                  }/>
+        </div>
+    );
 }
 
 const scheduledButtonHelp = {
     title: "Learn scheduled cards first",
     content: (
         <div>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br/>
-            Nullam eu dui eu erat molestie scelerisque non vel est.</p>
-          <p>Mauris pretium aliquam odio, eget ultrices mi ullamcorper in.<br/>
-            Sed facilisis pharetra sodales.</p>
+          <p>Start with reviewing cards that are already<br/>
+            memorized and scheduled for review (their review<br/>
+            date was set for today or earlier).</p>
+          <p>If the set is empty (there is no colored badge<br/>
+            indicating number of cards), you either have no<br/>
+            cards scheduled for today or haven't<br/>
+            memorized any yet.</p>
         </div>
     )
 };
@@ -36,11 +41,13 @@ const cramButtonHelp = {
     title: "Review crammed cards",
     content: (
         <div>
-          <p>Suspendisse a ornare erat. Pellentesque habitant morbi<br/>
-            tristique senectus et netus et malesuada fames ac turpis egestas.</p>
-          <p>Donec luctus rutrum est, ut dignissim odio condimentum non.<br/>
-            Curabitur consectetur lorem ex, non dignissim arcu faucibus eu.<br/>
-            Suspendisse ut purus at augue pellentesque euismod sed sit amet sem.</p>
+          <p>Cram contains cards that you either failed to<br/>
+            recollect on a review, or were given the 'pass'<br/>
+            grade (you had some problems when recollecting them).</p>
+          <p>By putting cards in cram, you increase likelihood, that<br/>
+            you'll recollect them easier/successfully next time you<br/>
+            see them.</p>
+          <p>You can also put a card in a cram in order to practice with it.</p>
         </div>
     )
 };
@@ -49,25 +56,15 @@ const learnNewButtonHelp = {
     title: "Learn cards that haven't been put into learning process yet.",
     content: (
         <div>
-          <p>Ut elementum sit amet est nec efficitur.<br/>
-            Praesent eget nisi et ipsum maximus pellentesque. Praesent<br/>
-            ullamcorper aliquam accumsan.</p>
-          <p>Praesent pharetra magna erat, id consequat arcu porttitor eu.<br/>
-            Ut placerat varius dolor sit amet consectetur. Nam nec turpis luctus,<br/>
-            cursus nulla vitae, porttitor diam.</p>
-          <p>Proin in sem scelerisque, rhoncus arcu sit amet, accumsan est.</p>
+          <p>If you just started using the app and have no cards<br/>
+            memorized yet, this is the place to start: learn new cards<br/>
+            in order to place them in a review cycle with increasing intervals.</p>
         </div>
     )
 };
 
 function getCardsLeft(obj) {
     return () => {
-        // debug
-        /*
-          console.log(`Obj: isLast: ${obj.cardsList.isLast},
-          currentPage.length: ${obj.cardsList.currentPage.length},
-          isLoading: ${obj.cardsList.isLoading}`);
-        */
         const isEmpty_isNotLoading = (obj.cardsList.currentPage.length === 0
                                       && !obj.cardsList.isLoading);
 
@@ -160,29 +157,29 @@ export default function CardsSelector({ setCurrentCard = f => f,
                   delay={500}
                   tip="Loading cards...">
               <MainDisplay title="Select cards group to learn:">
-              <Space direction="vertical"
-                     size="large"
-                     style={{height: "100%"}}>
-                <LearnButton buttonTitle="Learn&nbsp;scheduled"
-                             dataTestId="learn-all-trigger"
-                             popoverContent={scheduledButtonHelp}
-                             count={outstanding.count}
-                             onClick={reviewScheduled}/>
-                <LearnButton buttonTitle="Learn&nbsp;from&nbsp;cram"
-                             dataTestId="learn-crammed-trigger"
-                             onClick={reviewCram}
-                             popoverContent={cramButtonHelp}
-                             count={cram.count}
-                             badgeColor="gold"/>
-                <LearnButton buttonTitle="Learn&nbsp;new&nbsp;cards"
-                             dataTestId="learn-new-trigger"
-                             onClick={learnQueued}
-                             popoverContent={learnNewButtonHelp}
-                             count={queued.count}
-                             badgeColor="geekblue"/>
-              </Space>
-        </MainDisplay>
-        </Spin>
+                <Space direction="vertical"
+                       size="large"
+                       style={{height: "100%"}}>
+                  <LearnButton buttonTitle="Learn&nbsp;scheduled"
+                               dataTestId="learn-all-trigger"
+                               popoverContent={scheduledButtonHelp}
+                               count={outstanding.count}
+                               onClick={reviewScheduled}/>
+                  <LearnButton buttonTitle="Learn&nbsp;from&nbsp;cram"
+                               dataTestId="learn-crammed-trigger"
+                               onClick={reviewCram}
+                               popoverContent={cramButtonHelp}
+                               count={cram.count}
+                               badgeColor="gold"/>
+                  <LearnButton buttonTitle="Learn&nbsp;new&nbsp;cards"
+                               dataTestId="learn-new-trigger"
+                               onClick={learnQueued}
+                               popoverContent={learnNewButtonHelp}
+                               count={queued.count}
+                               badgeColor="geekblue"/>
+                </Space>
+              </MainDisplay>
+            </Spin>
         : emptyQueue() ?
             <EmptyQueue onClick={stopReviews}/>
         :
