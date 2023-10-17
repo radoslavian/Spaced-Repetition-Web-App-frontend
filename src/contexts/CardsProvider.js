@@ -68,14 +68,13 @@ export function CardsProvider({ children }) {
     // countParam - added due to naming differences of this attribute
     // between endpoint for all cards and the remaining
     const getCards = ({cardsSetter, count, navigation,
-                       countParam = "count",
                        setIsLoading = f => console.log(
                            "placeholder setIsLoading")}) =>
           async url => {
               setIsLoading(true);
               const response = await api.get(url);
               cardsSetter(response?.results);
-              count.current = response[countParam];
+              count.current = response["count"];
               navigation.current = {
                   currentPage: url,
                   prev: response.previous,
@@ -182,7 +181,6 @@ export function CardsProvider({ children }) {
     const getAllCards = getCards({cardsSetter: setAllCards,
                                   count: allCardsCount,
                                   navigation: allCardsNavigation,
-                                  countParam: "overall_total",
                                   setIsLoading: setAllCardsLoading});
     const nextPageAllCards = getNextPage(allCardsNavigation, getAllCards);
     const prevPageAllCards = getPrevPage(allCardsNavigation, getAllCards);
@@ -203,7 +201,6 @@ export function CardsProvider({ children }) {
     const allCardsLoadMore = getCards({cardsSetter: allCardsMoreSetter,
                                        count: allCardsCount,
                                        navigation: allCardsNavigation,
-                                       countParam: "overall_total",
                                        setIsLoading: setAllCardsLoading});
     const allCardsOnLoadMore = getCardsOnLoadMore(
         allCardsNavigation.current.next, allCardsLoadMore);
