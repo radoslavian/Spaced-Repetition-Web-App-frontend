@@ -76,7 +76,8 @@ export default function CardCategoryBrowser (
           <CardsBrowserModal title={cardsBrowserTitle}
                              isOpen={isModalOpen}
                              closeModal={onCloseModal}>
-            <Search placeholder="Search for..." allowClear
+            <Search placeholder="Search for..."
+                    allowClear
                     onSearch={handleSearch}
                     value={searchedPhrase}
                     onChange={e => setSearchedPhrase(e.target.value)}
