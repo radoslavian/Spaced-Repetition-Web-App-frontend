@@ -44,15 +44,6 @@ export default function GeneralStatistics({ statistics }) {
         </>
     );
 
-    return (
-        <>
-          {
-              displayStatistics ?
-                  <StatisticsData/>
-                  :
-                  <Skeleton/>
-          }
-        </>
-    );
+    return (displayStatistics ? <StatisticsData/> : <Skeleton/>);
 }
 

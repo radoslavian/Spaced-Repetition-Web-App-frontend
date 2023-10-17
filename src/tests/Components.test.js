@@ -6,8 +6,8 @@ import CardBrowser from "../components/CardBrowser";
 import CardBody from "../components/CardBody";
 import CardDetails from "../components/CardDetails";
 import { userCategories2 as userCategories, reviewSuccess,
-         queuedCard, generalStatistics, generalStatistics_noFurthestCard
-       } from "../__mocks__/mockData";
+         queuedCard, generalStatistics, generalStatistics_noFurthestCard,
+       userData } from "../__mocks__/mockData";
 import CardCategoryBrowser from "../components/CardCategoryBrowser";
 import {
     downloadCards, searchAllCards, 
@@ -15,7 +15,8 @@ import {
     gradesDistributionRouteCallback,
     eFactorDistributionRouteCallback,
     cardsDistribution_TwoWeeksCallback,
-    cardsMemorization_TwoWeeksCallback, dropCram } from "axios";
+    cardsMemorization_TwoWeeksCallback, dropCram,
+    downloadStatistics } from "axios";
 import LearningProgress from "../components/LearningProgress";
 import { getRenderScreen,
          renderComponent_waitForUser } from "../utils/testHelpers";
@@ -32,6 +33,7 @@ import CardsMenu from "../components/CardsMenu";
 import Suspense from "../components/Suspense";
 import UserPage from "../components/UserPage";
 import GeneralStatistics from "../components/GeneralStatistics";
+import UserDetails from "../components/UserDetails";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -124,30 +126,54 @@ describe("<GeneralStatistics/>", () => {
     });    
 });
 
-describe("<UserPage/>", () => {
-    const renderScreen = getRenderScreen(UserPage, credentials);
-
-    it("downloads data for statistics", () => {});
-
+describe("<UserDetails/>", () => {
     test("if page contains user email", async () => {
-        renderScreen();
+        render(<UserDetails user={userData}/>);
         const userDetails = await screen.findByTestId("user-details");
         expect(await within(userDetails).findByText("user@userdomain.com.su"))
             .toBeInTheDocument();
     });
 
     test("if page contains username", async () => {
-        renderScreen();
+        render(<UserDetails user={userData}/>);
         const userDetails = await screen.findByTestId("user-details");
         expect(await within(userDetails).findByText("User name"))
             .toBeInTheDocument();
     });
 
     test("if page contains user id", async () => {
-        renderScreen();
+        render(<UserDetails user={userData}/>);
         const userDetails = await screen.findByTestId("user-details");
         expect(await within(userDetails).findByText(
             "626e4d32-a52f-4c15-8f78-aacf3b69a9b2")).toBeInTheDocument();
+    });
+
+    it("renders <Skeleton/> as a fallback when user=undefined", () => {
+        render(<UserDetails user={undefined}/>);
+        const skeleton = document.getElementsByClassName(
+            "ant-skeleton-content")[0];
+        expect(skeleton).toBeInTheDocument();
+    });
+
+    it("renders <Skeleton/> as a fallback when user=null", () => {
+        render(<UserDetails user={null}/>);
+        const skeleton = document.getElementsByClassName(
+            "ant-skeleton-content")[0];
+        expect(skeleton).toBeInTheDocument();
+    });
+});
+
+describe("<UserPage/>", () => {
+    const renderScreen = getRenderScreen(UserPage, credentials);
+
+    it("downloads data for statistics", async () => {
+        renderScreen();
+        await waitFor(() => expect(downloadStatistics)
+                      .toHaveBeenCalledTimes(1));
+        expect(downloadStatistics).toHaveBeenCalledWith(
+            expect.objectContaining(
+                {"url": "http://localhost:8000/api/users/626e4d32-a52f"
+                 + "-4c15-8f78-aacf3b69a9b2/cards/general-statistics/"}));
     });
 });
 

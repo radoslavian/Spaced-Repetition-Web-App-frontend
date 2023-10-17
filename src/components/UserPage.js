@@ -1,9 +1,8 @@
 import {  useEffect, useState } from "react";
 import { useUser } from "../contexts/UserProvider";
-import { Descriptions, Skeleton } from "antd";
-import Suspense from "./Suspense";
-import GeneralStatistics from "./GeneralStatistics";
 import { useApi } from "../contexts/ApiProvider";
+import GeneralStatistics from "./GeneralStatistics";
+import UserDetails from "./UserDetails";
 
 export default function UserPage() {
     const { user } = useUser();
@@ -24,25 +23,7 @@ export default function UserPage() {
 
     return (
         <>
-          <Suspense displayChildren={Boolean(user)}
-                    fallback={<Skeleton/>}>
-            <Descriptions data-testid="user-details"
-                          title="User details"
-                          layout="horizontal"
-                          column={1}
-                          size="middle"
-                          bordered>
-              <Descriptions.Item label="User Id">
-                { user.id }
-              </Descriptions.Item>
-              <Descriptions.Item label="User email">
-                { user.email }
-              </Descriptions.Item>
-              <Descriptions.Item label="User name">
-                { user.username }
-              </Descriptions.Item>
-            </Descriptions>
-          </Suspense>
+          <UserDetails user={user}/>
           <GeneralStatistics statistics={statistics}/>
         </>
     );

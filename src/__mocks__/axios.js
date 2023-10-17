@@ -59,6 +59,7 @@ export const dropCram = jest.fn();
 export const searchAllCards = jest.fn();
 export const logout = jest.fn();
 export const login = jest.fn();
+export const downloadStatistics = jest.fn();
 
 // cards distribution spy functions
 export const cardsDistribution_7DaysCallback = jest.fn();
@@ -113,14 +114,8 @@ export const axiosMatch = {
             return Promise.resolve({ data: eFactorDistribution });
         }
         else if (generalStatisticsRoute.test(config.url)) {
-            switch(config.headers.Authorization) {
-	    case `Token ${authToken.auth_token}`:
-		return Promise.resolve({ data: generalStatistics });
-	    default:
-                return Promise.resolve({
-                    data: generalStatistics_noFurthestCard
-                });
-	    }
+            downloadStatistics(config);
+	    return Promise.resolve({ data: generalStatistics });
         }
         else if (gradesDistributionRoute.test(config.url)) {
             gradesDistributionRouteCallback();
