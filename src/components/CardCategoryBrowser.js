@@ -1,15 +1,14 @@
 import React, { useState, useRef } from "react";
-import { Button, Input, Skeleton } from "antd";
+import { Button, Input, Skeleton, Tag } from "antd";
 import CategorySelector from "./CategorySelector";
 import { useCards } from "../contexts/CardsProvider";
 import { useCategories } from "../contexts/CategoriesProvider";
 import CardBrowser from "./CardBrowser";
 import CardsBrowserModal from "./CardsBrowserModal";
-import Suspense from "./Suspense";
 
 function LoadingFallback() {
     return (<span data-testid="card-category-browser-fallback-component">
-              <Skeleton style={{minHeight: "50vw"}}/>
+              <Skeleton style={{minHeight: "45vw"}}/>
             </span>);
 }
 
@@ -56,6 +55,12 @@ export default function CardCategoryBrowser (
         await loadMore();
         showSuspenseChildren.current = false;
     };
+    const cardsBrowserTitle = (
+        <span>
+          <Tag color="cyan">{`${allCards.count}`} card(s)</Tag>
+          in the current set (all cards)
+        </span>
+    );
 
     return (
         <>
@@ -68,7 +73,7 @@ export default function CardCategoryBrowser (
                   onClick={showModal}>
             Browse all cards
           </Button>
-          <CardsBrowserModal title="All cards"
+          <CardsBrowserModal title={cardsBrowserTitle}
                              isOpen={isModalOpen}
                              closeModal={onCloseModal}>
             <Search placeholder="Search for..." allowClear
@@ -76,15 +81,16 @@ export default function CardCategoryBrowser (
                     value={searchedPhrase}
                     onChange={e => setSearchedPhrase(e.target.value)}
             />
-            <Suspense displayChildren={(!allCards.isLoading
-                                        || showSuspenseChildren.current)}
-                      fallback={<LoadingFallback/>}>
-              <CardBrowser scrollRef={scrollRef}
-                           loadMore={loadMoreCards}
-                           cards={allCards}
-                           functions={functions}/>
-            </Suspense>
-        </CardsBrowserModal>
+            {
+                (!allCards.isLoading
+                 || showSuspenseChildren.current) ?
+                    <CardBrowser scrollRef={scrollRef}
+                                 loadMore={loadMoreCards}
+                                 cards={allCards}
+                                 functions={functions}/>
+                : <LoadingFallback/>
+            }
+          </CardsBrowserModal>
         </>
     );
 }

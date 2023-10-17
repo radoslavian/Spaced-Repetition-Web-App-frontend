@@ -743,6 +743,12 @@ describe("<CardCategoryBrowser/>", () => {
         window.HTMLElement.prototype.scrollIntoView = jest.fn();
     });
 
+    it("displays number of cards", async () => {
+        await clickBrowseAllCards();
+        await waitFor(() => expect(screen.getByText("122 card(s)"))
+                      .toBeInTheDocument());
+    });
+
     it("searching: calling api endpoint and returning results", async () => {
         await clickBrowseAllCards();
         const searchField = await screen.findByPlaceholderText(
@@ -855,6 +861,7 @@ describe("<CardBrowser>", () => {
                 id: "2ccd1b58-945e-40b3-98df-da6b6fe44266",
             }            
         ],
+        count: 4,
         isLast: true,
         isLoading: false
     };
@@ -862,7 +869,7 @@ describe("<CardBrowser>", () => {
     test("'Load button' is enabled, loading attribute is false", () => {
         const cards = {...fakeCards, isLast: false};
         render(<CardBrowser cards={cards}
-                                     loadMore={() => {}}
+                            loadMore={() => {}}
                             functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
 

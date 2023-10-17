@@ -695,8 +695,7 @@ export const outstandingNextPage = {
 };
 
 export const allCardsPrev = {
-    "highest_count": 62,
-    "overall_total": 122,
+    "count": 122,
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=20",
     "previous": null,
     "results": [
@@ -775,8 +774,7 @@ export const allCardsPrev = {
 };
 
 export const allCardsMiddle = {
-    "highest_count": 62,
-    "overall_total": 122,
+    "count": 122,
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=40",
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20",
     "results": [
@@ -884,8 +882,7 @@ export const allCardsMiddle = {
 };
 
 export const allCardsNext = {
-    "highest_count": 62,
-    "overall_total": 122,
+    "count": 122,
     "next": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=60",
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=20",
     "results": [
@@ -927,8 +924,7 @@ export const allCardsNext = {
 };
 
 export const allCardsNext_1 = {
-    "highest_count": 62,
-    "overall_total": 122,
+    "count": 122,
     "next": null,
     "previous": "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=40",
     "results": [
