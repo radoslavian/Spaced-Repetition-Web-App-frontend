@@ -161,7 +161,8 @@ export default function CardsSelector({ setCurrentCard = f => f,
                   tip="Loading cards...">
               <MainDisplay title="Select cards group to learn:">
               <Space direction="vertical"
-                     size="large">
+                     size="large"
+                     style={{height: "100%"}}>
                 <LearnButton buttonTitle="Learn&nbsp;scheduled"
                              dataTestId="learn-all-trigger"
                              popoverContent={scheduledButtonHelp}

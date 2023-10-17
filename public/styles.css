@@ -1,7 +1,6 @@
 #card-body {
-    height: calc(100vh - 220px);
-    border: 1px solid black;
-    /* overflow: auto; */
+    height: calc(100vh - 225px);
+    overflow: auto;
 }
 
 #learning-progress-indicator {

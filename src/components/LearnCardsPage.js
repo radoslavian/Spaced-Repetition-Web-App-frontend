@@ -17,7 +17,7 @@ export default function LearnCardsPage() {
                  theme="light">
             <Space direction="vertical"
                    size="small"
-                   style={{ marginTop: "15px" }}>
+                   style={{ marginTop: "15px"}}>
               <CardsMenu/>
               <CardCategoryBrowser
                 set_cardBody_visible={setCardBody_visible}/>

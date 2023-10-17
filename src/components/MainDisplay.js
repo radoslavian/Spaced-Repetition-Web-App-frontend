@@ -5,8 +5,9 @@ export default function MainDisplay({testId, title, children}) {
         <Card title={title}
               size="large"
               data-testid={testId}
-              type="inner">
-            { children }
+              type="inner"
+              id="main-study-display">
+          { children }
         </Card>
     );
 }
