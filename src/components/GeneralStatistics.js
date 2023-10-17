@@ -1,4 +1,4 @@
-import { Descriptions, Skeleton } from "antd";
+import { Descriptions, Skeleton, Space } from "antd";
 
 export default function GeneralStatistics({ statistics }) {
     const displayStatistics = (typeof(statistics) === "object"
@@ -19,7 +19,7 @@ export default function GeneralStatistics({ statistics }) {
     );
 
     const StatisticsData = () => (
-        <>
+        <Space direction="vertical">
           <Descriptions title="General statistics"
                         data-testid="general-statistics"
                         layout="horizontal"
@@ -41,7 +41,7 @@ export default function GeneralStatistics({ statistics }) {
           </Descriptions>
           { statistics.furthest_scheduled_review !== null
             &&  <FurthestScheduledReviewed/> }
-        </>
+        </Space>
     );
 
     return (displayStatistics ? <StatisticsData/> : <Skeleton/>);

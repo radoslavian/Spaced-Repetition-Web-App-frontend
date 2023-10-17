@@ -19,7 +19,7 @@ export default function PageHeader() {
         },
         {
             icon: <AreaChartOutlined />,
-            label: "Statistics",
+            label: "Charts",
             key: "/statistics/cards-distribution"
         },
         {
@@ -29,7 +29,7 @@ export default function PageHeader() {
             style: {marginLeft: "auto"},
             children: [
                 {
-                    label: "User details",
+                    label: "User details & statistics",
                     key: "user-details",
                 },
                 {
