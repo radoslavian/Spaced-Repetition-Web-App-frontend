@@ -72,23 +72,48 @@ const technologiesUsed = [
     )
 ];
 
+const externalLinks = [
+    (
+        <Anchor href="https://super-memory.com/english/ol/sm2.htm">
+          The SuperMemo&nbsp;2 algorithm
+        </Anchor>
+    ),
+    (
+        <Anchor href="https://en.wikipedia.org/wiki/SuperMemo">
+          Supermemo software (Wikipedia)
+        </Anchor>
+    ),
+    (
+        <Anchor href="https://en.wikipedia.org/wiki/Spaced_repetition">
+          Spaced repetition learning technique (Wikipedia)
+        </Anchor>
+    ),
+    (
+        <Anchor href="https://www.wired.com/2008/04/ff-wozniak/">
+          Want to Remember Everything You'll Ever Learn?<br/>Surrender
+          to This Algorithm (Wired, 2008)
+        </Anchor>
+    )
+];
+
 export default function PageFooter() {
     
     return (
         <Footer style={{
-            background: "white"
+            background: "white",
         }}>
           <Space align="baseline"
                  size="large"
                  wrap={true}>
             <List header={<ListTitle>My social links</ListTitle>}
                   dataSource={personalLinks}
-                  renderItem={renderItem}>
-            </List>
+                  renderItem={renderItem}/>
             <List header={<ListTitle>Technologies used</ListTitle>}
                   dataSource={technologiesUsed}
-                  renderItem={renderItem}>
-            </List>
+                  renderItem={renderItem}/>
+            <List header={<ListTitle>External links</ListTitle>}
+                  dataSource={externalLinks}
+                  renderItem={renderItem}/>
           </Space>
         </Footer>
     );
