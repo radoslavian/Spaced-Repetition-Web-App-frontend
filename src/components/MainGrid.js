@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Result, Button, Typography } from "antd";
+import { Result, Button, Typography, Layout } from "antd";
 import LearnCardsPage from "./LearnCardsPage";
 import PageHeader from "./PageHeader";
 import StatisticsPage from "./StatisticsPage";
@@ -8,6 +8,7 @@ import UserPage from "./UserPage";
 import GradesDistributionPage from "./GradesDistributionPage";
 import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
+import PageFooter from "./PageFooter";
 
 const { Text } = Typography;
 
@@ -33,7 +34,7 @@ export default function MainGrid() {
     const navigate = useNavigate();
     
     return (
-        <>
+        <Layout>
           <PageHeader/>
           <Routes>
             <Route path="/" element={<LearnCardsPage/>}/>
@@ -75,6 +76,7 @@ export default function MainGrid() {
                   />}
               />
           </Routes>
-        </>        
+          <PageFooter/>
+        </Layout>
     );
 }

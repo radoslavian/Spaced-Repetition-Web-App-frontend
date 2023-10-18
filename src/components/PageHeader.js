@@ -1,10 +1,11 @@
-import { Menu } from "antd";
+import { Layout, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AreaChartOutlined, UserOutlined,
          BookOutlined } from "@ant-design/icons";
 import { useUser } from "../contexts/UserProvider.js";
 
 const notSelectables = ["userMenu", "logout", "cardMenu"];
+const { Header } = Layout;
 
 export default function PageHeader() {
     const navigate = useNavigate();
@@ -56,6 +57,6 @@ export default function PageHeader() {
           items={menuItems}
           defaultSelectedKeys={[currentLocation]}
           onClick={navigateKey}
-            />
+        />
     );
 }

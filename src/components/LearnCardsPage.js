@@ -5,7 +5,7 @@ import CardDetails from "./CardDetails";
 import CardsSelector from "./CardsSelector";
 import CardsMenu from "./CardsMenu";
 
-const {  Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 export default function LearnCardsPage() {
     const [currentCard, setCurrentCard] = useState(undefined);
