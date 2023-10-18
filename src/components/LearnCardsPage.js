@@ -24,7 +24,7 @@ export default function LearnCardsPage() {
               <CardDetails card={currentCard}/>
             </Space>
           </Sider>
-          <Content>
+          <Content style={{backgroundColor: "white"}}>
             <CardsSelector
               setCurrentCard={setCurrentCard}
               displayCardBody={cardBody_visible}/>
