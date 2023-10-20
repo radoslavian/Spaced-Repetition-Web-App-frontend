@@ -16,7 +16,7 @@ export function UserProvider({ children }) {
             if (api.isAuthenticated()) {
                 setUser(undefined);
                 const response = await api.get("/auth/users/me/");
-                setUser(response !== undefined ? response : null);
+                setUser(response?.status === undefined ? response : null);
             } else {
                 setUser(null);
             }
