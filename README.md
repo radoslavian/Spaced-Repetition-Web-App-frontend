@@ -1,5 +1,4 @@
-# This is a front-end application for spaced repetition app (similar in spirit to
-SuperMemo and Mnemosyne apps.)
+# This is a front-end application for spaced repetition app (similar in spirit to SuperMemo and Mnemosyne apps.)
 
 ### Installation:
 * The application is intended for deployment on a web server (or
@@ -9,7 +8,7 @@ a PaaS service - Render, Heroku etc.).
 * execute ```npm install``` command in the application directory to download the dependencies
 * Then build the application with
 ```
-$npm run build
+$ npm run build
 ```
 * The contents of the new directory (*build*) should be placed in
 the following backend application directories:
