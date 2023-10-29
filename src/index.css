@@ -11,3 +11,16 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#card-body {
+    height: calc(100vh - 220px);
+    overflow: auto;
+}
+
+#Learning-progress-indicator {
+    background: lightgrey;
+}
+
+.card-preview {
+    min-height: 200px;
+}
