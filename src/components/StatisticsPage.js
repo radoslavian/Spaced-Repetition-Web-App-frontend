@@ -37,7 +37,7 @@ export default function StatisticsPage() {
               defaultSelectedKeys={[currentLocation]}
             />
           </Sider>
-          <Content>
+          <Content id="chart-area">
             <Outlet/>
           </Content>
         </Layout>

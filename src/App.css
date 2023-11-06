@@ -11,6 +11,11 @@ body {
     text-align: left;
 }
 
+#chart-area canvas {
+    max-width: 900px;
+    max-height: 450px;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
