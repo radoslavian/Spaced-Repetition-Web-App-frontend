@@ -1,4 +1,4 @@
-import { Layout, Space, Row, Col } from "antd";
+import { Layout, Space } from "antd";
 import { useState } from "react";
 import CardCategoryBrowser from "./CardCategoryBrowser";
 import CardDetails from "./CardDetails";
