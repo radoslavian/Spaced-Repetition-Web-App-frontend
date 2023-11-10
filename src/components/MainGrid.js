@@ -9,6 +9,10 @@ import GradesDistributionPage from "./GradesDistributionPage";
 import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
 import PageFooter from "./PageFooter";
+import AllCardsBrowser from "./AllCardsBrowser.js";
+import { useCards } from "../contexts/CardsProvider";
+import CardCategoryBrowser from "./CardCategoryBrowser";
+import CardsBrowserTitle from "./CardsBrowserTitle";
 
 const { Text } = Typography;
 
@@ -32,12 +36,20 @@ const MemorizationDistribution = () => (
 
 export default function MainGrid() {
     const navigate = useNavigate();
+    const allCards = useCards().all;
     
     return (
         <Layout>
           <PageHeader/>
           <Routes>
             <Route path="/" element={<LearnCardsPage/>}/>
+            <Route path="browse-all-cards"
+                   element={<AllCardsBrowser
+                              cards={allCards}
+                              title={<CardsBrowserTitle
+                                       cards={allCards}/>}/>}/>
+            <Route path="view-categories"
+                   element={<CardCategoryBrowser/>}/>
             <Route path="user-details"
                    key="user-details-route"
                    element={<UserPage/>}
