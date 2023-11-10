@@ -50,8 +50,7 @@ export default function CardBrowser(
         if (card.type === "queued") {
             cardStamp = queuedStamp;
             actions = [
-                <a href="/#"
-                   title="memorize queued card"
+                <a title="memorize queued card"
                    onClick={() => memorize(card)}>
                   memorize
                 </a>,
@@ -60,16 +59,14 @@ export default function CardBrowser(
         else if (card.type === "memorized") {
             cardStamp = memorizedStamp;
             actions = [
-                <a href="/#"
-                   title="forget memorized card"
+                <a title="forget memorized card"
                    onClick={() => forget(card)}>
                   forget
                 </a>,
             ];
             if (card.cram_link === null) {
                 actions.push(
-                    <a href="/#"
-                       title="cram memorized card"
+                    <a title="cram memorized card"
                        onClick={() => cram(card)}>
                       cram
                     </a>
@@ -79,8 +76,7 @@ export default function CardBrowser(
         else if (card.type === "disabled") {
             cardStamp = disabledStamp;
             actions = [
-                <a href="/#"
-                   title="re-enable disabled card"
+                <a title="re-enable disabled card"
                    onClick={() => enable(card)}>
                   enable
                 </a>
