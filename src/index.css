@@ -17,6 +17,13 @@ code {
     overflow: auto;
 }
 
+/* Update LearnCardsPage.js/Sider if altering. */
+@media only screen and (min-width: 768px) {
+    #page-top-menu > #page-top-menu-browse-menu {
+        display: none;
+    }
+}
+
 #Learning-progress-indicator {
     background: lightgrey;
 }
