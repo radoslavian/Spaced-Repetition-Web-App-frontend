@@ -351,6 +351,7 @@ export function CardsProvider({ children }) {
         prevPage: prevPageAllCards,
         loadMore: allCardsOnLoadMore,
         goToFirst: getGoToFirst(getAllCards, allCardsUrl),
+        searchedPhrase: allCardsSearchedPhrase,
         setSearchedPhrase: setAllCardsSearchedPhrase
     };
     const removeFromQueued = getRemoveFromList(queuedCards, setQueuedCards);
