@@ -32,11 +32,11 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
     const gradeGood = () => gradingFn(card, 4);
     const gradeIdeal = () => gradingFn(card, 5);
 
-    const tooltipText = "Approximate next review: ";
+    const tipText = "Approximate next review: ";
 
-    const gradeTooltip = grade => {
+    const gradeTip = grade => {
         if (card?.projected_review_data) {
-            return tooltipText + card
+            return tipText + card
                 .projected_review_data[grade]["review_date"];
         }
         return null;
@@ -48,7 +48,7 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
             <GradeButton type="primary"
                          id="grade-button-null"
                          dataTestId="grade-button-null"
-                         tooltip={gradeTooltip("0")}
+                         tooltip={gradeTip("0")}
                          onClick={gradeNull}>
               Null
             </GradeButton>
@@ -57,7 +57,7 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
             <GradeButton type="primary"
                          id="grade-button-bad"
                          dataTestId="grade-button-bad"
-                         tooltip={gradeTooltip("1")}
+                         tooltip={gradeTip("1")}
                          onClick={gradeBad}>
               Bad
             </GradeButton>
@@ -66,7 +66,7 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
             <GradeButton type="primary"
                          id="grade-button-fail"
                          dataTestId="grade-button-fail"
-                         tooltip={gradeTooltip("2")}
+                         tooltip={gradeTip("2")}
                          onClick={gradeFail}>
               Fail
             </GradeButton>
@@ -75,7 +75,7 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
             <GradeButton type="primary"
                          id="grade-button-pass"
                          dataTestId="grade-button-pass"
-                         tooltip={gradeTooltip("3")}
+                         tooltip={gradeTip("3")}
                          onClick={gradePass}>
               Pass
             </GradeButton>
@@ -84,7 +84,7 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
             <GradeButton type="primary"
                          id="grade-button-good"
                          dataTestId="grade-button-good"
-                         tooltip={gradeTooltip("4")}
+                         tooltip={gradeTip("4")}
                          onClick={gradeGood}>
               Good
             </GradeButton>
@@ -93,7 +93,7 @@ export default function AnswerRater({ card, gradingFn = () => console.error(
             <GradeButton type="primary"
                          id="grade-button-ideal"
                          dataTestId="grade-button-ideal"
-                         tooltip={gradeTooltip("5")}
+                         tooltip={gradeTip("5")}
                          onClick={gradeIdeal}>
               Ideal
             </GradeButton>
