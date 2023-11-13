@@ -1,16 +1,15 @@
-import { Layout, Menu } from "antd";
+import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AreaChartOutlined, UserOutlined,
          BookOutlined } from "@ant-design/icons";
 import { useUser } from "../contexts/UserProvider.js";
 
 const notSelectables = ["userMenu", "logout", "cardMenu"];
-const { Header } = Layout;
 
 export default function PageHeader() {
     const navigate = useNavigate();
     const currentLocation = window.location.pathname;
-    const {user, logOut } = useUser();
+    const { user, logOut } = useUser();
 
     const menuItems = [
         {
@@ -22,6 +21,23 @@ export default function PageHeader() {
             icon: <AreaChartOutlined />,
             label: "Charts",
             key: "/statistics/cards-distribution"
+        },
+        {
+            label: "Browse",
+            key: "browse",
+            id: "page-top-menu-browse-menu",
+            children: [
+                {
+                    label: "Cards",
+                    key: "browse-all-cards",
+                    id: "page-top-menu-browse-all-cards"
+                },
+                {
+                    label: "Categories",
+                    key: "view-categories",
+                    id: "page-top-menu-view-categories"
+                },
+            ]
         },
         {
             icon: <UserOutlined/>,
@@ -37,7 +53,7 @@ export default function PageHeader() {
                     label: "Log out",
                     key: "logout",
                     onClick: logOut
-                }
+                },
             ]
         }
     ];
@@ -54,6 +70,7 @@ export default function PageHeader() {
         <Menu
           theme="light"
           mode="horizontal"
+          id="page-top-menu"
           items={menuItems}
           defaultSelectedKeys={[currentLocation]}
           onClick={navigateKey}
