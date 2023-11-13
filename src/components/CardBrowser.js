@@ -12,7 +12,7 @@ function LoadingFallback() {
 }
 
 export default function CardBrowser(
-    { set_cardBody_visible = f => f, cards, title }) {
+    { set_cardBody_visible = f => f, cards, title, entryLen = 40 }) {
     const { Search } = Input;
     const scrollRef = useRef(null);
     const functions = useCards().functions;
@@ -58,6 +58,7 @@ export default function CardBrowser(
               (!cards.isLoading
                || showSuspenseChildren.current) ?
                   <CardList scrollRef={scrollRef}
+                            entryLen={entryLen}
                             loadMore={loadMoreCards}
                             cards={cards}
                             functions={functions}/>

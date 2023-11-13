@@ -45,6 +45,7 @@ export default function MainGrid() {
             <Route path="/" element={<LearnCardsPage/>}/>
             <Route path="browse-all-cards"
                    element={<CardBrowser cards={allCards}
+                                         entryLen={20}
                                          title={<CardsBrowserTitle
                                                   cards={allCards}/>}/>}/>
             <Route path="view-categories"

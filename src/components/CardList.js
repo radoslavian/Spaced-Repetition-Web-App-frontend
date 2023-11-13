@@ -2,7 +2,7 @@ import { PushpinOutlined, HourglassOutlined,
          EyeOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { List, Button } from "antd";
-import { cardTextForList } from "../utils/helpers";
+import { getCardTextForList } from "../utils/helpers";
 import CardPreviewModal from "./CardPreviewModal";
 
 const queuedStamp = <>
@@ -18,13 +18,14 @@ const memorizedStamp = <>
 const disabledStamp = "[dis]";
 
 export default function CardList(
-    {scrollRef,  cards, loadMore = f => f, functions }) {
+    {scrollRef,  cards, loadMore = f => f, functions, entryLen = 30 }) {
     const { memorize, forget, cram, enable } = functions;
     const [previewedCard, setPreviewedCard] = useState(undefined);
     const [isCardPreviewOpen, setCardPreviewOpen] = useState(false);
 
     const openCardPreview = () => setCardPreviewOpen(true);
     const closeCardPreview = () => setPreviewedCard(undefined);
+    const cardTextForList = getCardTextForList(entryLen);
 
     useEffect(() => {
         /* This, together with closeCardPreview, is a workaround
