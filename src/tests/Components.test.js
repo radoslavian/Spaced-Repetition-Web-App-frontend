@@ -884,11 +884,27 @@ describe("<CardList>", () => {
         isLoading: false
     };
 
+    test("hovering over entry displays extended card text", async () => {
+        const cardList = {...fakeCards, currentPage: [
+            fakeCards.currentPage[0]
+        ]};
+        render(<CardList cards={cardList}
+                         loadMore={f => f}
+                         functions={functions}/>);
+        // valid for tip length == 70 characters
+        const tipText = "Fake card one Very long title Lorem ipsum dolor"
+              + " sit amet, consectetur ...";
+        const card = screen.getByTestId(
+            "3475ddea-2f52-4669-93ee-b1298b1f6c97");
+        fireEvent.mouseOver(card);
+        expect(await screen.findByText(tipText)).toBeInTheDocument();
+    });
+
     test("'Load button' is enabled, loading attribute is false", () => {
         const cards = {...fakeCards, isLast: false};
         render(<CardList cards={cards}
-                            loadMore={() => {}}
-                            functions={functions}/>);
+                         loadMore={() => {}}
+                         functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
 
         expect(loadMoreButton).not.toBeDisabled();

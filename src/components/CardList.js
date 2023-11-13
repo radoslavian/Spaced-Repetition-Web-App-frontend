@@ -1,7 +1,7 @@
 import { PushpinOutlined, HourglassOutlined,
          EyeOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
-import { List, Button } from "antd";
+import { List, Button, Tooltip } from "antd";
 import { getCardTextForList } from "../utils/helpers";
 import CardPreviewModal from "./CardPreviewModal";
 
@@ -26,6 +26,8 @@ export default function CardList(
     const openCardPreview = () => setCardPreviewOpen(true);
     const closeCardPreview = () => setPreviewedCard(undefined);
     const cardTextForList = getCardTextForList(entryLen);
+    const TIP_LEN = 70;
+    const tipText = getCardTextForList(TIP_LEN);
 
     useEffect(() => {
         /* This, together with closeCardPreview, is a workaround
@@ -96,15 +98,19 @@ export default function CardList(
         );
 
         return (
-            <List.Item
-              className={cardClass}
-              actions={actions}
-              data-testid={card.id}>
-              <span>
-                { cardStamp }
-              </span>
-              { cardTextForList(card.body) }
-            </List.Item>
+            <Tooltip placement="topLeft"
+                     title={ tipText(card.body) }
+                     mouseEnterDelay={1}>
+              <List.Item
+                className={cardClass}
+                actions={actions}
+                data-testid={card.id}>
+                <span>
+                  { cardStamp }
+                </span>
+                { cardTextForList(card.body) }
+              </List.Item>
+            </Tooltip>
         );
     };
 
