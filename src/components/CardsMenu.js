@@ -44,7 +44,7 @@ export default function CardsMenu() {
           <Dropdown menu={menuProps}>
             <Button data-testid="cards-menu">
               <Space>
-                <MenuOutlined />Menu
+                <MenuOutlined />
               </Space>
             </Button>
           </Dropdown>
