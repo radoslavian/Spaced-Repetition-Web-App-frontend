@@ -1,8 +1,11 @@
 import axios from "axios";
 import { getAuthToken } from "./helpers.js";
 
-export const BASE_API_URL = (process.env.REACT_APP_BASE_API_URL
-			     || "http://localhost:8000");
+// production mode
+// export const BASE_API_URL = "https://spaced-repetition-web-app.onrender.com";
+
+// development mode
+export const BASE_API_URL = "http://localhost:8000";
 
 export default class ApiClient {
     constructor() {

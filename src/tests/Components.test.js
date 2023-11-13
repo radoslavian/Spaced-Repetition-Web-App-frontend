@@ -2,7 +2,7 @@ import { render, screen, act, fireEvent,
          waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import AnswerRater from "../components/AnswerRater";
-import CardBrowser from "../components/CardBrowser";
+import CardList from "../components/CardList";
 import CardDetails from "../components/CardDetails";
 import { userCategories2 as userCategories, reviewSuccess,
          queuedCard, generalStatistics, generalStatistics_noFurthestCard,
@@ -33,7 +33,7 @@ import Suspense from "../components/Suspense";
 import UserPage from "../components/UserPage";
 import GeneralStatistics from "../components/GeneralStatistics";
 import UserDetails from "../components/UserDetails";
-import AllCardsBrowserModal from "../components/CardsBrowserModal";
+import CardBrowserModal from "../components/CardBrowserModal";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -723,7 +723,7 @@ describe("CategorySelector tests.", () => {
     });
 });
 
-describe("<AllCardsBrowserModal/>", () => {
+describe("<CardBrowserModal/>", () => {
     beforeEach(() => {
         window.HTMLElement.prototype.scrollIntoView = jest.fn();
     });
@@ -746,7 +746,7 @@ describe("<AllCardsBrowserModal/>", () => {
         password: "passwd"
     };
     const renderComponent = getRenderScreen(
-        () => (<AllCardsBrowserModal cards={allCards}/>), credentials);
+        () => (<CardBrowserModal cards={allCards}/>), credentials);
 
     const clickBrowseAllCards = async () => {
         const browseAllCardsButton = await screen.findByText(
@@ -789,7 +789,7 @@ describe("<AllCardsBrowserModal/>", () => {
 
     it("displays fallback when loading data", async () => {
         const cards = {...allCards, isLoading: true};
-        getRenderScreen(() => (<AllCardsBrowserModal cards={cards}/>),
+        getRenderScreen(() => (<CardBrowserModal cards={cards}/>),
                         credentials)();
         await clickBrowseAllCards();
         expect(await screen.findByTestId(
@@ -842,7 +842,7 @@ describe("<CardCategoryBrowser/>", () => {
          });
 });
 
-describe("<CardBrowser>", () => {
+describe("<CardList>", () => {
     const memorize = jest.fn();
     const forget = jest.fn();
     const cram = jest.fn();
@@ -886,7 +886,7 @@ describe("<CardBrowser>", () => {
 
     test("'Load button' is enabled, loading attribute is false", () => {
         const cards = {...fakeCards, isLast: false};
-        render(<CardBrowser cards={cards}
+        render(<CardList cards={cards}
                             loadMore={() => {}}
                             functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
@@ -898,7 +898,7 @@ describe("<CardBrowser>", () => {
 
     test("'Load button' is disabled, loading attribute is true", () => {
         const cards = { ...fakeCards, isLoading: true };
-        render(<CardBrowser cards={cards}
+        render(<CardList cards={cards}
                             loadMore={() => {}}
                             functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
@@ -910,7 +910,7 @@ describe("<CardBrowser>", () => {
 
     test("isLast is set to 'false', 'Load more' is enabled", () => {
         const cards = { ...fakeCards, isLast: false };
-        render(<CardBrowser cards={cards}
+        render(<CardList cards={cards}
                             loadMore={() => {}}
                             functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
@@ -919,7 +919,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("isLast is set to 'true', 'Load more' is disabled", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={() => {}}
                             functions={functions}/>);
         const loadMoreButton = screen.getByTestId("load-more-button");
@@ -928,7 +928,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("card preview", async () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const cardListItem = await screen.findByText(
@@ -945,7 +945,7 @@ describe("<CardBrowser>", () => {
 
     test("if clicking on the 'load more' works", async () => {
         const cards = { ...fakeCards, isLast: false };
-        render(<CardBrowser cards={cards}
+        render(<CardList cards={cards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const loadMoreButton = await screen.findByText("load more");
@@ -954,7 +954,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if list of cards displays", async () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const listItem = await screen.findByText("memorized fake card");
@@ -962,7 +962,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if long description gets shortened", async () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const listItemWithLongText = await screen.findByText(
@@ -971,7 +971,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if queued card has 'queued...' title", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const queuedCard = screen.getByTitle("queued - not yet memorized");
@@ -979,7 +979,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if memorized card has 'memorized' title", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const memorizedCard = screen.getAllByText("memorized fake card");
@@ -987,7 +987,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if disabled card is marked with '[dis]' stamp", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const disabledCard = screen.getByText("[dis]");
@@ -995,18 +995,18 @@ describe("<CardBrowser>", () => {
     });
 
     test("if queued card can be memorized", () => {
-        render(<CardBrowser cards={fakeCards}
-                            loadMore={loadMore}
-                            functions={functions}/>);
+        render(<CardList loadMore={loadMore}
+                         functions={functions}
+                         cards={fakeCards}/>);
         const memorizeTrigger = screen.getByText("memorize");
         fireEvent.click(memorizeTrigger);
         expect(memorize).toHaveBeenCalledTimes(1);
     });
 
     test("if memorized card can be forgotten", () => {
-        render(<CardBrowser cards={fakeCards}
-                            loadMore={loadMore}
-                            functions={functions}/>);
+        render(<CardList cards={fakeCards}
+                         loadMore={loadMore}
+                         functions={functions}/>);
         const memorizedCard = screen.getByText("memorized fake card");
         const forgetTrigger = within(memorizedCard).getByText("forget");
         fireEvent.click(forgetTrigger);
@@ -1014,7 +1014,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if memorized card can be crammed", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const memorizedCard = screen.getByText("memorized fake card");
@@ -1026,7 +1026,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if disabled card can be re-enabled", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const enableTrigger = screen.getByTitle("re-enable disabled card");
@@ -1035,7 +1035,7 @@ describe("<CardBrowser>", () => {
     });
 
     test("if crammed card doesn't have the 'cram' action", () => {
-        render(<CardBrowser cards={fakeCards}
+        render(<CardList cards={fakeCards}
                             loadMore={loadMore}
                             functions={functions}/>);
         const crammedCard = screen.getByTestId(

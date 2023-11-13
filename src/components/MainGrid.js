@@ -9,7 +9,7 @@ import GradesDistributionPage from "./GradesDistributionPage";
 import CardsDistributionPage from "./CardsDistributionPage";
 import EFactorDistributionPage from "./EFactorDistributionPage";
 import PageFooter from "./PageFooter";
-import AllCardsBrowser from "./AllCardsBrowser.js";
+import CardBrowser from "./CardBrowser.js";
 import { useCards } from "../contexts/CardsProvider";
 import CardCategoryBrowser from "./CardCategoryBrowser";
 import CardsBrowserTitle from "./CardsBrowserTitle";
@@ -44,10 +44,9 @@ export default function MainGrid() {
           <Routes>
             <Route path="/" element={<LearnCardsPage/>}/>
             <Route path="browse-all-cards"
-                   element={<AllCardsBrowser
-                              cards={allCards}
-                              title={<CardsBrowserTitle
-                                       cards={allCards}/>}/>}/>
+                   element={<CardBrowser cards={allCards}
+                                         title={<CardsBrowserTitle
+                                                  cards={allCards}/>}/>}/>
             <Route path="view-categories"
                    element={<CardCategoryBrowser/>}/>
             <Route path="user-details"

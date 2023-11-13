@@ -3,7 +3,7 @@ import { useState } from "react";
 import CardCategoryBrowser from "./CardCategoryBrowser";
 import CardDetails from "./CardDetails";
 import CardsSelector from "./CardsSelector";
-import CardsBrowserModal from "./CardsBrowserModal";
+import CardBrowserModal from "./CardBrowserModal";
 import { useCards } from "../contexts/CardsProvider";
 
 const { Content, Sider } = Layout;
@@ -26,8 +26,8 @@ export default function LearnCardsPage({set_cardBody_visible}) {
                    size="small"
                    style={{ marginTop: "15px" }}>
               <CardCategoryBrowser/>
-              <CardsBrowserModal cards={allCards}
-                                 set_cardBody_visible={setCardBody_visible}/>
+              <CardBrowserModal cards={allCards}
+                                set_cardBody_visible={setCardBody_visible}/>
               <CardDetails card={currentCard}/>
             </Space>
           </Sider>

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Modal, Button } from "antd";
-import AllCardsBrowser from "./AllCardsBrowser.js";
+import CardBrowser from "./CardBrowser.js";
 import CardsBrowserTitle from "./CardsBrowserTitle.js";
 
-export default function AllCardsBrowserModal(
+export default function CardBrowserModal(
     {cards, set_cardBody_visible = f => f}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -39,8 +39,8 @@ export default function AllCardsBrowserModal(
                        Close
                      </Button>
                  ]}>
-            <AllCardsBrowser set_cardBody_visible={set_cardBody_visible}
-                             cards={cards}/>
+            <CardBrowser set_cardBody_visible={set_cardBody_visible}
+                         cards={cards}/>
           </Modal>
         </>
     );
