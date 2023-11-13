@@ -14,18 +14,21 @@ export function removeElementsByClass(htmlString, className){
     return htmlObject.innerHTML;
 }
 
-export function cardTextForList(text) {
+export function getCardTextForList(textLen) {
     /* strips text of html tags and shortens it, removes white spaces
-      from start and end of the text
-    */
-    const textLen = 30;
-    const outputText = textCleaner(text);
+     * from start and end of the text
+     */
+    return text => {
+        const outputText = textCleaner(text);
 
-    if (outputText.length < textLen) {
-        return outputText;
-    }
-    return outputText.slice(0, textLen) + "...";
+        if (outputText.length < textLen) {
+            return outputText;
+        }
+        return outputText.slice(0, textLen) + "...";
+    };
 };
+
+export const cardTextForList = getCardTextForList(30);
 
 const textCleaner = composeAll(
     text => tagContentClearer(text, "audio"),
