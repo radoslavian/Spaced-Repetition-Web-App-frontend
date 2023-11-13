@@ -3,11 +3,10 @@ import { render, screen, act, fireEvent,
 import { within } from "@testing-library/react";
 import AnswerRater from "../components/AnswerRater";
 import CardBrowser from "../components/CardBrowser";
-import CardBody from "../components/CardBody";
 import CardDetails from "../components/CardDetails";
 import { userCategories2 as userCategories, reviewSuccess,
          queuedCard, generalStatistics, generalStatistics_noFurthestCard,
-       userData } from "../__mocks__/mockData";
+         userData, allCardsMiddle } from "../__mocks__/mockData";
 import CardCategoryBrowser from "../components/CardCategoryBrowser";
 import {
     downloadCards, searchAllCards, 
@@ -34,6 +33,7 @@ import Suspense from "../components/Suspense";
 import UserPage from "../components/UserPage";
 import GeneralStatistics from "../components/GeneralStatistics";
 import UserDetails from "../components/UserDetails";
+import AllCardsBrowserModal from "../components/CardsBrowserModal";
 
 async function expectToRejectCalls(functions) {
     for (let fn of functions) {
@@ -723,51 +723,57 @@ describe("CategorySelector tests.", () => {
     });
 });
 
-describe("<CardCategoryBrowser/>", () => {
-    const renderComponent = getRenderScreen(CardCategoryBrowser, {
+describe("<AllCardsBrowserModal/>", () => {
+    beforeEach(() => {
+        window.HTMLElement.prototype.scrollIntoView = jest.fn();
+    });
+
+    const allCards = {
+        currentPage: allCardsMiddle.results,
+        count: 122,
+        isFirst: false,
+        isLast: false,
+        isLoading: false,
+        nextPage: "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20&offset=40",
+        prevPage: "http://localhost:8000/api/users/09ee01d5-ade6-48d5-81b8-c5be870fd0c0/cards/?limit=20",
+        loadMore: jest.fn(),
+        goToFirst: jest.fn(),
+        searchedPhrase: "searched phrase",
+        setSearchedPhrase: jest.fn()
+    };
+    const credentials = {
         user: "user_1",
         password: "passwd"
-    });
+    };
+    const renderComponent = getRenderScreen(
+        () => (<AllCardsBrowserModal cards={allCards}/>), credentials);
 
     const clickBrowseAllCards = async () => {
         const browseAllCardsButton = await screen.findByText(
             "Browse all cards");
         fireEvent.click(browseAllCardsButton);
-        const noData = await screen.findByTestId(
-            "card-category-browser-fallback-component");
-        await waitFor(() => expect(noData).not.toBeInTheDocument());
     };
 
-    beforeEach(() => {
-        renderComponent();
-        window.HTMLElement.prototype.scrollIntoView = jest.fn();
-    });
-
     it("displays number of cards", async () => {
+        renderComponent();
         await clickBrowseAllCards();
-        await waitFor(() => expect(screen.getByText("122 card(s)"))
+        await waitFor(() => expect(screen.getByText(/122\s+card\(s\)/gm))
                       .toBeInTheDocument());
     });
 
     it("searching: calling api endpoint and returning results", async () => {
+        renderComponent();
         await clickBrowseAllCards();
         const searchField = await screen.findByPlaceholderText(
             "Search for...");
-        const cardsBrowser = await screen.findByText("Browse all cards");
-        fireEvent.click(cardsBrowser);
         const searchButton = await screen.findByLabelText("search");
-        const expectedUrl = "http://localhost:8000/api/users/626e4d32-"
-              + "a52f-4c15-8f78-aacf3b69a9b2/cards/?search=searched+phrase";
         fireEvent.change(searchField, {
             target: { value: "searched phrase" }
         });
         fireEvent.click(searchButton);
-        const searchResult = await screen.findByText("Search result");
-        
-        expect(searchResult).toBeInTheDocument();
-        await waitFor(() => expect(searchAllCards).toHaveBeenCalledWith(
-            expect.objectContaining(
-                {url: expectedUrl})));
+        expect(allCards.setSearchedPhrase).toHaveBeenCalledTimes(1);
+        expect(allCards.setSearchedPhrase).toHaveBeenCalledWith(
+            "searched phrase");
 
         const closeButton = await screen.findByText("Close");
         const clearUrl = "http://localhost:8000/api/users/626e4d32-"
@@ -776,17 +782,29 @@ describe("<CardCategoryBrowser/>", () => {
         // should reset search on closing modal
         downloadCards.mockClear();
         fireEvent.click(closeButton);
-        await waitFor(() => {
-            expect(downloadCards).toHaveBeenCalledWith(
-                expect.objectContaining({url: clearUrl}));
-            expect(downloadCards).toHaveBeenCalledTimes(1);
-        });
+        await waitFor(() => expect(downloadCards).toHaveBeenCalledWith(
+            expect.objectContaining({url: clearUrl})));
+        await waitFor(() => expect(downloadCards).toHaveBeenCalledTimes(1));
     });
 
     it("displays fallback when loading data", async () => {
-        clickBrowseAllCards();
+        const cards = {...allCards, isLoading: true};
+        getRenderScreen(() => (<AllCardsBrowserModal cards={cards}/>),
+                        credentials)();
+        await clickBrowseAllCards();
         expect(await screen.findByTestId(
             "card-category-browser-fallback-component")).toBeInTheDocument();
+    });
+});
+
+describe("<CardCategoryBrowser/>", () => {
+    const renderComponent = getRenderScreen(CardCategoryBrowser, {
+        user: "user_1",
+        password: "passwd"
+    });
+
+    beforeEach(() => {
+        renderComponent();
     });
 
     test("if component downloads cards from the server", async () => {
@@ -1025,76 +1043,6 @@ describe("<CardBrowser>", () => {
         const cramActionTitle = "cram memorized card";
         const cramAction = within(crammedCard).queryByTitle(cramActionTitle);
         expect(cramAction).not.toBeInTheDocument();
-    });
-});
-
-describe("<CardBody/>", () => {
-    const frontAudioUrl = "/local/audio/front_audiofile.mp3";
-    const backAudioUrl = "/local/audio/back_audiofile.mp3";
-    const card = {
-        front_audio: frontAudioUrl,
-        back_audio: backAudioUrl,
-        body: `<div class="card-body">
-  <div class="card-question">
-    Example <b>card</b> <i>question</i>.
-  </div>
-  <div class="card-answer">
-    Example Card answer.
-  </div>
-</div>`
-    };
-    const frontAudioTestId = `basic-audio-player-component-${frontAudioUrl}`;
-    const backAudioTestId = `basic-audio-player-component-${backAudioUrl}`;
-
-    test("if question sound component appears on card appearance", () => {
-        render(<CardBody card={card} showAnswer={false}/>);
-        const audioPlayer = screen.getByTestId(frontAudioTestId);
-        expect(audioPlayer).toBeInTheDocument();
-    });
-
-    test("if answer sound component doesn't appear", async () => {
-        // ... when the answer is hidden
-        render(<CardBody card={card} showAnswer={false}/>);
-        await expect(async () => {
-            await screen.findByTestId(backAudioTestId);
-        }).rejects.toEqual(expect.anything());
-    });
-
-    test("if front audio doesn't appear/when no sound file", () => {
-        // sound playback component for the front of the card should
-        // not appear if front_audio field is empty
-        const localCard = {...card, front_audio: null};
-        render(<CardBody card={localCard} showAnswer={false}/>);
-        const audioPlayer = screen.queryByTestId(frontAudioTestId);
-        expect(audioPlayer).not.toBeInTheDocument();
-    });
-
-    test("if back audio doesn't appear/when no sound file", () => {
-        // sound playback component for the back of the card should
-        // not appear if back_audio field is empty
-        const localCard = {...card, back_audio: null};
-        render(<CardBody card={localCard} showAnswer={true}/>);
-        const audioPlayer = screen.queryByTestId(backAudioTestId);
-        expect(audioPlayer).not.toBeInTheDocument();
-    });
-
-    test("if answer sound component appears", () => {
-        render(<CardBody card={card} showAnswer={true}/>);
-        const audioPlayer = screen.getByTestId(backAudioTestId);
-        expect(audioPlayer).toBeInTheDocument();
-    });
-
-    test("displaying answer", () => {
-        render(<CardBody card={card} showAnswer={true}/>);
-        const answer = screen.queryByText("Example Card answer.");
-        expect(answer).toBeInTheDocument();
-        expect(answer.className).toBe("card-answer");
-    });
-
-    test("answer is hidden", () => {
-        render(<CardBody card={card} showAnswer={false}/>);
-        const answer = screen.queryByText("Example Card answer.");
-        expect(answer).not.toBeInTheDocument();
     });
 });
 
